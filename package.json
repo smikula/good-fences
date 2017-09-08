@@ -7,5 +7,8 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Scott Mikula <smikula@microsoft.com>",
-    "license": "MIT"
+    "license": "MIT",
+    "dependencies": {
+        "typescript": "~2.4.0"
+    }
 }
