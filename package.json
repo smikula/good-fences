@@ -2,8 +2,9 @@
     "name": "dependency-cop",
     "version": "0.1.0",
     "description": "Dependency management for TypeScript projects",
-    "main": "index.js",
+    "main": "lib/index.js",
     "scripts": {
+        "build": "tsc",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Scott Mikula <smikula@microsoft.com>",

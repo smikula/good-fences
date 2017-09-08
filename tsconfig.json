@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2015",
+        "noImplicitAny": false,
+        "noUnusedLocals": true,
+        "sourceMap": true,
+        "outDir": "lib"
+    },
+    "exclude": [
+        "node_modules",
+        "lib"
+    ]
+}
