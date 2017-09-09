@@ -10,6 +10,11 @@
     "author": "Scott Mikula <smikula@microsoft.com>",
     "license": "MIT",
     "dependencies": {
+        "fs": "^0.0.1-security",
+        "glob": "^7.1.2",
         "typescript": "~2.4.0"
+    },
+    "devDependencies": {
+        "@types/node": "^7.0.4"
     }
 }
