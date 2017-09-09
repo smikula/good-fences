@@ -1,3 +1,8 @@
+import * as glob from 'glob';
+
 export default function validate() {
-    console.log('Validating...');
+    let files = glob.sync('src/**/*.ts');
+    files.forEach(file => {
+        console.log(file);
+    });
 }
