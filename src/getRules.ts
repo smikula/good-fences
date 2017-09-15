@@ -1,13 +1,18 @@
 import * as fs from 'fs';
 import * as glob from 'glob';
+import RuleSet from './types/RuleSet';
 
-export default function getRules() {
-    let files = glob.sync('**/depcop.json');
-    let rules = {};
+let ruleSet: RuleSet = null;
 
-    files.forEach(file => {
-        rules[file] = JSON.parse(fs.readFileSync(file).toString());
-    });
+export default function getRules(): RuleSet {
+    if (!ruleSet) {
+        ruleSet = {};
 
-    return rules;
+        let files = glob.sync('**/depcop.json');
+        files.forEach(file => {
+            ruleSet[file] = JSON.parse(fs.readFileSync(file).toString());
+        });
+    }
+
+    return ruleSet;
 }
