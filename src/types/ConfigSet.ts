@@ -1,7 +1,5 @@
-interface DirectoryConfig {
-    tags: string[];
-}
+import Config from './Config';
 
 export default interface ConfigSet {
-    [path: string]: DirectoryConfig;
+    [path: string]: Config;
 };

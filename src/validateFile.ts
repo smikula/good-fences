@@ -3,6 +3,7 @@ import * as ts from 'typescript';
 import getCompilerHost from './getCompilerHost';
 import getCompilerOptions from './getCompilerOptions';
 import getTagsForFile from './getTagsForFile';
+import validateImportIsAccessible from './validateImportIsAccessible';
 
 export default function validateFile(filePath: string) {
     console.log('Validating file:', filePath);
@@ -24,6 +25,10 @@ export default function validateFile(filePath: string) {
             '  resolvedModule: ',
             resolvedFile.resolvedModule && resolvedFile.resolvedModule.resolvedFileName
         );
+
+        if (resolvedFile.resolvedModule) {
+            validateImportIsAccessible(filePath, resolvedFile.resolvedModule.resolvedFileName);
+        }
     });
 
     console.log();
