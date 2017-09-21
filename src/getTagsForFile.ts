@@ -1,21 +1,16 @@
-import * as path from 'path';
-import getConfig from './getConfig';
+import getConfigsForFile from './getConfigsForFile';
 
 export default function getTagsForFile(filePath: string): string[] {
-    let config = getConfig();
+    let configs = getConfigsForFile(filePath);
     let tags = {};
 
-    let pathSegments = path.resolve(path.dirname(filePath)).split(path.sep);
-    while (pathSegments.length) {
-        let dirPath = pathSegments.join(path.sep);
-        if (config[dirPath] && config[dirPath].tags) {
-            config[dirPath].tags.forEach(tag => {
+    configs.forEach(config => {
+        if (config.tags) {
+            config.tags.forEach(tag => {
                 tags[tag] = true;
             });
         }
-
-        pathSegments.pop();
-    }
+    });
 
     return Object.keys(tags).sort();
 }

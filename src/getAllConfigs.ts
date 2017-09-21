@@ -5,7 +5,7 @@ import ConfigSet from './types/ConfigSet';
 
 let configSet: ConfigSet = null;
 
-export default function getConfig(): ConfigSet {
+export default function getAllConfigs(): ConfigSet {
     if (!configSet) {
         configSet = {};
 
@@ -13,6 +13,7 @@ export default function getConfig(): ConfigSet {
         files.forEach(file => {
             let absolutePath = path.resolve(path.dirname(file));
             configSet[absolutePath] = JSON.parse(fs.readFileSync(file).toString());
+            configSet[absolutePath].path = absolutePath;
         });
     }
 

@@ -1,9 +1,9 @@
 import * as path from 'path';
-import getConfig from './getConfig';
+import getConfigsForFile from './getConfigsForFile';
 import reportError from './reportError';
 
 export default function validateImportIsAccessible(sourceFile: string, importFile: string) {
-    let allConfigs = getConfig();
+    let configsForImport = getConfigsForFile(importFile);
     let isExported = false;
     let foundUnsharedConfig = false;
 
@@ -11,20 +11,10 @@ export default function validateImportIsAccessible(sourceFile: string, importFil
     sourceFile = path.resolve(sourceFile);
     importFile = path.resolve(importFile);
 
-    // Starting at import file's path, walk up the directory structure
-    let configPathSegments = path.resolve(path.dirname(importFile)).split(path.sep);
-    while (configPathSegments.length) {
-        let configPath = configPathSegments.join(path.sep);
-        configPathSegments.pop();
-
-        // If there's no config file at this level, there's nothing to validate
-        let config = allConfigs[configPath];
-        if (!config) {
-            continue;
-        }
-
+    // Process each config that applies to the imported file
+    configsForImport.forEach(config => {
         // If the config is shared between source file and import then the export rules don't apply
-        if (path.relative(configPath, sourceFile).startsWith('..')) {
+        if (path.relative(config.path, sourceFile).startsWith('..')) {
             foundUnsharedConfig = true;
 
             // Examine each export specified in the config
@@ -33,7 +23,7 @@ export default function validateImportIsAccessible(sourceFile: string, importFil
                     let value = config.exports[key];
 
                     if (
-                        keyMatchesImportFile(configPath, key, importFile) &&
+                        keyMatchesImportFile(config.path, key, importFile) &&
                         valueMatchesSourceFile(value, sourceFile)
                     ) {
                         isExported = true;
@@ -41,7 +31,7 @@ export default function validateImportIsAccessible(sourceFile: string, importFil
                 });
             }
         }
-    }
+    });
 
     // If there is no unshared config (i.e. both files are under the same subtree of every config
     // above them) then the import is valid by default.  Otherwise we need to make sure that it
