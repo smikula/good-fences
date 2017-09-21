@@ -1,5 +1,6 @@
 import * as path from 'path';
 import getConfig from './getConfig';
+import reportError from './reportError';
 
 export default function validateImportIsAccessible(sourceFile: string, importFile: string) {
     let allConfigs = getConfig();
@@ -46,7 +47,7 @@ export default function validateImportIsAccessible(sourceFile: string, importFil
     // above them) then the import is valid by default.  Otherwise we need to make sure that it
     // was exported.
     if (foundUnsharedConfig && !isExported) {
-        console.error(`Error: ${sourceFile} is not allowed to import ${importFile}`);
+        reportError(`${sourceFile} is not allowed to import ${importFile}`);
     }
 }
 
