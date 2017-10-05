@@ -1,3 +1,3 @@
-import validate from './validate';
+import { run } from './runner';
 
-validate();
+run();
