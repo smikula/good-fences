@@ -12,6 +12,7 @@
     "dependencies": {
         "fs": "^0.0.1-security",
         "glob": "^7.1.2",
+        "minimatch": "^3.0.4",
         "typescript": "~2.4.0"
     },
     "devDependencies": {
