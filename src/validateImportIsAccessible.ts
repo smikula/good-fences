@@ -1,6 +1,7 @@
 import * as path from 'path';
 import Config from './types/Config';
 import getConfigsForFile from './getConfigsForFile';
+import matchTagsToFile from './matchTagsToFile';
 import reportError from './reportError';
 
 export default function validateImportIsAccessible(sourceFile: string, importFile: string) {
@@ -37,11 +38,11 @@ function validateConfig(config: Config, sourceFile: string, importFile: string) 
 function hasMatchingExport(config: Config, sourceFile: string, importFile: string) {
     let isExported = false;
     Object.keys(config.exports).forEach(key => {
-        let value = config.exports[key];
+        let tags = config.exports[key];
 
         if (
             keyMatchesImportFile(config.path, key, importFile) &&
-            valueMatchesSourceFile(value, sourceFile)
+            matchTagsToFile(tags, sourceFile)
         ) {
             isExported = true;
         }
@@ -54,8 +55,4 @@ function keyMatchesImportFile(configPath: string, key: string, importFile: strin
     // Remove the file extension before matching
     importFile = importFile.substr(0, importFile.length - path.extname(importFile).length);
     return path.resolve(configPath, key) == importFile;
-}
-
-function valueMatchesSourceFile(value: string | string[], sourceFile: string) {
-    return value == '*';
 }
