@@ -1,1 +1,1 @@
-export { default as validate } from './validate';
+export { run } from './runner';
