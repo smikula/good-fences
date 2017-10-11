@@ -1,7 +1,7 @@
 import * as path from 'path';
 import Config from './types/Config';
 import getConfigsForFile from './getConfigsForFile';
-import matchTagsToFile from './matchTagsToFile';
+import fileMatchesTag from './fileMatchesTag';
 import reportError from './reportError';
 
 export default function validateImportIsAccessible(sourceFile: string, importFile: string) {
@@ -42,7 +42,7 @@ function hasMatchingExport(config: Config, sourceFile: string, importFile: strin
 
         if (
             keyMatchesImportFile(config.path, key, importFile) &&
-            matchTagsToFile(tags, sourceFile)
+            fileMatchesTag(sourceFile, tags)
         ) {
             isExported = true;
         }

@@ -1,7 +1,7 @@
 import getTagsForFile from './getTagsForFile';
 
-// Determines whether a given file matches any of the given tags
-export default function matchTagsToFile(tags: string | string[], filePath: string) {
+// Returns true if the given file matches any of the given tags
+export default function fileMatchesTag(filePath: string, tags: string | string[]) {
     // '*' matches all files
     if (tags == '*') {
         return true;
