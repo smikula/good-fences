@@ -1,6 +1,7 @@
 import * as path from 'path';
 import Config from './types/Config';
 import getConfigsForFile from './getConfigsForFile';
+import fileMatchesConfigGlob from './fileMatchesConfigGlob';
 import fileMatchesTag from './fileMatchesTag';
 import reportError from './reportError';
 
@@ -41,7 +42,7 @@ function hasMatchingExport(config: Config, sourceFile: string, importFile: strin
         let tags = config.exports[key];
 
         if (
-            keyMatchesImportFile(config.path, key, importFile) &&
+            fileMatchesConfigGlob(importFile, config.path, key) &&
             fileMatchesTag(sourceFile, tags)
         ) {
             isExported = true;
@@ -49,10 +50,4 @@ function hasMatchingExport(config: Config, sourceFile: string, importFile: strin
     });
 
     return isExported;
-}
-
-function keyMatchesImportFile(configPath: string, key: string, importFile: string) {
-    // Remove the file extension before matching
-    importFile = importFile.substr(0, importFile.length - path.extname(importFile).length);
-    return path.resolve(configPath, key) == importFile;
 }
