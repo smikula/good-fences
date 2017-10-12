@@ -5,13 +5,15 @@
     "main": "lib/index.js",
     "scripts": {
         "build": "tsc",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "jest"
     },
     "author": "Scott Mikula <smikula@microsoft.com>",
     "license": "MIT",
     "dependencies": {
+        "@types/jest": "^21.1.2",
         "fs": "^0.0.1-security",
         "glob": "^7.1.2",
+        "jest": "^21.2.1",
         "minimatch": "^3.0.4",
         "typescript": "~2.4.0"
     },
