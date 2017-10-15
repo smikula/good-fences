@@ -2,7 +2,10 @@
     "name": "dependency-cop",
     "version": "0.1.0",
     "description": "Dependency management for TypeScript projects",
-    "main": "lib/index.js",
+    "main": "./lib/index.js",
+    "bin": {
+        "dependency-cop": "./bin/dependency-cop"
+    },
     "scripts": {
         "build": "tsc",
         "test": "jest"
