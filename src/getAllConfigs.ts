@@ -9,7 +9,7 @@ export default function getAllConfigs(): ConfigSet {
     if (!configSet) {
         configSet = {};
 
-        let files = glob.sync('**/depcop.json');
+        let files = glob.sync('**/fence.json');
         files.forEach(file => {
             let absolutePath = path.resolve(path.dirname(file));
             configSet[absolutePath] = JSON.parse(fs.readFileSync(file).toString());

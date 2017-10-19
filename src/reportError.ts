@@ -1,3 +1,3 @@
 export default function reportError(message: string) {
-    console.error(`[dependency-cop] Error: ${message}`);
+    console.error(`[good-fences] Error: ${message}`);
 }

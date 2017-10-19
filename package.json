@@ -1,20 +1,20 @@
 {
-    "name": "dependency-cop",
+    "name": "good-fences",
     "version": "0.1.0",
-    "description": "Dependency management for TypeScript projects",
+    "description": "Code boundary management for TypeScript projects",
     "main": "./lib/index.js",
     "bin": {
-        "dependency-cop": "./bin/dependency-cop"
+        "good-fences": "./bin/good-fences",
+        "gf": "./bin/good-fences"
     },
     "scripts": {
         "build": "tsc",
         "test": "jest"
     },
-    "author": "Scott Mikula <smikula@microsoft.com>",
+    "author": "Scott Mikula <mikula@gmail.com>",
     "license": "MIT",
     "dependencies": {
         "@types/jest": "^21.1.2",
-        "fs": "^0.0.1-security",
         "glob": "^7.1.2",
         "jest": "^21.2.1",
         "minimatch": "^3.0.4",
