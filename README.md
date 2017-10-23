@@ -8,23 +8,15 @@
 Good-fences is a tool that allows you to segment a TypeScript project into conceptual areas and manage dependencies between those areas.
 
 This is mostly a concern for large projects with many people working on them, where it is impossible for every developer to have a wholistic understanding of the entire codebase.
-TypeScript's module system is a specialized form of anarchy because any file can import any other file, possibly allowing access to code that was really meant to be an internal implementation detail of some larger system.
+JavaScript's module system is a specialized form of anarchy because any file can import any other file, possibly allowing access to code that was really meant to be an internal implementation detail of some larger system.
 Other languages have concepts like DLL boundaries and the `internal` keyword to mitigate this.
 Good-fences provides a way to enforce similar boundaries in the TypeScript world.
 
 ## Getting started
 
-1. Install:
-    ```
-    npm install -g good-fences
-    ```
-
+1. Install:  `npm install -g good-fences`
 2. Configure with one or more fence.json files (see below).
-
-3. Run:
-    ```
-    gf
-    ```
+3. Run: `gf`
 
 ## Configuring good-fences
 
@@ -44,7 +36,7 @@ A typical **fence.json** might look like the following.
 }
 ```
 
-### `tags`
+### Tags
 
 The `tags` property can specify one or more tags to apply to all modules under this config's subdirectory.
 Tags are a way of defining a class of files;
