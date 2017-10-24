@@ -2,6 +2,16 @@ language: node_js
 node_js:
 - "node"
 cache: yarn
+before_install:
+- yarn global add makeshift && makeshift -r https://registry.npmjs.org
 script:
 - npm run build
 - npm test
+deploy:
+  - provider: npm
+    skip_cleanup: true
+    email: mikula@gmail.com
+    api_key: $NPM_TOKEN
+    tag: latest
+    on:
+      tags: true
