@@ -13,14 +13,14 @@
     },
     "author": "Scott Mikula <mikula@gmail.com>",
     "dependencies": {
-        "@types/jest": "^21.1.2",
         "glob": "^7.1.2",
-        "jest": "^21.2.1",
         "minimatch": "^3.0.4",
-        "typescript": "~2.4.0"
+        "typescript": ">=2.4.0"
     },
     "devDependencies": {
-        "@types/node": "^7.0.4"
+        "@types/jest": "^21.1.2",
+        "@types/node": "^7.0.4",
+        "jest": "^21.2.1"
     },
     "repository": {
         "type": "git",
