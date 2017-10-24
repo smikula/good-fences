@@ -1,6 +1,6 @@
 {
     "name": "good-fences",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Code boundary management for TypeScript projects",
     "main": "./lib/index.js",
     "bin": {
