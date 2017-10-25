@@ -23,6 +23,14 @@ export default class TypeScriptProgram {
         );
     }
 
+    getSourceFiles() {
+        // Filter out .d.ts files
+        return this.program
+            .getSourceFiles()
+            .map(file => file.fileName)
+            .filter(fileName => !fileName.endsWith('.d.ts'));
+    }
+
     // Get all imports from a given file
     getImportsForFile(fileName: string) {
         let fileInfo = ts.preProcessFile(ts.sys.readFile(fileName), true, true);
