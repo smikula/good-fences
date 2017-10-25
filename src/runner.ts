@@ -1,7 +1,10 @@
-import * as glob from 'glob';
 import validateFile from './validateFile';
+import TypeScriptProgram from './TypeScriptProgram';
 
 export function run() {
-    let files = glob.sync('src/**/*.ts');
-    files.forEach(validateFile);
+    let tsProgram = new TypeScriptProgram('tsconfig.json');
+    let files = tsProgram.getSourceFiles();
+    files.forEach(file => {
+        validateFile(file, tsProgram);
+    });
 }

@@ -1,22 +1,12 @@
-import * as fs from 'fs';
-import * as ts from 'typescript';
-import getCompilerHost from './getCompilerHost';
-import getCompilerOptions from './getCompilerOptions';
+import TypeScriptProgram from './TypeScriptProgram';
 import validateImportIsAccessible from './validateImportIsAccessible';
 
-export default function validateFile(filePath: string) {
-    let fileInfo = ts.preProcessFile(fs.readFileSync(filePath).toString(), true, true);
-    fileInfo.importedFiles.forEach(importInfo => {
-        let resolvedFile = ts.resolveModuleName(
-            importInfo.fileName,
-            filePath,
-            getCompilerOptions(),
-            getCompilerHost(),
-            null // TODO
-        );
-
-        if (resolvedFile.resolvedModule) {
-            validateImportIsAccessible(filePath, resolvedFile.resolvedModule.resolvedFileName);
+export default function validateFile(filePath: string, tsProgram: TypeScriptProgram) {
+    const importedFiles = tsProgram.getImportsForFile(filePath);
+    importedFiles.forEach(importInfo => {
+        const resolvedFileName = tsProgram.resolveImportFromFile(importInfo.fileName, filePath);
+        if (resolvedFileName) {
+            validateImportIsAccessible(filePath, resolvedFileName);
         }
     });
 }
