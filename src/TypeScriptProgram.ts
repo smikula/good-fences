@@ -23,8 +23,14 @@ export default class TypeScriptProgram {
         );
     }
 
+    // Get all imports from a given file
+    getImportsForFile(fileName: string) {
+        let fileInfo = ts.preProcessFile(ts.sys.readFile(fileName), true, true);
+        return fileInfo.importedFiles;
+    }
+
     // Resolve an imported module
-    resolveImport(moduleName: string, containingFile: string) {
+    resolveImportFromFile(moduleName: string, containingFile: string) {
         const resolvedFile = ts.resolveModuleName(
             moduleName,
             containingFile,
