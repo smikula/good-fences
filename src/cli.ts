@@ -1,12 +1,15 @@
 import * as commander from 'commander';
+import Options from './types/Options';
 import { run } from './runner';
 
 // Read the package version from package.json
-let packageVersion = require('../package').version;
+const packageVersion = require('../package').version;
 
-commander
+// Parse command line options
+const options = commander
     .version(packageVersion)
     .option('-p, --project <string>', 'tsconfig.json file')
-    .parse(process.argv);
+    .parse(process.argv) as Options;
 
-run();
+// Run good-fences
+run(options);
