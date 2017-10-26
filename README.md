@@ -16,7 +16,14 @@ Good-fences provides a way to enforce similar boundaries in the TypeScript world
 
 1. Install:  `npm install -g good-fences`
 2. Configure with one or more fence.json files (see below).
-3. Run: `gf`
+3. Run: `gf [options]`
+
+    Or run good-fences programmatically via the API:
+
+    ```typescript
+    import { run } from 'good-fences';
+    run(options);
+    ```
 
 ## Configuring good-fences
 
@@ -77,3 +84,22 @@ This is best demonstrated with an example:
 * The `index` module is accessible to all modules.
 * Modules under the `/view` directory are accessible to any module tagged with 'view'.
 * The `data/store` modules is accessible to any module tagged with 'data' or 'view'.
+
+## Options
+
+### OnError
+
+Provide a callback for reporting errors.
+This option is only available when running good-fences via the API.
+
+Default       | CLI | API
+--------------|-----|----
+`console.log` | n/a | `onError: (message: string) => void`
+
+### Project
+
+Specify the tsconfig file to use for your project.
+
+Default           | CLI                                      | API
+------------------|------------------------------------------|----
+`./tsconfig.json` | `--project <string>`<br/>`-p <string>` | `project: string`
