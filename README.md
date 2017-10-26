@@ -100,6 +100,6 @@ Default       | CLI | API
 
 Specify the tsconfig file to use for your project.
 
-Default           | CLI                                      | API
-------------------|------------------------------------------|----
+Default           | CLI                                    | API
+------------------|----------------------------------------|----
 `./tsconfig.json` | `--project <string>`<br/>`-p <string>` | `project: string`
