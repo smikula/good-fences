@@ -10,7 +10,7 @@ export default class TypeScriptProgram {
     constructor(configFile: string) {
         // Parse the config file
         const projectPath = path.dirname(path.resolve(configFile));
-        const { config } = ts.readConfigFile(configFile, ts.sys.readFile);
+        const config = readConfigFile(configFile);
         const parsedConfig = ts.parseJsonConfigFileContent(config, ts.sys, projectPath);
         this.compilerOptions = parsedConfig.options;
 
@@ -49,4 +49,14 @@ export default class TypeScriptProgram {
 
         return resolvedFile.resolvedModule && resolvedFile.resolvedModule.resolvedFileName;
     }
+}
+
+function readConfigFile(configFile: string) {
+    const { config, error } = ts.readConfigFile(configFile, ts.sys.readFile);
+
+    if (error) {
+        throw new Error('Error reading project file: ' + error.messageText);
+    }
+
+    return config;
 }
