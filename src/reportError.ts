@@ -1,11 +1,7 @@
-let errorReporter = logToConsole;
+import getOptions from './getOptions';
 
 export default function reportError(message: string) {
-    errorReporter(message);
-}
-
-export function setErrorReporter(onError: (message: string) => void) {
-    errorReporter = onError;
+    (getOptions().onError || logToConsole)(message);
 }
 
 function logToConsole(message: string) {

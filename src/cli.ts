@@ -9,6 +9,7 @@ const packageVersion = require('../package').version;
 const options = commander
     .version(packageVersion)
     .option('-p, --project <string>', 'tsconfig.json file')
+    .option('-r, --rootDir <string>', 'root directory of the project')
     .parse(process.argv) as Options;
 
 // Run good-fences
