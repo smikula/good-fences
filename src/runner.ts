@@ -1,17 +1,14 @@
 import Options from './types/Options';
-import { setErrorReporter } from './reportError';
+import { setOptions } from './getOptions';
 import validateFile from './validateFile';
 import TypeScriptProgram from './TypeScriptProgram';
 
 export function run(options: Options) {
-    // Apply options
-    const project = options.project || 'tsconfig.json';
-    if (options.onError) {
-        setErrorReporter(options.onError);
-    }
+    // Store options so they can be globally available
+    setOptions(options);
 
     // Run validation
-    let tsProgram = new TypeScriptProgram(project);
+    let tsProgram = new TypeScriptProgram(options.project || 'tsconfig.json');
     let files = tsProgram.getSourceFiles();
     files.forEach(file => {
         validateFile(file, tsProgram);
