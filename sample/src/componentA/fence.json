@@ -1,0 +1,6 @@
+{
+    "tags": [ "tagA" ],
+    "exports": {
+        "componentA": "*"
+    }
+}
