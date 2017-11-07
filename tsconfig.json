@@ -5,7 +5,7 @@
         "declaration": true,
         "sourceMap": false,
         "outDir": "lib",
-        "noImplicitAny": false,
+        "noImplicitAny": true,
         "noUnusedLocals": true
     },
     "exclude": [

@@ -2,7 +2,7 @@ import getConfigsForFile from './getConfigsForFile';
 
 export default function getTagsForFile(filePath: string): string[] {
     let configs = getConfigsForFile(filePath);
-    let tags = {};
+    let tags: { [tag: string]: boolean } = {};
 
     configs.forEach(config => {
         if (config.tags) {
