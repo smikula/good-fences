@@ -1,0 +1,6 @@
+{
+    "tags": [ "tagB" ],
+    "exports": {
+        "componentB": "tagA"
+    }
+}

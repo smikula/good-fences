@@ -10,7 +10,8 @@
     },
     "scripts": {
         "build": "tsc",
-        "test": "jest"
+        "test": "jest",
+        "sample": "npm run build && node ./lib/cli.js --rootDir ./sample"
     },
     "author": "Scott Mikula <mikula@gmail.com>",
     "dependencies": {
