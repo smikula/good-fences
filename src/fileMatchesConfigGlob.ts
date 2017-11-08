@@ -11,5 +11,7 @@ export default function fileMatchesConfigGlob(importFile: Path, configPath: Path
 
     // Remove the file extension before matching
     importFile = <Path>importFile.substr(0, importFile.length - path.extname(importFile).length);
+    console.log('importFile', importFile);
+    console.log('createPath(configPath, key)', createPath(configPath, key));
     return minimatch(importFile, createPath(configPath, key));
 }
