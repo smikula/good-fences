@@ -25,6 +25,9 @@ Good-fences provides a way to enforce similar boundaries in the TypeScript world
     run(options);
     ```
 
+Also see the [sample project](./sample) which demonstrates how fences can be configured.
+To run good-fences against the sample, just clone this repository and run `npm run sample`.
+
 ## Configuring good-fences
 
 Good-fences is configured by creating **fence.json** files throughout your project's directory structure.
