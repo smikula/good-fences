@@ -1,7 +1,7 @@
 import * as path from 'path';
 import NormalizedPath from './types/NormalizedPath';
 
-export default function createPath(...pathSegments: string[]) {
+export default function normalizePath(...pathSegments: string[]) {
     // Resolve the raw path to an absolute path
     let normalizedPath = path.resolve.apply(null, pathSegments);
 

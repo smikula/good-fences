@@ -1,5 +1,5 @@
 import NormalizedPath from './types/NormalizedPath';
-import createPath from './createPath';
+import normalizePath from './normalizePath';
 import TypeScriptProgram from './TypeScriptProgram';
 import validateImportIsAccessible from './validateImportIsAccessible';
 
@@ -8,7 +8,7 @@ export default function validateFile(filePath: NormalizedPath, tsProgram: TypeSc
     importedFiles.forEach(importInfo => {
         const resolvedFileName = tsProgram.resolveImportFromFile(importInfo.fileName, filePath);
         if (resolvedFileName) {
-            validateImportIsAccessible(filePath, createPath(resolvedFileName));
+            validateImportIsAccessible(filePath, normalizePath(resolvedFileName));
         }
     });
 }

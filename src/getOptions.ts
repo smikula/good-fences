@@ -1,5 +1,5 @@
 import Options from './types/Options';
-import createPath from './createPath';
+import normalizePath from './normalizePath';
 
 let options: Options;
 
@@ -11,8 +11,8 @@ export function setOptions(providedOptions: Options) {
     options = providedOptions;
 
     // Normalize and apply defaults
-    options.rootDir = createPath(options.rootDir || process.cwd());
+    options.rootDir = normalizePath(options.rootDir || process.cwd());
     options.project = options.project
-        ? createPath(options.project)
-        : createPath(options.rootDir, 'tsconfig.json');
+        ? normalizePath(options.project)
+        : normalizePath(options.rootDir, 'tsconfig.json');
 }

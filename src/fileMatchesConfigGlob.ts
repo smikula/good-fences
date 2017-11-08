@@ -1,6 +1,6 @@
 import * as path from 'path';
 import NormalizedPath from './types/NormalizedPath';
-import createPath from './createPath';
+import normalizePath from './normalizePath';
 const minimatch = require('minimatch');
 
 export default function fileMatchesConfigGlob(
@@ -18,5 +18,5 @@ export default function fileMatchesConfigGlob(
         0,
         importFile.length - path.extname(importFile).length
     );
-    return minimatch(importFile, createPath(configPath, key));
+    return minimatch(importFile, normalizePath(configPath, key));
 }
