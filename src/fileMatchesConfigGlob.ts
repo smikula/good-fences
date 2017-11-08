@@ -1,5 +1,6 @@
 import * as path from 'path';
 import Path from './types/Path';
+import createPath from './createPath';
 const minimatch = require('minimatch');
 
 export default function fileMatchesConfigGlob(importFile: Path, configPath: Path, key: string) {
@@ -10,5 +11,5 @@ export default function fileMatchesConfigGlob(importFile: Path, configPath: Path
 
     // Remove the file extension before matching
     importFile = <Path>importFile.substr(0, importFile.length - path.extname(importFile).length);
-    return minimatch(importFile, path.resolve(configPath, key));
+    return minimatch(importFile, createPath(configPath, key));
 }

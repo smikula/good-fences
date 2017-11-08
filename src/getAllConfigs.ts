@@ -12,7 +12,7 @@ export default function getAllConfigs(): ConfigSet {
         configSet = {};
 
         // Glob for configs under the project root directory
-        let files = glob.sync(path.resolve(getOptions().rootDir, '**/fence.json'));
+        let files = glob.sync(createPath(getOptions().rootDir, '**/fence.json'));
         files.forEach(file => {
             let configPath = createPath(path.dirname(file));
             configSet[configPath] = JSON.parse(fs.readFileSync(file).toString());
