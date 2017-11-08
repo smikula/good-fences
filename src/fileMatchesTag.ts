@@ -1,7 +1,8 @@
+import Path from './types/Path';
 import getTagsForFile from './getTagsForFile';
 
 // Returns true if the given file matches any of the given tags
-export default function fileMatchesTag(filePath: string, tags: string | string[]) {
+export default function fileMatchesTag(filePath: Path, tags: string | string[]) {
     // '*' matches all files
     if (tags == '*') {
         return true;

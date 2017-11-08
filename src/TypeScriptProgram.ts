@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as ts from 'typescript';
+import Path from './types/Path';
 
 // Helper class for interacting with TypeScript
 export default class TypeScriptProgram {
@@ -7,7 +8,7 @@ export default class TypeScriptProgram {
     private compilerHost: ts.CompilerHost;
     private program: ts.Program;
 
-    constructor(configFile: string) {
+    constructor(configFile: Path) {
         // Parse the config file
         const projectPath = path.dirname(path.resolve(configFile));
         const config = readConfigFile(configFile);
@@ -32,13 +33,13 @@ export default class TypeScriptProgram {
     }
 
     // Get all imports from a given file
-    getImportsForFile(fileName: string) {
+    getImportsForFile(fileName: Path) {
         let fileInfo = ts.preProcessFile(ts.sys.readFile(fileName), true, true);
         return fileInfo.importedFiles;
     }
 
     // Resolve an imported module
-    resolveImportFromFile(moduleName: string, containingFile: string) {
+    resolveImportFromFile(moduleName: string, containingFile: Path) {
         const resolvedFile = ts.resolveModuleName(
             moduleName,
             containingFile,
@@ -51,7 +52,7 @@ export default class TypeScriptProgram {
     }
 }
 
-function readConfigFile(configFile: string) {
+function readConfigFile(configFile: Path) {
     const { config, error } = ts.readConfigFile(configFile, ts.sys.readFile);
 
     if (error) {

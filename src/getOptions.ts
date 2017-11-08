@@ -1,5 +1,6 @@
 import * as path from 'path';
 import Options from './types/Options';
+import createPath from './createPath';
 
 let options: Options;
 
@@ -11,8 +12,6 @@ export function setOptions(providedOptions: Options) {
     options = providedOptions;
 
     // Normalize and apply defaults
-    options.rootDir = options.rootDir ? path.resolve(options.rootDir) : path.resolve();
-    options.project = options.project
-        ? path.resolve(options.project)
-        : path.resolve(options.rootDir, 'tsconfig.json');
+    options.rootDir = createPath(options.rootDir || process.cwd());
+    options.project = createPath(options.project || path.resolve(options.rootDir, 'tsconfig.json'));
 }

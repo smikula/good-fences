@@ -1,5 +1,7 @@
+import Path from './Path';
+
 export default interface Options {
-    project?: string;
-    rootDir?: string;
+    project?: Path;
+    rootDir?: Path;
     onError?: (message: string) => void;
 };

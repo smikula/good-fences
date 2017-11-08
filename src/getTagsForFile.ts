@@ -1,6 +1,7 @@
+import Path from './types/Path';
 import getConfigsForFile from './getConfigsForFile';
 
-export default function getTagsForFile(filePath: string): string[] {
+export default function getTagsForFile(filePath: Path): string[] {
     let configs = getConfigsForFile(filePath);
     let tags: { [tag: string]: boolean } = {};
 
