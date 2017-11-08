@@ -106,3 +106,11 @@ Specify the tsconfig file to use for your project.
 Default           | CLI                                    | API
 ------------------|----------------------------------------|----
 `./tsconfig.json` | `--project <string>`<br/>`-p <string>` | `project: string`
+
+### Root Directory
+
+Specify the project root directory.
+
+Default         | CLI                                    | API
+----------------|----------------------------------------|----
+`process.cwd()` | `--rootDir <string>`<br/>`-r <string>` | `rootDir: string`
