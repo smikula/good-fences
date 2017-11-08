@@ -4,5 +4,5 @@ export declare class Nominal<T extends string> {
     private nominalType: T;
 }
 
-type Path = string & Nominal<'Path'>;
-export default Path;
+type NormalizedPath = string & Nominal<'Path'>;
+export default NormalizedPath;

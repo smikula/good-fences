@@ -1,5 +1,5 @@
 import * as path from 'path';
-import Path from './types/Path';
+import NormalizedPath from './types/NormalizedPath';
 
 export default function createPath(...pathSegments: string[]) {
     // Resolve the raw path to an absolute path
@@ -10,5 +10,5 @@ export default function createPath(...pathSegments: string[]) {
         normalizedPath = normalizedPath.substr(0, 1).toUpperCase() + normalizedPath.substr(1);
     }
 
-    return <Path>normalizedPath;
+    return <NormalizedPath>normalizedPath;
 }
