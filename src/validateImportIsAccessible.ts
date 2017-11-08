@@ -1,21 +1,21 @@
 import * as path from 'path';
 import Config from './types/Config';
+import NormalizedPath from './types/NormalizedPath';
 import getConfigsForFile from './getConfigsForFile';
 import fileMatchesConfigGlob from './fileMatchesConfigGlob';
 import fileMatchesTag from './fileMatchesTag';
 import reportError from './reportError';
 
-export default function validateImportIsAccessible(sourceFile: string, importFile: string) {
-    // Make sure we're using absolute paths
-    sourceFile = path.resolve(sourceFile);
-    importFile = path.resolve(importFile);
-
+export default function validateImportIsAccessible(
+    sourceFile: NormalizedPath,
+    importFile: NormalizedPath
+) {
     // Validate against each config that applies to the imported file
     let configsForImport = getConfigsForFile(importFile);
     configsForImport.forEach(config => validateConfig(config, sourceFile, importFile));
 }
 
-function validateConfig(config: Config, sourceFile: string, importFile: string) {
+function validateConfig(config: Config, sourceFile: NormalizedPath, importFile: NormalizedPath) {
     // If the source file is under the config (i.e. the source and import files share the
     // config) then we don't apply the export rules
     if (!path.relative(config.path, sourceFile).startsWith('..')) {
@@ -36,7 +36,7 @@ function validateConfig(config: Config, sourceFile: string, importFile: string) 
     reportError(`${sourceFile} is importing inaccessible module ${importFile}`);
 }
 
-function hasMatchingExport(config: Config, sourceFile: string, importFile: string) {
+function hasMatchingExport(config: Config, sourceFile: NormalizedPath, importFile: NormalizedPath) {
     let isExported = false;
     Object.keys(config.exports).forEach(key => {
         let tags = config.exports[key];

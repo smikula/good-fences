@@ -1,5 +1,7 @@
+import NormalizedPath from './NormalizedPath';
+
 export default interface Options {
-    project?: string;
-    rootDir?: string;
+    project?: NormalizedPath;
+    rootDir?: NormalizedPath;
     onError?: (message: string) => void;
 };

@@ -1,6 +1,7 @@
+import NormalizedPath from './types/NormalizedPath';
 import getConfigsForFile from './getConfigsForFile';
 
-export default function getTagsForFile(filePath: string): string[] {
+export default function getTagsForFile(filePath: NormalizedPath): string[] {
     let configs = getConfigsForFile(filePath);
     let tags: { [tag: string]: boolean } = {};
 

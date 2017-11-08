@@ -1,8 +1,9 @@
 import * as path from 'path';
+import normalizePath from '../src/normalizePath';
 import fileMatchesConfigGlob from '../src/fileMatchesConfigGlob';
 
-const importFilePath = path.resolve(normalize('a\\b\\c\\d\\e\\file.ts'));
-const configPath = path.resolve(normalize('a\\b'));
+const importFilePath = normalizePath(normalize('a\\b\\c\\d\\e\\file.ts'));
+const configPath = normalizePath(normalize('a\\b'));
 
 describe('fileMatchesConfigGlob', () => {
     it('returns false if not a match', () => {

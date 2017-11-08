@@ -1,5 +1,7 @@
+import NormalizedPath from './NormalizedPath';
+
 export default interface Config {
-    path: string;
+    path: NormalizedPath;
     tags?: string[];
     exports?: { [files: string]: string | string[] };
 };
