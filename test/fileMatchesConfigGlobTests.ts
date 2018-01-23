@@ -3,6 +3,7 @@ import normalizePath from '../src/normalizePath';
 import fileMatchesConfigGlob from '../src/fileMatchesConfigGlob';
 
 const importFilePath = normalizePath(normalize('a\\b\\c\\d\\e\\file.ts'));
+const dtsImportFilePath = normalizePath(normalize('a\\b\\c\\d\\e\\file.d.ts'));
 const configPath = normalizePath(normalize('a\\b'));
 
 describe('fileMatchesConfigGlob', () => {
@@ -31,6 +32,12 @@ describe('fileMatchesConfigGlob', () => {
     it('matches path wildcards', () => {
         let key = normalize('c\\**\\file');
         let match = fileMatchesConfigGlob(importFilePath, configPath, key);
+        expect(match).toBe(true);
+    });
+
+    it('matches a d.ts file', () => {
+        let key = normalize('c\\d\\e\\file');
+        let match = fileMatchesConfigGlob(dtsImportFilePath, configPath, key);
         expect(match).toBe(true);
     });
 });
