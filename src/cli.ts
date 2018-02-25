@@ -17,12 +17,11 @@ let hadError = false;
 // Run good-fences
 run({
     ...options,
-    onError() {
+    onError(message) {
+        console.error(`Error: ${message}`);
         hadError = true;
     },
 });
 
-process.exitCode = hadError
-    ? 1
-    : 0;
-
+// Indicate success or failure via the exit code
+process.exitCode = hadError ? 1 : 0;
