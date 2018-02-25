@@ -12,5 +12,17 @@ const options = commander
     .option('-r, --rootDir <string>', 'root directory of the project')
     .parse(process.argv) as Options;
 
+let hadError = false;
+
 // Run good-fences
-run(options);
+run({
+    ...options,
+    onError() {
+        hadError = true;
+    },
+});
+
+process.exitCode = hadError
+    ? 1
+    : 0;
+
