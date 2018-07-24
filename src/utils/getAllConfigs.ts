@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as glob from 'glob';
 import * as path from 'path';
-import ConfigSet from './types/ConfigSet';
+import ConfigSet from '../types/ConfigSet';
 import normalizePath from './normalizePath';
 import getOptions from './getOptions';
 

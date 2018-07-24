@@ -1,4 +1,4 @@
-import NormalizedPath from './types/NormalizedPath';
+import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from './getConfigsForFile';
 
 export default function getTagsForFile(filePath: NormalizedPath): string[] {
