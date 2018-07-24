@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as ts from 'typescript';
-import NormalizedPath from './types/NormalizedPath';
+import NormalizedPath from '../types/NormalizedPath';
 
 // Helper class for interacting with TypeScript
 export default class TypeScriptProgram {

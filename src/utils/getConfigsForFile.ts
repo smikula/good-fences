@@ -1,6 +1,6 @@
 import * as path from 'path';
-import Config from './types/Config';
-import NormalizedPath from './types/NormalizedPath';
+import Config from '../types/Config';
+import NormalizedPath from '../types/NormalizedPath';
 import normalizePath from './normalizePath';
 import getAllConfigs from './getAllConfigs';
 

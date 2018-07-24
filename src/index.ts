@@ -1,2 +1,2 @@
 export { default as Options } from './types/Options';
-export { run } from './runner';
+export { run } from './core/runner';

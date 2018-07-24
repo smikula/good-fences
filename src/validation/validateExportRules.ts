@@ -1,12 +1,12 @@
 import * as path from 'path';
-import Config from './types/Config';
-import NormalizedPath from './types/NormalizedPath';
-import getConfigsForFile from './getConfigsForFile';
-import fileMatchesConfigGlob from './fileMatchesConfigGlob';
-import fileMatchesTag from './fileMatchesTag';
-import reportError from './reportError';
+import Config from '../types/Config';
+import NormalizedPath from '../types/NormalizedPath';
+import getConfigsForFile from '../utils/getConfigsForFile';
+import fileMatchesConfigGlob from '../utils/fileMatchesConfigGlob';
+import fileMatchesTag from '../utils/fileMatchesTag';
+import reportError from '../core/reportError';
 
-export default function validateImportIsAccessible(
+export default function validateExportRules(
     sourceFile: NormalizedPath,
     importFile: NormalizedPath
 ) {
