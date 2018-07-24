@@ -3,7 +3,7 @@ import Options from '../types/Options';
 import { run } from './runner';
 
 // Read the package version from package.json
-const packageVersion = require('../package').version;
+const packageVersion = require('../../package').version;
 
 // Parse command line options
 const options = commander

@@ -11,7 +11,7 @@
     "scripts": {
         "build": "tsc",
         "test": "jest",
-        "sample": "npm run build && node ./lib/cli.js --rootDir ./sample"
+        "sample": "npm run build && node ./lib/core/cli.js --rootDir ./sample"
     },
     "author": "Scott Mikula <mikula@gmail.com>",
     "dependencies": {
