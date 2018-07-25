@@ -4,4 +4,5 @@ export default interface Config {
     path: NormalizedPath;
     tags?: string[];
     exports?: { [files: string]: string | string[] };
+    imports?: string[];
 };
