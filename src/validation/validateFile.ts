@@ -8,6 +8,6 @@ export default function validateFile(filePath: NormalizedPath, tsProgram: TypeSc
     const imports = getImportsFromFile(filePath, tsProgram);
     for (let importRecord of imports) {
         validateExportRules(filePath, importRecord.filePath);
-        validateImportRules(filePath, importRecord.filePath);
+        validateImportRules(filePath, importRecord);
     }
 }
