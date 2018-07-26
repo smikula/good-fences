@@ -3,6 +3,7 @@ import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from '../utils/getConfigsForFile';
 import reportError from '../core/reportError';
 import ImportRecord from '../core/ImportRecord';
+const minimatch = require('minimatch');
 
 export default function validateDependencyRules(
     sourceFile: NormalizedPath,
@@ -28,8 +29,8 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
 
     // In order for the the import to be valid, there needs to be some rule that allows it
     let importAllowed = false;
-    for (let packageName of config.dependencies) {
-        if (importRecord.packageName == packageName) {
+    for (let dependencyPattern of config.dependencies) {
+        if (minimatch(importRecord.rawImport, dependencyPattern)) {
             importAllowed = true;
         }
     }
