@@ -20,10 +20,4 @@ export default class ImportRecord {
     get isExternal() {
         return this.filePath.split('\\').indexOf('node_modules') != -1;
     }
-
-    get packageName() {
-        let pathParts = this.filePath.split('\\');
-        let i = pathParts.indexOf('node_modules');
-        return pathParts[i + 1];
-    }
 }
