@@ -27,15 +27,15 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
         return;
     }
 
-    // In order for the the import to be valid, there needs to be some rule that allows it
-    let importAllowed = false;
+    // In order for the the dependency to be valid, there needs to be some rule that allows it
+    let dependencyAllowed = false;
     for (let dependencyPattern of config.dependencies) {
         if (minimatch(importRecord.rawImport, dependencyPattern)) {
-            importAllowed = true;
+            dependencyAllowed = true;
         }
     }
 
-    if (!importAllowed) {
+    if (!dependencyAllowed) {
         reportError(`${sourceFile} is not allowed to import '${importRecord.rawImport}'`);
     }
 }
