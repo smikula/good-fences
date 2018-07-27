@@ -9,11 +9,6 @@ export default function validateDependencyRules(
     sourceFile: NormalizedPath,
     importRecord: ImportRecord
 ) {
-    // If the import is not an external dependency then these rules do not apply
-    if (!importRecord.isExternal) {
-        return;
-    }
-
     // Validate against each config that applies to the imported file
     let configsForSource = getConfigsForFile(sourceFile);
     for (let config of configsForSource) {
