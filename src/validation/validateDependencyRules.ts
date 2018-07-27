@@ -23,14 +23,13 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
     }
 
     // In order for the the dependency to be valid, there needs to be some rule that allows it
-    let dependencyAllowed = false;
     for (let dependencyPattern of config.dependencies) {
         if (minimatch(importRecord.rawImport, dependencyPattern)) {
-            dependencyAllowed = true;
+            // A rule matched, so the dependency is valid
+            return;
         }
     }
 
-    if (!dependencyAllowed) {
-        reportError(`${sourceFile} is not allowed to import '${importRecord.rawImport}'`);
-    }
+    // If we made it here, the dependency is invalid
+    reportError(`${sourceFile} is not allowed to import '${importRecord.rawImport}'`);
 }
