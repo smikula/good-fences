@@ -3,6 +3,9 @@ import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from '../utils/getConfigsForFile';
 import reportError from '../core/reportError';
 import ImportRecord from '../core/ImportRecord';
+import DependencyRule from '../types/DependencyRule';
+import FullDependencyRule from '../types/FullDependencyRule';
+import fileMatchesTag from '../utils/fileMatchesTag';
 const minimatch = require('minimatch');
 
 export default function validateDependencyRules(
@@ -23,14 +26,33 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
     }
 
     // In order for the the dependency to be valid, there needs to be some rule that allows it
-    let dependencyAllowed = false;
-    for (let dependencyPattern of config.dependencies) {
-        if (minimatch(importRecord.rawImport, dependencyPattern)) {
-            dependencyAllowed = true;
+    for (let dependency of config.dependencies) {
+        let dependencyRule = getFullDependencyRule(dependency);
+
+        // Check whether:
+        //   1) The import matches the rule
+        //   2) If necessary, the source file has a relevant tag
+        if (
+            minimatch(importRecord.rawImport, dependencyRule.dependency) &&
+            (!dependencyRule.accessibleTo ||
+                fileMatchesTag(sourceFile, dependencyRule.accessibleTo))
+        ) {
+            // A rule matched, so the dependency is valid
+            return;
         }
     }
 
-    if (!dependencyAllowed) {
-        reportError(`${sourceFile} is not allowed to import '${importRecord.rawImport}'`);
+    // If we made it here, we didn't find a rule that allows the dependency
+    reportError(`${sourceFile} is not allowed to import '${importRecord.rawImport}'`);
+}
+
+function getFullDependencyRule(dependency: DependencyRule): FullDependencyRule {
+    if (typeof dependency == 'string') {
+        return {
+            dependency,
+            accessibleTo: null,
+        };
+    } else {
+        return dependency;
     }
 }
