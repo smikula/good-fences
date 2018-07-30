@@ -31,8 +31,9 @@ To run good-fences against the sample, just clone this repository and run `npm r
 ## Configuring good-fences
 
 Good-fences is configured by creating **fence.json** files throughout your project's directory structure.
-These configuration files apply various rules or attributes to their directory and the modules underneath it.
-The **fence.json** files may be nested, so that a given module may have two or more configuration files that apply to it.
+This configuration file defines a "fence" around that directory (and any subdirectories).
+Within a fenced directory, modules may import each other without restriction—fences only control what passes in or out of them.
+Fences may be nested, so that a given directory may have two or more configuration files that apply to it.
 
 A typical **fence.json** might look like the following.
 
@@ -42,7 +43,15 @@ A typical **fence.json** might look like the following.
     "exports": {
         "index": "*",
         "internals/*": "tag3"
-    }
+    },
+    "imports": [
+        "tag4",
+        "tag5"
+    ],
+    "dependencies": [
+        "dependency1",
+        "dependency2/lib/**"
+    ]
 }
 ```
 
@@ -52,19 +61,14 @@ The `tags` property can specify one or more tags to apply to all modules under t
 Tags are a way of defining a class of files;
 for example you might tag all your UI components with 'view', or you might have very granular tags for different areas within your application.
 (Or both!)
-Tags are used by the `exports` config option to make certain modules accessible to a limited set of other modules.
+Tags are used by the other config options to scope which modules are accessible to other modules.
 
 ### Exports
 
 The `exports` property specifies what modules are accessible from the directory.
-Exports are enforced based on a few simple rules:
-
-1. Any modules in or underneath the directory may import each other without restriction.
-(Another **fence.json** file deeper in the directory structure might apply additional restrictions.)
-
-2. If **fence.json** does not contain an `exports` definition, then *all* modules are considered exported.
-
-3. If **fence.json** does contain an `exports` definition, then in order for any module outside the directory to import a module under the directory, there must be a matching export rule.
+In other words, it allows you to keep private modules private.
+If **fence.json** contains an `exports` definition, then in order for any module outside the directory to import a module under the directory, there must be a matching export rule.
+If there is no `exports` definition, then *all* modules are considered exported.
 
 The `exports` property is a map where:
 * The *key* is a glob string that resolves to one or more modules within the directory.
@@ -74,19 +78,59 @@ An asterisk (`"*"`) indicates the modules are accessible from anywhere.
 
 This is best demonstrated with an example:
 
-```
-{
-    "exports": {
-        "index": "*",
-        "views/**/*": "view",
-        "data/store": [ "data", "view" ]
-    }
+```json
+"exports": {
+    "index": "*",
+    "views/**/*": "view",
+    "data/store": [ "data", "view" ]
 }
 ```
 
 * The `index` module is accessible to all modules.
 * Modules under the `/view` directory are accessible to any module tagged with 'view'.
 * The `data/store` modules is accessible to any module tagged with 'data' or 'view'.
+
+### Imports
+
+The `imports` property specifies what modules may be imported by modules in the directory.
+This allows you to control your module graph by restricting unwanted dependencies.
+(Note that `imports` applies to your project code; for external dependencies see `dependencies` below.)
+If **fence.json** contains an `imports` definition, then only imports with the given tags will be allowed.
+If there is no `imports` definition, then *any* module is free to be imported.
+
+The `imports` property is an array of tags:
+
+```json
+"imports": [
+    "tag1",
+    "tag2"
+]
+```
+
+In this case, modules tagged with either 'tag1' or 'tag2' may be imported.
+
+### Dependencies
+
+The `dependencies` property specifies what external dependencies (i.e. those installed under node_modules) may be imported by modules in the directory.
+If **fence.json** contains an `dependencies` definition, then only matching dependencies are allowed.
+(If there is no `dependencies` definition, then *any* dependency is free to be imported.)
+
+The `dependencies` property is an array of dependencies to allow.  Each element can be a simple glob string or an object that allows for more configuration.
+
+```json
+"dependencies": [
+    "dependency1",
+    "dependency2/lib/**",
+    {
+        "dependency": "dependency3",
+        "accessibleTo": "tag3"
+    }
+]
+```
+
+* The index of `dependency1` may be imported.
+* Anything under `dependency2/lib` may be imported.
+* The index of `dependency3` may be imported, but only by modules with the 'tag3' tag.
 
 ## Options
 
