@@ -68,7 +68,7 @@ Tags are used by the other config options to scope which modules are accessible 
 The `exports` property specifies what modules are accessible from the directory.
 In other words, it allows you to keep private modules private.
 If **fence.json** contains an `exports` definition, then in order for any module outside the directory to import a module under the directory, there must be a matching export rule.
-(If there is no `exports` definition, then *all* modules are considered exported.)
+If there is no `exports` definition, then *all* modules are considered exported.
 
 The `exports` property is a map where:
 * The *key* is a glob string that resolves to one or more modules within the directory.
@@ -96,7 +96,7 @@ The `imports` property specifies what modules may be imported by modules in the 
 This allows you to control your module graph by restricting unwanted dependencies.
 (Note that `imports` applies to your project code; for external dependencies see `dependencies` below.)
 If **fence.json** contains an `imports` definition, then only imports with the given tags will be allowed.
-(If there is no `imports` definition, then *any* module is free to be imported.)
+If there is no `imports` definition, then *any* module is free to be imported.
 
 The `imports` property is an array of tags:
 
