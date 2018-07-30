@@ -107,7 +107,7 @@ The `imports` property is an array of tags:
 ]
 ```
 
-In this case, modules tagged with 'tag1' *or* those tagged with 'tag2' may be imported.
+In this case, modules tagged with either 'tag1' or 'tag2' may be imported.
 
 ### Dependencies
 
