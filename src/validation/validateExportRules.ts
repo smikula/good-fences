@@ -33,7 +33,7 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importFile: 
     }
 
     // If we made it here, the import is invalid
-    reportError(`${sourceFile} is importing inaccessible module ${importFile}`);
+    reportError({kind:'ExportError', sourceFile, importFile});
 }
 
 function hasMatchingExport(config: Config, sourceFile: NormalizedPath, importFile: NormalizedPath) {

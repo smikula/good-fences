@@ -43,7 +43,7 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
     }
 
     // If we made it here, we didn't find a rule that allows the dependency
-    reportError(`${sourceFile} is not allowed to import '${importRecord.rawImport}'`);
+    reportError({kind: 'DependencyError', sourceFile, rawImport: importRecord.rawImport});
 }
 
 function getFullDependencyRule(dependency: DependencyRule): FullDependencyRule {
