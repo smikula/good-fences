@@ -15,9 +15,13 @@ export function setOptions(providedOptions: Options) {
         ? normalizePath(providedOptions.project)
         : normalizePath(rootDir, 'tsconfig.json');
 
+    const requiredFences =
+        providedOptions.requiredFences && providedOptions.requiredFences.map(f => normalizePath(f));
+
     options = {
         project,
         rootDir,
+        requiredFences,
         onError: providedOptions.onError,
     };
 }
