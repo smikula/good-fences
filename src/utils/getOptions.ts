@@ -18,6 +18,7 @@ export function setOptions(providedOptions: Options) {
     options = {
         project,
         rootDir,
+        ignoreNodeModules: providedOptions.ignoreNodeModules,
         onError: providedOptions.onError,
     };
 }
