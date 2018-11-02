@@ -1,5 +1,7 @@
+import ValidationError from './ValidationError';
+
 export default interface Options {
     project?: string;
     rootDir?: string;
-    onError?: (message: string) => void;
+    onError?: (error: ValidationError) => void;
 };

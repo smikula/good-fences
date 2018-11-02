@@ -6,7 +6,8 @@
         "sourceMap": false,
         "outDir": "lib",
         "noImplicitAny": true,
-        "noUnusedLocals": true
+        "noUnusedLocals": true,
+        "noImplicitThis": true
     },
     "exclude": [
         "node_modules",
