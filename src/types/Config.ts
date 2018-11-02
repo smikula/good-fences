@@ -7,4 +7,5 @@ export default interface Config {
     exports?: { [files: string]: string | string[] };
     dependencies?: DependencyRule[];
     imports?: string[];
+    requiredFences?: string[];
 };
