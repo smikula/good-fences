@@ -39,5 +39,5 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
     }
 
     // If we made it here, the import is invalid
-    reportError(`${sourceFile} is not allowed to import '${importRecord.rawImport}'`);
+    reportError('Import not allowed', sourceFile, importRecord.rawImport, config);
 }
