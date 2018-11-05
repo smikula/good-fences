@@ -13,6 +13,11 @@ export default function getAllConfigs(): ConfigSet {
 
         // Glob for configs under the project root directory
         let files = glob.sync(normalizePath(getOptions().rootDir, '**/fence.json'));
+        
+        if (getOptions().ignoreExternalFences) {
+            files = files.filter(f => f.split(path.sep).indexOf('node_modules') > -1);
+        }
+
         files.forEach(file => {
             let configPath = normalizePath(path.dirname(file));
             configSet[configPath] = JSON.parse(fs.readFileSync(file).toString());
