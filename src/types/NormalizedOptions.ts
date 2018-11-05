@@ -3,6 +3,6 @@ import NormalizedPath from './NormalizedPath';
 export default interface NormalizedOptions {
     project: NormalizedPath;
     rootDir: NormalizedPath;
-    ignoreNodeModules: boolean;
+    ignoreExternalFences: boolean;
     onError?: (message: string) => void;
 };
