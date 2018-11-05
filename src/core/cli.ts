@@ -17,8 +17,8 @@ let hadError = false;
 // Run good-fences
 run({
     ...options,
-    onError(message) {
-        console.error(`Error: ${message}`);
+    onError(error) {
+        console.error(error.detailedMessage);
         hadError = true;
     },
 });
