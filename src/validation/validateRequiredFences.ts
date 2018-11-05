@@ -11,7 +11,7 @@ interface ConfigPathPair {
     config: Config;
 }
 
-export default function validateFencesExistence() {
+export default function validateRequiredFences() {
     const configPathMap = getAllConfigs();
     const requiredFenceGlobs = getRequiredFenceGlobs(configPathMap);
 
