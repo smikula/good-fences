@@ -18,6 +18,7 @@ export function setOptions(providedOptions: Options) {
     options = {
         project,
         rootDir,
+        ignoreExternalFences: providedOptions.ignoreExternalFences,
         onError: providedOptions.onError,
     };
 }
