@@ -4,7 +4,7 @@ import getConfigsForFile from '../utils/getConfigsForFile';
 import reportError from '../core/reportError';
 import ImportRecord from '../core/ImportRecord';
 import DependencyRule from '../types/rawConfig/RawDependencyRule';
-import FullDependencyRule from '../types/FullDependencyRule';
+import FullDependencyRule from '../types/config/DependencyRule';
 import fileMatchesTag from '../utils/fileMatchesTag';
 const minimatch = require('minimatch');
 
