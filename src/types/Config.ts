@@ -1,5 +1,5 @@
 import NormalizedPath from './NormalizedPath';
-import DependencyRule from './DependencyRule';
+import DependencyRule from './rawConfig/RawDependencyRule';
 
 export default interface Config {
     path: NormalizedPath;

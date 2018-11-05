@@ -3,7 +3,7 @@ import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from '../utils/getConfigsForFile';
 import reportError from '../core/reportError';
 import ImportRecord from '../core/ImportRecord';
-import DependencyRule from '../types/DependencyRule';
+import DependencyRule from '../types/rawConfig/RawDependencyRule';
 import FullDependencyRule from '../types/FullDependencyRule';
 import fileMatchesTag from '../utils/fileMatchesTag';
 const minimatch = require('minimatch');

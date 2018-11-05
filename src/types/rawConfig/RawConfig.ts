@@ -1,4 +1,4 @@
-import DependencyRule from '../DependencyRule';
+import DependencyRule from './RawDependencyRule';
 
 export default interface RawConfig {
     tags?: string[];
