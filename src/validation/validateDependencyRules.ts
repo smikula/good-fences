@@ -1,10 +1,8 @@
-import Config from '../types/Config';
+import Config from '../types/config/Config';
 import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from '../utils/getConfigsForFile';
 import reportError from '../core/reportError';
 import ImportRecord from '../core/ImportRecord';
-import DependencyRule from '../types/rawConfig/RawDependencyRule';
-import FullDependencyRule from '../types/config/DependencyRule';
 import fileMatchesTag from '../utils/fileMatchesTag';
 const minimatch = require('minimatch');
 
@@ -26,9 +24,7 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
     }
 
     // In order for the the dependency to be valid, there needs to be some rule that allows it
-    for (let dependency of config.dependencies) {
-        let dependencyRule = getFullDependencyRule(dependency);
-
+    for (let dependencyRule of config.dependencies) {
         // Check whether:
         //   1) The import matches the rule
         //   2) If necessary, the source file has a relevant tag
@@ -44,15 +40,4 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
 
     // If we made it here, we didn't find a rule that allows the dependency
     reportError('Dependency is not allowed', sourceFile, importRecord.rawImport, config);
-}
-
-function getFullDependencyRule(dependency: DependencyRule): FullDependencyRule {
-    if (typeof dependency == 'string') {
-        return {
-            dependency,
-            accessibleTo: null,
-        };
-    } else {
-        return dependency;
-    }
 }

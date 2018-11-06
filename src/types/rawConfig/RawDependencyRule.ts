@@ -1,4 +1,4 @@
-import FullDependencyRule from '../config/DependencyRule';
+import DependencyRule from '../config/DependencyRule';
 
-type RawDependencyRule = FullDependencyRule | string;
+type RawDependencyRule = DependencyRule | string;
 export default RawDependencyRule;
