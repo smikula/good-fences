@@ -1,5 +1,5 @@
 import * as path from 'path';
-import Config from '../types/Config';
+import Config from '../types/config/Config';
 import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from '../utils/getConfigsForFile';
 import fileMatchesConfigGlob from '../utils/fileMatchesConfigGlob';
