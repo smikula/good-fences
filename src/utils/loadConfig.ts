@@ -16,6 +16,7 @@ export default function loadConfig(file: string): Config {
         exports: rawConfig.exports,
         dependencies: normalizeDependencyRules(rawConfig.dependencies),
         imports: rawConfig.imports,
+        requiredFences: rawConfig.requiredFences,
     };
 }
 
