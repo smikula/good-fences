@@ -1,24 +1,24 @@
+import RawOptions from '../types/RawOptions';
 import Options from '../types/Options';
-import NormalizedOptions from '../types/NormalizedOptions';
 import normalizePath from './normalizePath';
 
-let options: NormalizedOptions;
+let options: Options;
 
 export default function getOptions() {
     return options;
 }
 
-export function setOptions(providedOptions: Options) {
+export function setOptions(rawOptions: RawOptions) {
     // Normalize and apply defaults
-    const rootDir = normalizePath(providedOptions.rootDir || process.cwd());
-    const project = providedOptions.project
-        ? normalizePath(providedOptions.project)
+    const rootDir = normalizePath(rawOptions.rootDir || process.cwd());
+    const project = rawOptions.project
+        ? normalizePath(rawOptions.project)
         : normalizePath(rootDir, 'tsconfig.json');
 
     options = {
         project,
         rootDir,
-        ignoreExternalFences: providedOptions.ignoreExternalFences,
-        onError: providedOptions.onError,
+        ignoreExternalFences: rawOptions.ignoreExternalFences,
+        onError: rawOptions.onError,
     };
 }
