@@ -1,6 +1,6 @@
 import * as path from 'path';
 import getOptions from '../utils/getOptions';
-import Config from '../types/Config';
+import Config from '../types/config/Config';
 
 export default function reportError(
     message: string,

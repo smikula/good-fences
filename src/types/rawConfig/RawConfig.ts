@@ -1,8 +1,6 @@
-import NormalizedPath from './NormalizedPath';
-import DependencyRule from './DependencyRule';
+import DependencyRule from './RawDependencyRule';
 
-export default interface Config {
-    path: NormalizedPath;
+export default interface RawConfig {
     tags?: string[];
     exports?: { [files: string]: string | string[] };
     dependencies?: DependencyRule[];

@@ -2,7 +2,7 @@ import reportError from '../core/reportError';
 import * as glob from 'glob';
 import * as path from 'path';
 import getAllConfigs from '../utils/getAllConfigs';
-import Config from '../types/Config';
+import Config from '../types/config/Config';
 import ConfigSet from '../types/ConfigSet';
 
 interface ConfigPathPair {
