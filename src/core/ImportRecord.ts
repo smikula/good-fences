@@ -1,6 +1,7 @@
 import NormalizedPath from '../types/NormalizedPath';
 import TypeScriptProgram from './TypeScriptProgram';
 import normalizePath from '../utils/normalizePath';
+import * as path from 'path';
 
 export default class ImportRecord {
     public filePath: NormalizedPath;
@@ -18,6 +19,6 @@ export default class ImportRecord {
 
     // Is this import an external dependency (i.e. is it under node_modules)?
     get isExternal() {
-        return this.filePath.split('\\').indexOf('node_modules') != -1;
+        return this.filePath.split(path.sep).indexOf('node_modules') != -1;
     }
 }
