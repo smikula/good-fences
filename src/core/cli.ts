@@ -1,5 +1,5 @@
 import * as commander from 'commander';
-import Options from '../types/Options';
+import RawOptions from '../types/RawOptions';
 import { run } from './runner';
 
 // Read the package version from package.json
@@ -10,7 +10,7 @@ const options = commander
     .version(packageVersion)
     .option('-p, --project <string>', 'tsconfig.json file')
     .option('-r, --rootDir <string>', 'root directory of the project')
-    .parse(process.argv) as Options;
+    .parse(process.argv) as RawOptions;
 
 let hadError = false;
 
