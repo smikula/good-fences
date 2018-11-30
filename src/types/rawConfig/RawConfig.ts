@@ -1,8 +1,8 @@
-import DependencyRule from './RawDependencyRule';
+import RawDependencyRule from './RawDependencyRule';
 
 export default interface RawConfig {
     tags?: string[];
     exports?: { [files: string]: string | string[] };
-    dependencies?: DependencyRule[];
+    dependencies?: RawDependencyRule[];
     imports?: string[];
 };
