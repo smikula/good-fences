@@ -1,10 +1,11 @@
 import NormalizedPath from '../NormalizedPath';
 import DependencyRule from './DependencyRule';
+import ExportRule from './ExportRule';
 
 export default interface Config {
     path: NormalizedPath;
     tags: string[];
-    exports: { [files: string]: string | string[] };
+    exports: ExportRule[];
     dependencies: DependencyRule[];
     imports: string[];
 };
