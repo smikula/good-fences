@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import RawConfig from '../../src/types/rawConfig/RawConfig';
-import loadConfig from '../../src/utils/loadConfig';
+import loadConfig, { normalizeExportRules } from '../../src/utils/loadConfig';
 import * as normalizePath from '../../src/utils/normalizePath';
 
 describe('loadConfig', () => {
@@ -38,18 +38,6 @@ describe('loadConfig', () => {
         expect(config.tags).toBe(tags);
     });
 
-    it('includes the exports', () => {
-        // Arrange
-        let exports = {};
-        rawConfig = { exports };
-
-        // Act
-        let config = loadConfig(configPath);
-
-        // Assert
-        expect(config.exports).toBe(exports);
-    });
-
     it('includes the imports', () => {
         // Arrange
         let imports = [];
@@ -85,4 +73,60 @@ describe('loadConfig', () => {
         // Assert
         expect(config.dependencies).toEqual(normalizedDependencies);
     });
+});
+
+describe('normalizeExportRules', () => {
+    const testModules = 'test';
+
+    it('handles null', () => {
+        // Act
+        const returnValue = normalizeExportRules(null);
+
+        // Assert
+        expect(returnValue).toEqual(null);
+    });
+
+    it('does not modify a full ExportRule', () => {
+        // Arrange
+        const exportRules = [
+            {
+                modules: testModules,
+                accessibleTo: ['tag1', 'tag2'],
+            },
+        ];
+
+        // Act
+        const returnValue = normalizeExportRules(exportRules);
+
+        // Assert
+        expect(returnValue).toEqual(exportRules);
+    });
+
+    it('converts a simple strings to ExportRules', () => {
+        // Arrange
+        const exportRules = [testModules];
+
+        // Act
+        const returnValue = normalizeExportRules(exportRules);
+
+        // Assert
+        expect(returnValue).toEqual([
+            {
+                modules: testModules,
+                accessibleTo: null,
+            },
+        ]);
+    });
+
+    // it('converts a LegacyExportRule accessible to *', () => {
+    //     fail();
+    // });
+
+    // it('converts a LegacyExportRule accessible to a single tag', () => {
+    //     fail();
+    // });
+
+    // it('converts a LegacyExportRule accessible to multiple tags', () => {
+    //     fail();
+    // });
 });

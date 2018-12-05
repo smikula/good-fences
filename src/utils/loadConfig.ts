@@ -4,6 +4,9 @@ import RawConfig from '../types/rawConfig/RawConfig';
 import Config from '../types/config/Config';
 import normalizePath from './normalizePath';
 import RawDependencyRule from '../types/rawConfig/RawDependencyRule';
+import RawExportRule from '../types/rawConfig/RawExportRule';
+import ExportRule from '../types/config/ExportRule';
+import LegacyExportRules from '../types/rawConfig/LegacyExportRules';
 
 export default function loadConfig(file: string): Config {
     // Load the raw config
@@ -13,7 +16,7 @@ export default function loadConfig(file: string): Config {
     return {
         path: normalizePath(path.dirname(file)),
         tags: rawConfig.tags,
-        exports: rawConfig.exports,
+        exports: normalizeExportRules(rawConfig.exports),
         dependencies: normalizeDependencyRules(rawConfig.dependencies),
         imports: rawConfig.imports,
     };
@@ -33,6 +36,24 @@ function normalizeDependencyRules(rules: RawDependencyRule[]) {
             };
         } else {
             return dependency;
+        }
+    });
+}
+
+export function normalizeExportRules(rules: RawExportRule[] | LegacyExportRules): ExportRule[] {
+    if (!rules) {
+        return null;
+    }
+
+    return (<RawExportRule[]>rules).map(exportRule => {
+        // Upgrade simple strings to ExportRule structs
+        if (typeof exportRule == 'string') {
+            return {
+                modules: exportRule,
+                accessibleTo: null,
+            };
+        } else {
+            return exportRule;
         }
     });
 }
