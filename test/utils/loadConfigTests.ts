@@ -118,15 +118,57 @@ describe('normalizeExportRules', () => {
         ]);
     });
 
-    // it('converts a LegacyExportRule accessible to *', () => {
-    //     fail();
-    // });
+    it('converts a LegacyExportRule accessible to *', () => {
+        // Arrange
+        const exportRules = {
+            [testModules]: '*',
+        };
 
-    // it('converts a LegacyExportRule accessible to a single tag', () => {
-    //     fail();
-    // });
+        // Act
+        const returnValue = normalizeExportRules(exportRules);
 
-    // it('converts a LegacyExportRule accessible to multiple tags', () => {
-    //     fail();
-    // });
+        // Assert
+        expect(returnValue).toEqual([
+            {
+                modules: testModules,
+                accessibleTo: null,
+            },
+        ]);
+    });
+
+    it('converts a LegacyExportRule accessible to a single tag', () => {
+        // Arrange
+        const exportRules = {
+            [testModules]: 'tagA',
+        };
+
+        // Act
+        const returnValue = normalizeExportRules(exportRules);
+
+        // Assert
+        expect(returnValue).toEqual([
+            {
+                modules: testModules,
+                accessibleTo: 'tagA',
+            },
+        ]);
+    });
+
+    it('converts a LegacyExportRule accessible to multiple tags', () => {
+        // Arrange
+        const exportRules = {
+            [testModules]: ['tagA', 'tagB'],
+        };
+
+        // Act
+        const returnValue = normalizeExportRules(exportRules);
+
+        // Assert
+        expect(returnValue).toEqual([
+            {
+                modules: testModules,
+                accessibleTo: ['tagA', 'tagB'],
+            },
+        ]);
+    });
 });
