@@ -18,14 +18,14 @@
         "commander": "^2.11.0",
         "glob": "^7.1.2",
         "minimatch": "^3.0.4",
-        "typescript": ">=2.4.0"
+        "typescript": "^3.5.3"
     },
     "devDependencies": {
         "@types/commander": "^2.11.0",
         "@types/glob": "^5.0.33",
         "@types/jest": "^21.1.2",
         "@types/node": "^7.0.4",
-        "jest": "^21.2.1"
+        "jest": "^24.8.0"
     },
     "repository": {
         "type": "git",
