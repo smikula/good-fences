@@ -18,7 +18,7 @@
         "commander": "^2.11.0",
         "glob": "^7.1.2",
         "minimatch": "^3.0.4",
-        "typescript": ">=3.5.3"
+        "typescript": "^3.5.3"
     },
     "devDependencies": {
         "@types/commander": "^2.11.0",
