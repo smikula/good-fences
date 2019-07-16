@@ -5,4 +5,5 @@ export default interface RawConfig {
     exports?: { [files: string]: string | string[] };
     dependencies?: RawDependencyRule[];
     imports?: string[];
+    requiredFences?: string[];
 };

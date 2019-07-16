@@ -62,6 +62,18 @@ describe('loadConfig', () => {
         expect(config.imports).toBe(imports);
     });
 
+    it('includes the required fences', () => {
+        // Arrange
+        let requiredFences = [];
+        rawConfig = { requiredFences };
+
+        // Act
+        let config = loadConfig(configPath);
+
+        // Assert
+        expect(config.requiredFences).toBe(requiredFences);
+    });
+
     it('normalizes the dependency rules', () => {
         // Arrange
         let dependencies = [
