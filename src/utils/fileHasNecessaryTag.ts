@@ -1,10 +1,10 @@
 import NormalizedPath from '../types/NormalizedPath';
 import getTagsForFile from './getTagsForFile';
 
-// Returns true if the given file matches any of the given tags
-export default function fileMatchesTag(filePath: NormalizedPath, tags: string | string[]) {
-    // '*' matches all files
-    if (tags == '*') {
+// Returns true if the given file matches has any of the given tags
+export default function fileHasNecessaryTag(filePath: NormalizedPath, tags: string | string[]) {
+    // If no tags are provided, default to true
+    if (tags == null) {
         return true;
     }
 

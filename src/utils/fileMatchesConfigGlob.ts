@@ -6,16 +6,16 @@ const minimatch = require('minimatch');
 export default function fileMatchesConfigGlob(
     importFile: NormalizedPath,
     configPath: NormalizedPath,
-    key: string
+    modulesGlob: string
 ) {
     // '*' matches all files under the config
-    if (key == '*') {
+    if (modulesGlob == '*') {
         return true;
     }
 
     // Remove the file extension before matching
     importFile = removeFileExtension(importFile);
-    return minimatch(importFile, normalizePath(configPath, key));
+    return minimatch(importFile, normalizePath(configPath, modulesGlob));
 }
 
 function removeFileExtension(filePath: NormalizedPath): NormalizedPath {

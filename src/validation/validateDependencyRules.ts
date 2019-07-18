@@ -3,7 +3,7 @@ import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from '../utils/getConfigsForFile';
 import reportError from '../core/reportError';
 import ImportRecord from '../core/ImportRecord';
-import fileMatchesTag from '../utils/fileMatchesTag';
+import fileHasNecessaryTag from '../utils/fileHasNecessaryTag';
 const minimatch = require('minimatch');
 
 export default function validateDependencyRules(
@@ -30,8 +30,7 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
         //   2) If necessary, the source file has a relevant tag
         if (
             minimatch(importRecord.rawImport, dependencyRule.dependency) &&
-            (!dependencyRule.accessibleTo ||
-                fileMatchesTag(sourceFile, dependencyRule.accessibleTo))
+            fileHasNecessaryTag(sourceFile, dependencyRule.accessibleTo)
         ) {
             // A rule matched, so the dependency is valid
             return;
