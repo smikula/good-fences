@@ -45,15 +45,30 @@ export function normalizeExportRules(rules: RawExportRule[] | LegacyExportRules)
         return null;
     }
 
-    return (<RawExportRule[]>rules).map(exportRule => {
-        // Upgrade simple strings to ExportRule structs
-        if (typeof exportRule == 'string') {
+    if (!Array.isArray(rules)) {
+        // Convert LegacyExportRule to ExportRule
+        return Object.keys(rules).map(key => {
+            let accessibleTo = rules[key];
+            if (accessibleTo == '*') {
+                accessibleTo = null;
+            }
+
             return {
-                modules: exportRule,
-                accessibleTo: null,
+                modules: key,
+                accessibleTo,
             };
-        } else {
-            return exportRule;
-        }
-    });
+        });
+    } else {
+        return rules.map(exportRule => {
+            // Upgrade simple strings to ExportRule structs
+            if (typeof exportRule == 'string') {
+                return {
+                    modules: exportRule,
+                    accessibleTo: null,
+                };
+            } else {
+                return exportRule;
+            }
+        });
+    }
 }
