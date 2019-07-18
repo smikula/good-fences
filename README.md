@@ -40,9 +40,12 @@ A typical **fence.json** might look like the following.
 ```
 {
     "tags": [ "tag1", "tag2" ],
-    "exports": {
-        "index": "*",
-        "internals/*": "tag3"
+    "exports": [
+        "index",
+        {
+            "modules": "internals/*",
+            "accessibleTo": "tag3"
+        }
     },
     "imports": [
         "tag4",
@@ -70,25 +73,32 @@ In other words, it allows you to keep private modules private.
 If **fence.json** contains an `exports` definition, then in order for any module outside the directory to import a module under the directory, there must be a matching export rule.
 If there is no `exports` definition, then *all* modules are considered exported.
 
-The `exports` property is a map where:
-* The *key* is a glob string that resolves to one or more modules within the directory.
-An asterisk (`"*"`) indicates all modules under the directory.
-* The *value* is a tag (or array of tags) to which these modules are accessible.
-An asterisk (`"*"`) indicates the modules are accessible from anywhere.
+The `exports` property is an array of rules.  A rule consists of:
+* The `modules` glob string which resolves to one or more modules within the directory.
+(An asterisk (`"*"`) indicates all modules under the directory.)
+* An optional `accessibleTo` property which is a tag (or array of tags) to which these modules are accessible.
+* If `accessibleTo` is not defined then there is no restriction on where these modules may be imported.
+(As a convenience, you can just provide a string as an export rule if you don't need to specify `accessibleTo`.)
 
 This is best demonstrated with an example:
 
 ```json
-"exports": {
-    "index": "*",
-    "views/**/*": "view",
-    "data/store": [ "data", "view" ]
-}
+"exports": [
+    "index",
+    {
+        "modules": "views/**/*",
+        "accessibleTo": "view"
+    },
+    {
+        "modules": "data/store",
+        "accessibleTo": [ "data", "view" ]
+    }
+]
 ```
 
 * The `index` module is accessible to all modules.
 * Modules under the `/view` directory are accessible to any module tagged with 'view'.
-* The `data/store` modules is accessible to any module tagged with 'data' or 'view'.
+* The `data/store` module is accessible to any module tagged with 'data' or 'view'.
 
 ### Imports
 
