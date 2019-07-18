@@ -1,7 +1,9 @@
 {
-    "tags": [ "tagA" ],
-    "exports": {
-        "componentA": "*"
-    },
-    "imports":[]
+    "tags": [
+        "tagA"
+    ],
+    "exports": [
+        "componentA"
+    ],
+    "imports": []
 }
