@@ -3,7 +3,7 @@ import getOptions, { setOptions } from '../utils/getOptions';
 import validateFile from '../validation/validateFile';
 import TypeScriptProgram from './TypeScriptProgram';
 import normalizePath from '../utils/normalizePath';
-import { getErrors } from './reportError';
+import { getResult } from './result';
 
 export function run(rawOptions: RawOptions) {
     // Store options so they can be globally available
@@ -21,5 +21,5 @@ export function run(rawOptions: RawOptions) {
         validateFile(normalizePath(file), tsProgram);
     });
 
-    return getErrors();
+    return getResult();
 }

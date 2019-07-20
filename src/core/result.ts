@@ -2,10 +2,14 @@ import * as path from 'path';
 import getOptions from '../utils/getOptions';
 import Config from '../types/config/Config';
 import ValidationError from '../types/ValidationError';
+import GoodFencesResult from '../types/GoodFencesResult';
 
-const errors: ValidationError[] = [];
+const result: GoodFencesResult = {
+    errors: [],
+    warnings: [],
+};
 
-export default function reportError(
+export function reportError(
     message: string,
     sourceFile: string,
     rawImport: string,
@@ -30,9 +34,9 @@ export default function reportError(
         getOptions().onError(validationError);
     }
 
-    errors.push(validationError);
+    result.errors.push(validationError);
 }
 
-export function getErrors() {
-    return errors;
+export function getResult() {
+    return result;
 }

@@ -2,7 +2,7 @@ import * as path from 'path';
 import Config from '../types/config/Config';
 import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from '../utils/getConfigsForFile';
-import reportError from '../core/reportError';
+import { reportError } from '../core/result';
 import ImportRecord from '../core/ImportRecord';
 import getTagsForFile from '../utils/getTagsForFile';
 

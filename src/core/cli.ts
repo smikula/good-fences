@@ -13,12 +13,12 @@ const options = commander
     .parse(process.argv) as RawOptions;
 
 // Run good-fences
-const results = run(options);
+const result = run(options);
 
 // Write errors to the console
-for (const error of results) {
+for (const error of result.errors) {
     console.error(error.detailedMessage);
 }
 
 // Indicate success or failure via the exit code
-process.exitCode = results.length > 0 ? 1 : 0;
+process.exitCode = result.errors.length > 0 ? 1 : 0;
