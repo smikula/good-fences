@@ -15,9 +15,13 @@ const options = commander
 // Run good-fences
 const result = run(options);
 
-// Write errors to the console
+// Write results to the console
 for (const error of result.errors) {
     console.error(error.detailedMessage);
+}
+
+for (const warning of result.warnings) {
+    console.error(warning.detailedMessage);
 }
 
 // Indicate success or failure via the exit code

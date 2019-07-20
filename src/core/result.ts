@@ -3,11 +3,16 @@ import getOptions from '../utils/getOptions';
 import Config from '../types/config/Config';
 import ValidationError from '../types/ValidationError';
 import GoodFencesResult from '../types/GoodFencesResult';
+import ConfigWarning from '../types/ConfigWarning';
 
 const result: GoodFencesResult = {
     errors: [],
     warnings: [],
 };
+
+export function getResult() {
+    return result;
+}
 
 export function reportError(
     message: string,
@@ -37,6 +42,15 @@ export function reportError(
     result.errors.push(validationError);
 }
 
-export function getResult() {
-    return result;
+export function reportWarning(message: string, config: Config) {
+    let fencePath = config.path + path.sep + 'fence.json';
+    let detailedMessage = `Good-fences warning: ${message}\n` + `    Fence: ${fencePath}`;
+
+    const configWarning: ConfigWarning = {
+        message,
+        fencePath,
+        detailedMessage,
+    };
+
+    result.warnings.push(configWarning);
 }
