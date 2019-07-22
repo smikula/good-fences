@@ -1,7 +1,7 @@
 import GoodFencesError from './GoodFencesError';
-import ConfigWarning from './ConfigWarning';
+import GoodFencesWarning from './GoodFencesWarning';
 
 export default interface GoodFencesResult {
     errors: GoodFencesError[];
-    warnings: ConfigWarning[];
+    warnings: GoodFencesWarning[];
 };

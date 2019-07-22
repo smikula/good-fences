@@ -3,7 +3,7 @@ import getOptions from '../utils/getOptions';
 import Config from '../types/config/Config';
 import GoodFencesError from '../types/GoodFencesError';
 import GoodFencesResult from '../types/GoodFencesResult';
-import ConfigWarning from '../types/ConfigWarning';
+import GoodFencesWarning from '../types/GoodFencesWarning';
 
 const result: GoodFencesResult = {
     errors: [],
@@ -46,11 +46,11 @@ export function reportWarning(message: string, config: Config) {
     let fencePath = config.path + path.sep + 'fence.json';
     let detailedMessage = `Good-fences warning: ${message}\n` + `    Fence: ${fencePath}`;
 
-    const configWarning: ConfigWarning = {
+    const warning: GoodFencesWarning = {
         message,
         fencePath,
         detailedMessage,
     };
 
-    result.warnings.push(configWarning);
+    result.warnings.push(warning);
 }
