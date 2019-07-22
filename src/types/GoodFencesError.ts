@@ -1,4 +1,4 @@
-export default interface ValidationError {
+export default interface GoodFencesError {
     message: string;
     sourceFile: string;
     rawImport: string;
