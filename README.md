@@ -144,15 +144,6 @@ The `dependencies` property is an array of dependencies to allow.  Each element 
 
 ## Options
 
-### OnError
-
-Provide a callback for reporting errors.
-This option is only available when running good-fences via the API.
-
-Default       | CLI | API
---------------|-----|----
-`console.log` | n/a | `onError: (message: string) => void`
-
 ### Project
 
 Specify the tsconfig file to use for your project.
@@ -168,3 +159,28 @@ Specify the project root directory.
 Default         | CLI                                    | API
 ----------------|----------------------------------------|----
 `process.cwd()` | `--rootDir <string>`<br/>`-r <string>` | `rootDir: string`
+
+## Return value
+
+When running good-fences via the API, the results are returned in a structure like the following:
+
+```json
+{
+    "errors": [
+        {
+            "message": "The error message",
+            "sourceFile": "The source file where the error was encountered",
+            "rawImport": "The offending import",
+            "fencePath": "The fence whose rule was violated",
+            "detailedMessage": "A human-friendly message that includes all of the above"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "The warning message",
+            "fencePath": "The fence which generated the warning",
+            "detailedMessage": "A human-friendly message that includes all of the above"
+        }
+    ]
+}
+```

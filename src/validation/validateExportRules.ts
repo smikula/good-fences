@@ -4,7 +4,7 @@ import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from '../utils/getConfigsForFile';
 import fileMatchesConfigGlob from '../utils/fileMatchesConfigGlob';
 import fileHasNecessaryTag from '../utils/fileHasNecessaryTag';
-import reportError from '../core/reportError';
+import { reportError } from '../core/result';
 
 export default function validateExportRules(
     sourceFile: NormalizedPath,

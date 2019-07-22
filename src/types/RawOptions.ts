@@ -1,8 +1,8 @@
-import ValidationError from './ValidationError';
+import GoodFencesError from './GoodFencesError';
 
 export default interface RawOptions {
     project?: string;
     rootDir?: string;
     ignoreExternalFences?: boolean;
-    onError?: (error: ValidationError) => void;
+    onError?: (error: GoodFencesError) => void;
 };

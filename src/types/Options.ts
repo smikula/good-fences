@@ -1,9 +1,9 @@
 import NormalizedPath from './NormalizedPath';
-import ValidationError from './ValidationError';
+import GoodFencesError from './GoodFencesError';
 
 export default interface Options {
     project: NormalizedPath;
     rootDir: NormalizedPath;
     ignoreExternalFences: boolean;
-    onError?: (error: ValidationError) => void;
+    onError?: (error: GoodFencesError) => void;
 };

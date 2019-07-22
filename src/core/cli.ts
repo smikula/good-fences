@@ -12,16 +12,17 @@ const options = commander
     .option('-r, --rootDir <string>', 'root directory of the project')
     .parse(process.argv) as RawOptions;
 
-let hadError = false;
-
 // Run good-fences
-run({
-    ...options,
-    onError(error) {
-        console.error(error.detailedMessage);
-        hadError = true;
-    },
-});
+const result = run(options);
+
+// Write results to the console
+for (const error of result.errors) {
+    console.error(error.detailedMessage);
+}
+
+for (const warning of result.warnings) {
+    console.error(warning.detailedMessage);
+}
 
 // Indicate success or failure via the exit code
-process.exitCode = hadError ? 1 : 0;
+process.exitCode = result.errors.length > 0 ? 1 : 0;
