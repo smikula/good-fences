@@ -1,7 +1,7 @@
 import * as path from 'path';
 import getOptions from '../utils/getOptions';
 import Config from '../types/config/Config';
-import ValidationError from '../types/ValidationError';
+import GoodFencesError from '../types/GoodFencesError';
 import GoodFencesResult from '../types/GoodFencesResult';
 import ConfigWarning from '../types/ConfigWarning';
 
@@ -27,7 +27,7 @@ export function reportError(
         `    ${message}: ${rawImport}\n` +
         `    Fence: ${fencePath}`;
 
-    const validationError: ValidationError = {
+    const error: GoodFencesError = {
         message,
         sourceFile,
         rawImport,
@@ -36,10 +36,10 @@ export function reportError(
     };
 
     if (getOptions().onError) {
-        getOptions().onError(validationError);
+        getOptions().onError(error);
     }
 
-    result.errors.push(validationError);
+    result.errors.push(error);
 }
 
 export function reportWarning(message: string, config: Config) {

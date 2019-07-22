@@ -1,7 +1,7 @@
-import ValidationError from './ValidationError';
+import GoodFencesError from './GoodFencesError';
 import ConfigWarning from './ConfigWarning';
 
 export default interface GoodFencesResult {
-    errors: ValidationError[];
+    errors: GoodFencesError[];
     warnings: ConfigWarning[];
 };
