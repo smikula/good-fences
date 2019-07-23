@@ -1,18 +1,18 @@
-describe('cli', () => {
+import { run } from '../../src/core/runner';
+
+describe('runner', () => {
     it('returns the expected results', () => {
         // Arrange
-        const errors: string[] = [];
-        process.argv = ['node', './lib/core/cli.js', '--rootDir', './sample'];
-
-        spyOn(console, 'error').and.callFake(error => {
-            errors.push(error);
-        });
+        const expectedResults = require('./endToEndTests.expected.json');
 
         // Act
-        require('../../src/core/cli');
+        const actualResults = run({
+            rootDir: './sample',
+        });
 
         // Assert
-        expect(errors).toEqual(expectedErrors);
+        // TODO: loop and compare, normalizing paths
+        expect(actualResults).toEqual(expectedResults);
     });
 });
 
