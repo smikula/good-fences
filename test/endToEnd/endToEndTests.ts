@@ -32,7 +32,6 @@ function removeDetailedMessages(results: GoodFencesResult) {
 function normalizePaths(results: GoodFencesResult) {
     for (const error of results.errors) {
         error.fencePath = normalizePath(error.fencePath);
-        error.rawImport = normalizePath(error.rawImport);
         error.sourceFile = normalizePath(error.sourceFile);
     }
 
