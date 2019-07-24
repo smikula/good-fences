@@ -2,8 +2,26 @@
     "errors": [
         {
             "message": "Module is not exported",
-            "sourceFile": "sample\\src\\componentB\\helperA1.ts",
+            "sourceFile": "sample\\src\\componentA\\helperA1.ts",
             "rawImport": "sample\\src\\componentB\\helperB1.ts",
+            "fencePath": "sample\\src\\componentB\\fence.json"
+        },
+        {
+            "message": "Import not allowed",
+            "sourceFile": "sample\\src\\componentA\\helperA1.ts",
+            "rawImport": "sample\\src\\componentB\\helperB1.ts",
+            "fencePath": "sample\\src\\componentA\\fence.json"
+        },
+        {
+            "message": "Import not allowed",
+            "sourceFile": "sample\\src\\componentA\\componentA.ts",
+            "rawImport": "sample\\src\\componentB\\componentB.ts",
+            "fencePath": "sample\\src\\componentA\\fence.json"
+        },
+        {
+            "message": "Module is not exported",
+            "sourceFile": "sample\\src\\index.ts",
+            "rawImport": "sample\\src\\componentB\\componentB.ts",
             "fencePath": "sample\\src\\componentB\\fence.json"
         }
     ],

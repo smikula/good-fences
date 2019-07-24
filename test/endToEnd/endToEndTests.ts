@@ -1,4 +1,6 @@
 import { run } from '../../src/core/runner';
+import GoodFencesResult from '../../src/types/GoodFencesResult';
+import normalizePath from '../../src/utils/normalizePath';
 
 describe('runner', () => {
     it('returns the expected results', () => {
@@ -11,26 +13,30 @@ describe('runner', () => {
         });
 
         // Assert
-        // TODO: loop and compare, normalizing paths
+        removeDetailedMessages(actualResults);
+        normalizePaths(expectedResults);
         expect(actualResults).toEqual(expectedResults);
     });
 });
 
-// TODO: get errors from file?
-// TODO: deal with absolute paths
-// TODO: rename endToEndTests
-// Maybe just go to runner?
-const expectedErrors = [
-    `Good-fences violation in C:\\repos\\good-fences\\sample\\src\\componentA\\helperA1.ts:\n
-    Module is not exported: C:\\repos\\good-fences\\sample\\src\\componentB\\helperB1.ts\n
-    Fence: C:\\repos\\good-fences\\sample\\src\\componentB\\fence.json`,
-    `Good-fences violation in C:\\repos\\good-fences\\sample\\src\\componentA\\helperA1.ts:\n
-    Import not allowed: ../componentB/helperB1\n
-    Fence: C:\\repos\\good-fences\\sample\\src\\componentA\\fence.json`,
-    `Good-fences violation in C:\\repos\\good-fences\\sample\\src\\componentA\\componentA.ts:\n
-    Import not allowed: ../componentB/componentB\n
-    Fence: C:\\repos\\good-fences\\sample\\src\\componentA\\fence.json`,
-    `Good-fences violation in C:\\repos\\good-fences\\sample\\src\\index.ts:\n
-    Module is not exported: C:\\repos\\good-fences\\sample\\src\\componentB\\componentB.ts\n
-    Fence: C:\\repos\\good-fences\\sample\\src\\componentB\\fence.json`,
-];
+function removeDetailedMessages(results: GoodFencesResult) {
+    for (const error of results.errors) {
+        delete error.detailedMessage;
+    }
+
+    for (const warning of results.warnings) {
+        delete warning.detailedMessage;
+    }
+}
+
+function normalizePaths(results: GoodFencesResult) {
+    for (const error of results.errors) {
+        error.fencePath = normalizePath(error.fencePath);
+        error.rawImport = normalizePath(error.rawImport);
+        error.sourceFile = normalizePath(error.sourceFile);
+    }
+
+    for (const warning of results.warnings) {
+        warning.fencePath = normalizePath(warning.fencePath);
+    }
+}
