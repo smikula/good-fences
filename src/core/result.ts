@@ -4,6 +4,7 @@ import Config from '../types/config/Config';
 import GoodFencesError from '../types/GoodFencesError';
 import GoodFencesResult from '../types/GoodFencesResult';
 import GoodFencesWarning from '../types/GoodFencesWarning';
+import ImportRecord from './ImportRecord';
 
 const result: GoodFencesResult = {
     errors: [],
@@ -17,20 +18,20 @@ export function getResult() {
 export function reportError(
     message: string,
     sourceFile: string,
-    rawImport: string,
+    importRecord: ImportRecord,
     config: Config
 ) {
     let fencePath = config.path + path.sep + 'fence.json';
 
     let detailedMessage =
         `Good-fences violation in ${sourceFile}:\n` +
-        `    ${message}: ${rawImport}\n` +
+        `    ${message}: ${importRecord.rawImport}\n` +
         `    Fence: ${fencePath}`;
 
     const error: GoodFencesError = {
         message,
         sourceFile,
-        rawImport,
+        rawImport: importRecord.rawImport,
         fencePath,
         detailedMessage,
     };

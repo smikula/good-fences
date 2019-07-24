@@ -8,7 +8,7 @@ import validateImportRules from './validateImportRules';
 export default function validateFile(filePath: NormalizedPath, tsProgram: TypeScriptProgram) {
     const imports = getImportsFromFile(filePath, tsProgram);
     for (let importRecord of imports) {
-        validateExportRules(filePath, importRecord.filePath);
+        validateExportRules(filePath, importRecord);
 
         if (importRecord.isExternal) {
             // External dependency, so apply dependency rules

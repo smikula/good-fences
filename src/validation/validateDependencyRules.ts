@@ -38,5 +38,5 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
     }
 
     // If we made it here, we didn't find a rule that allows the dependency
-    reportError('Dependency is not allowed', sourceFile, importRecord.rawImport, config);
+    reportError('Dependency is not allowed', sourceFile, importRecord, config);
 }
