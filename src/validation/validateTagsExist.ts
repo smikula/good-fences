@@ -20,35 +20,47 @@ export function validateTagsExist() {
     // Warn for tags that are referenced but not actually defined
     for (const key of Object.keys(allConfigs)) {
         const config = allConfigs[key];
-
-        if (config.exports) {
-            for (const exportRule of config.exports) {
-                validateAccessibleToTags(exportRule.accessibleTo, config, allTags);
+        forEachTagReferencedInConfig(config, tag => {
+            if (!allTags[tag]) {
+                reportWarning(
+                    `Tag '${tag}' is referred to but is not defined in any fence.`,
+                    config
+                );
             }
+        });
+    }
+}
+
+function forEachTagReferencedInConfig(config: Config, callback: (tag: string) => void) {
+    if (config.exports) {
+        for (const exportRule of config.exports) {
+            forEachTag(exportRule.accessibleTo, callback);
         }
+    }
 
-        if (config.dependencies) {
-            for (const dependencyRule of config.dependencies) {
-                validateAccessibleToTags(dependencyRule.accessibleTo, config, allTags);
-            }
+    if (config.dependencies) {
+        for (const dependencyRule of config.dependencies) {
+            forEachTag(dependencyRule.accessibleTo, callback);
+        }
+    }
+
+    if (config.imports) {
+        for (const importTag of config.imports) {
+            callback(importTag);
         }
     }
 }
 
-function validateAccessibleToTags(tags: string | string[], config: Config, allTags: any) {
+function forEachTag(tags: string | string[], callback: (tag: string) => void) {
     if (!tags) {
         return;
-    } else if (!Array.isArray(tags)) {
-        testTag(tags, config, allTags);
-    } else {
-        for (const tag in tags) {
-            testTag(tag, config, allTags);
-        }
     }
-}
 
-function testTag(tag: string, config: Config, allTags: any) {
-    if (!allTags[tag]) {
-        reportWarning(`Tag '${tag}' is referred to but is not defined in any fence.`, config);
+    if (!Array.isArray(tags)) {
+        tags = [tags];
+    }
+
+    for (const tag in tags) {
+        callback(tag);
     }
 }
