@@ -3,7 +3,7 @@ import Config from '../types/config/Config';
 import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from '../utils/getConfigsForFile';
 import fileMatchesConfigGlob from '../utils/fileMatchesConfigGlob';
-import fileMatchesTag from '../utils/fileMatchesTag';
+import fileHasNecessaryTag from '../utils/fileHasNecessaryTag';
 import { reportError } from '../core/result';
 import ImportRecord from '../core/ImportRecord';
 
@@ -39,16 +39,14 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
 
 function hasMatchingExport(config: Config, sourceFile: NormalizedPath, importFile: NormalizedPath) {
     let isExported = false;
-    Object.keys(config.exports).forEach(key => {
-        let tags = config.exports[key];
-
+    for (const exportRule of config.exports) {
         if (
-            fileMatchesConfigGlob(importFile, config.path, key) &&
-            fileMatchesTag(sourceFile, tags)
+            fileMatchesConfigGlob(importFile, config.path, exportRule.modules) &&
+            fileHasNecessaryTag(sourceFile, exportRule.accessibleTo)
         ) {
             isExported = true;
         }
-    });
+    }
 
     return isExported;
 }
