@@ -60,7 +60,7 @@ function forEachTag(tags: string | string[], callback: (tag: string) => void) {
         tags = [tags];
     }
 
-    for (const tag in tags) {
+    for (const tag of tags) {
         callback(tag);
     }
 }
