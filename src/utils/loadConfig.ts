@@ -7,19 +7,26 @@ import RawDependencyRule from '../types/rawConfig/RawDependencyRule';
 import RawExportRule from '../types/rawConfig/RawExportRule';
 import ExportRule from '../types/config/ExportRule';
 import LegacyExportRules from '../types/rawConfig/LegacyExportRules';
+import { reportWarning } from '../core/result';
 
 export default function loadConfig(file: string): Config {
     // Load the raw config
     let rawConfig: RawConfig = JSON.parse(fs.readFileSync(file).toString());
 
     // Normalize it
-    return {
+    const config: Config = {
         path: normalizePath(path.dirname(file)),
         tags: rawConfig.tags,
         exports: normalizeExportRules(rawConfig.exports),
         dependencies: normalizeDependencyRules(rawConfig.dependencies),
         imports: rawConfig.imports,
     };
+
+    if (rawConfig.exports && !Array.isArray(rawConfig.exports)) {
+        reportWarning('Config is using deprecated style for exports.', config);
+    }
+
+    return config;
 }
 
 function normalizeDependencyRules(rules: RawDependencyRule[]) {
