@@ -4,7 +4,7 @@ import { reportWarning } from '../core/result';
 
 export function validateTagsExist() {
     const allConfigs = getAllConfigs();
-    const allTags: any = {};
+    const allTags = new Set<string>();
 
     // Accumulate all tags that are defined
     for (const key of Object.keys(allConfigs)) {
@@ -12,7 +12,7 @@ export function validateTagsExist() {
 
         if (config.tags) {
             for (const tag of config.tags) {
-                allTags[tag] = true;
+                allTags.add(tag);
             }
         }
     }
@@ -21,7 +21,7 @@ export function validateTagsExist() {
     for (const key of Object.keys(allConfigs)) {
         const config = allConfigs[key];
         forEachTagReferencedInConfig(config, tag => {
-            if (!allTags[tag]) {
+            if (!allTags.has(tag)) {
                 reportWarning(
                     `Tag '${tag}' is referred to but is not defined in any fence.`,
                     config
