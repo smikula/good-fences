@@ -25,5 +25,10 @@
             "fencePath": "sample/src/componentB/fence.json"
         }
     ],
-    "warnings": []
+    "warnings": [
+        {
+            "message": "Tag 'unknownTag' is referred to but is not defined in any fence.",
+            "fencePath": "sample/src/componentA/fence.json"
+        }
+    ]
 }

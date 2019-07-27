@@ -3,7 +3,11 @@
         "tagA"
     ],
     "exports": [
-        "componentA"
+        "componentA",
+        {
+            "modules": "helperA1",
+            "accessibleTo": "unknownTag"
+        }
     ],
     "imports": []
 }
