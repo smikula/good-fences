@@ -10,11 +10,6 @@ export function run(rawOptions: RawOptions) {
     // Store options so they can be globally available
     setOptions(rawOptions);
 
-    // Warn when using a deprecated option
-    if (getOptions().onError) {
-        console.warn('The onError option is deprecated.  Use the return value from run() instead.');
-    }
-
     // Do some sanity checks on the fences
     validateTagsExist();
 

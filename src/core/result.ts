@@ -1,5 +1,4 @@
 import * as path from 'path';
-import getOptions from '../utils/getOptions';
 import Config from '../types/config/Config';
 import GoodFencesError from '../types/GoodFencesError';
 import GoodFencesResult from '../types/GoodFencesResult';
@@ -35,10 +34,6 @@ export function reportError(
         fencePath,
         detailedMessage,
     };
-
-    if (getOptions().onError) {
-        getOptions().onError(error);
-    }
 
     result.errors.push(error);
 }
