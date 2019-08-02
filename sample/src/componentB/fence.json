@@ -2,8 +2,10 @@
     "tags": [
         "tagB"
     ],
-    "_note": "Using legacy-style schema for exports",
-    "exports": {
-        "componentB": "tagA"
-    }
+    "exports": [
+        {
+            "modules": "componentB",
+            "accessibleTo": "tagA"
+        }
+    ]
 }
