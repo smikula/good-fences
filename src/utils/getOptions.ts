@@ -19,6 +19,5 @@ export function setOptions(rawOptions: RawOptions) {
         project,
         rootDir,
         ignoreExternalFences: rawOptions.ignoreExternalFences,
-        onError: rawOptions.onError,
     };
 }
