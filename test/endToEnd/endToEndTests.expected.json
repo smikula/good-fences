@@ -27,10 +27,6 @@
     ],
     "warnings": [
         {
-            "message": "Config is using deprecated style for exports.",
-            "fencePath": "sample/src/componentB/fence.json"
-        },
-        {
             "message": "Tag 'unknownTag' is referred to but is not defined in any fence.",
             "fencePath": "sample/src/componentA/fence.json"
         }

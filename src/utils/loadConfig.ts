@@ -6,7 +6,6 @@ import normalizePath from './normalizePath';
 import RawDependencyRule from '../types/rawConfig/RawDependencyRule';
 import RawExportRule from '../types/rawConfig/RawExportRule';
 import ExportRule from '../types/config/ExportRule';
-import LegacyExportRules from '../types/rawConfig/LegacyExportRules';
 import { reportWarning } from '../core/result';
 
 export default function loadConfig(file: string): Config {
@@ -47,35 +46,20 @@ function normalizeDependencyRules(rules: RawDependencyRule[]) {
     });
 }
 
-export function normalizeExportRules(rules: RawExportRule[] | LegacyExportRules): ExportRule[] {
+export function normalizeExportRules(rules: RawExportRule[]): ExportRule[] {
     if (!rules) {
         return null;
     }
 
-    if (!Array.isArray(rules)) {
-        // Convert LegacyExportRule to ExportRule
-        return Object.keys(rules).map(key => {
-            let accessibleTo = rules[key];
-            if (accessibleTo == '*') {
-                accessibleTo = null;
-            }
-
+    return rules.map(exportRule => {
+        // Upgrade simple strings to ExportRule structs
+        if (typeof exportRule == 'string') {
             return {
-                modules: key,
-                accessibleTo,
+                modules: exportRule,
+                accessibleTo: null,
             };
-        });
-    } else {
-        return rules.map(exportRule => {
-            // Upgrade simple strings to ExportRule structs
-            if (typeof exportRule == 'string') {
-                return {
-                    modules: exportRule,
-                    accessibleTo: null,
-                };
-            } else {
-                return exportRule;
-            }
-        });
-    }
+        } else {
+            return exportRule;
+        }
+    });
 }
