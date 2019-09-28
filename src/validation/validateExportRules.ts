@@ -4,7 +4,7 @@ import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from '../utils/getConfigsForFile';
 import fileMatchesConfigGlob from '../utils/fileMatchesConfigGlob';
 import fileHasNecessaryTag from '../utils/fileHasNecessaryTag';
-import { reportError } from '../core/result';
+import { reportViolation } from '../core/result';
 import ImportRecord from '../core/ImportRecord';
 
 export default function validateExportRules(
@@ -34,7 +34,7 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
     }
 
     // If we made it here, the import is invalid
-    reportError('Module is not exported', sourceFile, importRecord, config);
+    reportViolation('Module is not exported', sourceFile, importRecord, config);
 }
 
 function hasMatchingExport(config: Config, sourceFile: NormalizedPath, importFile: NormalizedPath) {

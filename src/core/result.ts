@@ -13,7 +13,7 @@ export function getResult() {
     return result;
 }
 
-export function reportError(
+export function reportViolation(
     message: string,
     sourceFile: string,
     importRecord: ImportRecord,
