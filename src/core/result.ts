@@ -37,6 +37,21 @@ export function reportViolation(
     result.errors.push(error);
 }
 
+export function reportConfigError(message: string, config: Config) {
+    let fencePath = config.path + path.sep + 'fence.json';
+
+    let detailedMessage =
+        `Good-fences configuration error: ${message}\n` + `    Fence: ${fencePath}`;
+
+    const error: GoodFencesError = {
+        message,
+        fencePath,
+        detailedMessage,
+    };
+
+    result.errors.push(error);
+}
+
 export function reportWarning(message: string, config: Config) {
     let fencePath = config.path + path.sep + 'fence.json';
     let detailedMessage = `Good-fences warning: ${message}\n` + `    Fence: ${fencePath}`;
