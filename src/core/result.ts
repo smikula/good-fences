@@ -2,7 +2,6 @@ import * as path from 'path';
 import Config from '../types/config/Config';
 import GoodFencesError from '../types/GoodFencesError';
 import GoodFencesResult from '../types/GoodFencesResult';
-import GoodFencesWarning from '../types/GoodFencesWarning';
 import ImportRecord from './ImportRecord';
 
 const result: GoodFencesResult = {
@@ -14,7 +13,7 @@ export function getResult() {
     return result;
 }
 
-export function reportError(
+export function reportViolation(
     message: string,
     sourceFile: string,
     importRecord: ImportRecord,
@@ -38,11 +37,26 @@ export function reportError(
     result.errors.push(error);
 }
 
+export function reportConfigError(message: string, config: Config) {
+    let fencePath = config.path + path.sep + 'fence.json';
+
+    let detailedMessage =
+        `Good-fences configuration error: ${message}\n` + `    Fence: ${fencePath}`;
+
+    const error: GoodFencesError = {
+        message,
+        fencePath,
+        detailedMessage,
+    };
+
+    result.errors.push(error);
+}
+
 export function reportWarning(message: string, config: Config) {
     let fencePath = config.path + path.sep + 'fence.json';
     let detailedMessage = `Good-fences warning: ${message}\n` + `    Fence: ${fencePath}`;
 
-    const warning: GoodFencesWarning = {
+    const warning: GoodFencesError = {
         message,
         fencePath,
         detailedMessage,

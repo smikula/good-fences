@@ -2,7 +2,7 @@ import * as path from 'path';
 import Config from '../types/config/Config';
 import NormalizedPath from '../types/NormalizedPath';
 import getConfigsForFile from '../utils/getConfigsForFile';
-import { reportError } from '../core/result';
+import { reportViolation } from '../core/result';
 import ImportRecord from '../core/ImportRecord';
 import getTagsForFile from '../utils/getTagsForFile';
 
@@ -39,5 +39,5 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
     }
 
     // If we made it here, the import is invalid
-    reportError('Import not allowed', sourceFile, importRecord, config);
+    reportViolation('Import not allowed', sourceFile, importRecord, config);
 }
