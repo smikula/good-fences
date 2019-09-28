@@ -1,7 +1,6 @@
-import * as glob from 'glob';
+import * as fs from 'fs';
 import * as path from 'path';
 import ConfigSet from '../types/ConfigSet';
-import normalizePath from './normalizePath';
 import getOptions from './getOptions';
 import loadConfig from './loadConfig';
 
@@ -11,13 +10,8 @@ export default function getAllConfigs(): ConfigSet {
     if (!configSet) {
         configSet = {};
 
-        // Glob for configs under the project root directory
-        let files = glob.sync(normalizePath(getOptions().rootDir, '**/fence.json'));
-
-        // If necessary, filter out external fences
-        if (getOptions().ignoreExternalFences) {
-            files = files.filter(f => f.split(path.sep).indexOf('node_modules') > -1);
-        }
+        let files: string[] = [];
+        accumulateFences(getOptions().rootDir, files, getOptions().ignoreExternalFences);
 
         files.forEach(file => {
             let config = loadConfig(file);
@@ -26,4 +20,19 @@ export default function getAllConfigs(): ConfigSet {
     }
 
     return configSet;
+}
+
+function accumulateFences(dir: string, files: string[], ignoreExternalFences: boolean) {
+    const directoryEntries: fs.Dirent[] = fs.readdirSync(dir, { withFileTypes: true });
+    for (const directoryEntry of directoryEntries) {
+        const fullPath = path.join(dir, directoryEntry.name);
+        if (directoryEntry.name == 'fence.json') {
+            files.push(fullPath);
+        } else if (
+            directoryEntry.isDirectory() &&
+            !(ignoreExternalFences && directoryEntry.name == 'node_modules')
+        ) {
+            accumulateFences(fullPath, files, ignoreExternalFences);
+        }
+    }
 }

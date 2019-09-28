@@ -24,7 +24,7 @@
         "@types/commander": "^2.11.0",
         "@types/glob": "^5.0.33",
         "@types/jest": "^21.1.2",
-        "@types/node": "^7.0.4",
+        "@types/node": "^12.7.8",
         "jest": "^24.8.0"
     },
     "repository": {
