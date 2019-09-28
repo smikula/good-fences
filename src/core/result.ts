@@ -2,7 +2,6 @@ import * as path from 'path';
 import Config from '../types/config/Config';
 import GoodFencesError from '../types/GoodFencesError';
 import GoodFencesResult from '../types/GoodFencesResult';
-import GoodFencesWarning from '../types/GoodFencesWarning';
 import ImportRecord from './ImportRecord';
 
 const result: GoodFencesResult = {
@@ -42,7 +41,7 @@ export function reportWarning(message: string, config: Config) {
     let fencePath = config.path + path.sep + 'fence.json';
     let detailedMessage = `Good-fences warning: ${message}\n` + `    Fence: ${fencePath}`;
 
-    const warning: GoodFencesWarning = {
+    const warning: GoodFencesError = {
         message,
         fencePath,
         detailedMessage,
