@@ -5,22 +5,29 @@ import Config from '../types/config/Config';
 import normalizePath from './normalizePath';
 import RawDependencyRule from '../types/rawConfig/RawDependencyRule';
 import RawExportRule from '../types/rawConfig/RawExportRule';
+import ConfigSet from '../types/ConfigSet';
 import ExportRule from '../types/config/ExportRule';
+import validateRawConfig from '../validation/validateRawConfig';
 
-export default function loadConfig(file: string): Config {
+export default function loadConfig(file: string, configSet: ConfigSet) {
     // Load the raw config
     let rawConfig: RawConfig = JSON.parse(fs.readFileSync(file).toString());
 
-    // Normalize it
-    const config: Config = {
-        path: normalizePath(path.dirname(file)),
-        tags: rawConfig.tags,
-        exports: normalizeExportRules(rawConfig.exports),
-        dependencies: normalizeDependencyRules(rawConfig.dependencies),
-        imports: rawConfig.imports,
-    };
+    // Validate it
+    const configPath = normalizePath(path.dirname(file));
+    if (validateRawConfig(rawConfig, configPath)) {
+        // Normalize it
+        const config: Config = {
+            path: configPath,
+            tags: rawConfig.tags,
+            exports: normalizeExportRules(rawConfig.exports),
+            dependencies: normalizeDependencyRules(rawConfig.dependencies),
+            imports: rawConfig.imports,
+        };
 
-    return config;
+        // Add it to the config set
+        configSet[config.path] = config;
+    }
 }
 
 function normalizeDependencyRules(rules: RawDependencyRule[]) {
