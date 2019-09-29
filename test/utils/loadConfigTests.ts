@@ -2,17 +2,31 @@ import * as fs from 'fs';
 import RawConfig from '../../src/types/rawConfig/RawConfig';
 import loadConfig, { normalizeExportRules } from '../../src/utils/loadConfig';
 import * as normalizePath from '../../src/utils/normalizePath';
+import ConfigSet from '../../src/types/ConfigSet';
 
 describe('loadConfig', () => {
     const configPath = 'configPath';
     const normalizedPath = 'normalizedPath';
 
     let rawConfig: RawConfig;
+    let configSet: ConfigSet;
 
     beforeEach(() => {
         spyOn(fs, 'readFileSync').and.returnValue({});
         spyOn(JSON, 'parse').and.callFake(() => rawConfig);
         spyOn(normalizePath, 'default').and.returnValue(normalizedPath);
+        configSet = {};
+    });
+
+    it('adds the config to the configSet object', () => {
+        // Arrange
+        rawConfig = {};
+
+        // Act
+        loadConfig(configPath, configSet);
+
+        // Assert
+        expect(configSet[normalizedPath]).toBeDefined();
     });
 
     it('adds the normalized path to the config object', () => {
@@ -20,10 +34,10 @@ describe('loadConfig', () => {
         rawConfig = {};
 
         // Act
-        let config = loadConfig(configPath);
+        loadConfig(configPath, configSet);
 
         // Assert
-        expect(config.path).toBe(normalizedPath);
+        expect(configSet[normalizedPath].path).toBe(normalizedPath);
     });
 
     it('includes the tags', () => {
@@ -32,10 +46,10 @@ describe('loadConfig', () => {
         rawConfig = { tags };
 
         // Act
-        let config = loadConfig(configPath);
+        loadConfig(configPath, configSet);
 
         // Assert
-        expect(config.tags).toBe(tags);
+        expect(configSet[normalizedPath].tags).toBe(tags);
     });
 
     it('includes the imports', () => {
@@ -44,10 +58,10 @@ describe('loadConfig', () => {
         rawConfig = { imports };
 
         // Act
-        let config = loadConfig(configPath);
+        loadConfig(configPath, configSet);
 
         // Assert
-        expect(config.imports).toBe(imports);
+        expect(configSet[normalizedPath].imports).toBe(imports);
     });
 
     it('normalizes the dependency rules', () => {
@@ -68,10 +82,10 @@ describe('loadConfig', () => {
         rawConfig = { dependencies };
 
         // Act
-        let config = loadConfig(configPath);
+        loadConfig(configPath, configSet);
 
         // Assert
-        expect(config.dependencies).toEqual(normalizedDependencies);
+        expect(configSet[normalizedPath].dependencies).toEqual(normalizedDependencies);
     });
 });
 

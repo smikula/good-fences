@@ -37,8 +37,8 @@ export function reportViolation(
     result.errors.push(error);
 }
 
-export function reportConfigError(message: string, config: Config) {
-    let fencePath = config.path + path.sep + 'fence.json';
+export function reportConfigError(message: string, configPath: string) {
+    let fencePath = configPath + path.sep + 'fence.json';
 
     let detailedMessage =
         `Good-fences configuration error: ${message}\n` + `    Fence: ${fencePath}`;
@@ -52,8 +52,8 @@ export function reportConfigError(message: string, config: Config) {
     result.errors.push(error);
 }
 
-export function reportWarning(message: string, config: Config) {
-    let fencePath = config.path + path.sep + 'fence.json';
+export function reportWarning(message: string, configPath: string) {
+    let fencePath = configPath + path.sep + 'fence.json';
     let detailedMessage = `Good-fences warning: ${message}\n` + `    Fence: ${fencePath}`;
 
     const warning: GoodFencesError = {

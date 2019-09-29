@@ -74,6 +74,7 @@ describe('validateTagsExist', () => {
     it('warns for an unknown tag in export rules', () => {
         // Arrange
         const testConfig = {
+            path: 'testPath',
             exports: [
                 {
                     modules: 'testModule',
@@ -90,13 +91,14 @@ describe('validateTagsExist', () => {
         // Assert
         expect(result.reportWarning).toHaveBeenCalledWith(
             "Tag 'unknownTag' is referred to but is not defined in any fence.",
-            testConfig
+            testConfig.path
         );
     });
 
     it('warns for an unknown tag in dependency rules', () => {
         // Arrange
         const testConfig = {
+            path: 'testPath',
             dependencies: [
                 {
                     dependency: 'test-dependency',
@@ -113,13 +115,14 @@ describe('validateTagsExist', () => {
         // Assert
         expect(result.reportWarning).toHaveBeenCalledWith(
             "Tag 'unknownTag' is referred to but is not defined in any fence.",
-            testConfig
+            testConfig.path
         );
     });
 
     it('warns for an unknown tag in import rules', () => {
         // Arrange
         const testConfig = {
+            path: 'testPath',
             imports: ['unknownTag'],
         };
 
@@ -131,7 +134,7 @@ describe('validateTagsExist', () => {
         // Assert
         expect(result.reportWarning).toHaveBeenCalledWith(
             "Tag 'unknownTag' is referred to but is not defined in any fence.",
-            testConfig
+            testConfig.path
         );
     });
 

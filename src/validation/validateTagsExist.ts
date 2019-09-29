@@ -24,7 +24,7 @@ export function validateTagsExist() {
             if (!allTags.has(tag)) {
                 reportWarning(
                     `Tag '${tag}' is referred to but is not defined in any fence.`,
-                    config
+                    config.path
                 );
             }
         });
