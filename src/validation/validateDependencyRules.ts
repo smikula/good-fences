@@ -4,6 +4,7 @@ import getConfigsForFile from '../utils/getConfigsForFile';
 import { reportViolation } from '../core/result';
 import ImportRecord from '../core/ImportRecord';
 import fileHasNecessaryTag from '../utils/fileHasNecessaryTag';
+import ViolationType from '../types/ViolationType';
 const minimatch = require('minimatch');
 
 export default function validateDependencyRules(
@@ -38,5 +39,5 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
     }
 
     // If we made it here, we didn't find a rule that allows the dependency
-    reportViolation('Dependency is not allowed', sourceFile, importRecord, config);
+    reportViolation('Dependency is not allowed', sourceFile, importRecord, config, ViolationType.Dependency);
 }

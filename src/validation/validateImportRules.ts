@@ -5,6 +5,7 @@ import getConfigsForFile from '../utils/getConfigsForFile';
 import { reportViolation } from '../core/result';
 import ImportRecord from '../core/ImportRecord';
 import getTagsForFile from '../utils/getTagsForFile';
+import ViolationType from '../types/ViolationType';
 
 export default function validateImportRules(
     sourceFile: NormalizedPath,
@@ -39,5 +40,5 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
     }
 
     // If we made it here, the import is invalid
-    reportViolation('Import not allowed', sourceFile, importRecord, config);
+    reportViolation('Import not allowed', sourceFile, importRecord, config, ViolationType.Import);
 }

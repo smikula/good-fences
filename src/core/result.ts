@@ -2,6 +2,7 @@ import * as path from 'path';
 import Config from '../types/config/Config';
 import GoodFencesError from '../types/GoodFencesError';
 import GoodFencesResult from '../types/GoodFencesResult';
+import ViolationType from '../types/ViolationType';
 import ImportRecord from './ImportRecord';
 
 const result: GoodFencesResult = {
@@ -17,7 +18,8 @@ export function reportViolation(
     message: string,
     sourceFile: string,
     importRecord: ImportRecord,
-    config: Config
+    config: Config,
+    violationType: ViolationType,
 ) {
     let fencePath = config.path + path.sep + 'fence.json';
 
@@ -32,6 +34,7 @@ export function reportViolation(
         rawImport: importRecord.rawImport,
         fencePath,
         detailedMessage,
+        violationType,
     };
 
     result.errors.push(error);

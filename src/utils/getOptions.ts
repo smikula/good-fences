@@ -18,6 +18,7 @@ export function setOptions(rawOptions: RawOptions) {
     options = {
         project,
         rootDir,
+        fixImportsAndDependencies: rawOptions.fixImportsAndDependencies,
         ignoreExternalFences: rawOptions.ignoreExternalFences,
     };
 }
