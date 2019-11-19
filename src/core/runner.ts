@@ -25,7 +25,7 @@ export function run(rawOptions: RawOptions) {
     });
 
     if (getOptions().fixImportsAndDependencies) {
-        fixImportsAndDependencies(getResult());
+        return fixImportsAndDependencies(getResult());
     } else {
         return getResult();
     }
@@ -39,17 +39,28 @@ function fixImportsAndDependencies(result: GoodFencesResult) {
     Object.keys(reducedResults).forEach(fenceFile => {
         const config = JSON.parse(readFileSync(fenceFile).toString());
         // add imports to the imports section
-        const importViolations = reducedResults[fenceFile].filter(violation => violation.violationType === ViolationType.Import).map(violation => violation.import);
-        config.imports = (config.imports || []).concat(...importViolations);
-        config.imports = config.imports.sort();
+        if (config.imports) {
+            const importViolations = reducedResults[fenceFile].filter(violation => violation.violationType === ViolationType.Import).map(violation => violation.import);
+            config.imports = (config.imports).concat(...importViolations);
+            config.imports = config.imports.sort();
+        }
 
         // add dependencies to the dependencies section
-        const dependencyViolations = reducedResults[fenceFile].filter(violation => violation.violationType === ViolationType.Dependency).map(violation => violation.import);
-        config.dependencies = (config.dependencies || []).concat(...dependencyViolations);
-        config.dependencies = config.dependencies.sort();
+        if (config.dependencies) {
+            const dependencyViolations = reducedResults[fenceFile].filter(violation => violation.violationType === ViolationType.Dependency).map(violation => violation.import);
+            config.dependencies = (config.dependencies).concat(...dependencyViolations);
+            config.dependencies = config.dependencies.sort();
+        }
 
-        writeFileSync(fenceFile, JSON.stringify(config, null, 2));
+        if (config.imports || config.dependencies) {
+            writeFileSync(fenceFile, JSON.stringify(config, null, 2));
+        }
     })
+
+    // since we handled the import and dependency errors, remove them from the error results
+    result.errors = result.errors.filter(error => error.violationType !== ViolationType.Import && error.violationType !== ViolationType.Dependency);
+
+    return result;
 }
 
 interface Violation {
