@@ -10,7 +10,7 @@ import { ViolationType } from '../types/ViolationType';
 import GoodFencesResult from '../types/GoodFencesResult';
 import { readFileSync, writeFileSync } from 'fs';
 
-export function run(rawOptions: RawOptions) {
+export function run(rawOptions: RawOptions, files?: string[]) {
     // Store options so they can be globally available
     setOptions(rawOptions);
 
@@ -18,8 +18,12 @@ export function run(rawOptions: RawOptions) {
     validateTagsExist();
 
     // Run validation
+    // if no files passed in, process the whole folder
     let tsProgram = new TypeScriptProgram(getOptions().project);
-    let files = tsProgram.getSourceFiles();
+    if (!files || files.length === 0) {
+        files = tsProgram.getSourceFiles();
+    }
+
     files.forEach(file => {
         validateFile(normalizePath(file), tsProgram);
     });

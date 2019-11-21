@@ -168,6 +168,11 @@ Default         | CLI                                    | API
 ----------------|----------------------------------------|----
 `false`| `--fixImportsAndDependencies `<br/>`-f` | `fixImportsAndDependencies: boolean`
 
+### Specify files to fix
+
+Any additional parameters are interpreted as files to fix. If no files are specified, will run on every file
+
+
 ## Return value
 
 When running good-fences via the API, the results are returned in a structure like the following:
