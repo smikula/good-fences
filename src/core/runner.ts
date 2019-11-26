@@ -8,7 +8,7 @@ import { validateTagsExist } from '../validation/validateTagsExist';
 import GoodFencesError from '../types/GoodFencesError';
 import { ViolationType } from '../types/ViolationType';
 import GoodFencesResult from '../types/GoodFencesResult';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 
 export function run(rawOptions: RawOptions, files?: string[]) {
     // Store options so they can be globally available
@@ -22,6 +22,9 @@ export function run(rawOptions: RawOptions, files?: string[]) {
     let tsProgram = new TypeScriptProgram(getOptions().project);
     if (!files || files.length === 0) {
         files = tsProgram.getSourceFiles();
+    } else {
+        // filter out non ts files and invalid files
+        files = files.filter(fileName => existsSync(fileName) && fileName.endsWith('.ts'));
     }
 
     files.forEach(file => {
