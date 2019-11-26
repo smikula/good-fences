@@ -24,7 +24,7 @@ export function run(rawOptions: RawOptions, files?: string[]) {
         files = tsProgram.getSourceFiles();
     } else {
         // filter out non ts files and invalid files
-        files = files.filter(fileName => existsSync(fileName) && fileName.endsWith('.ts'));
+        files = files.filter(fileName => existsSync(fileName) && (fileName.endsWith('.ts') || fileName.endsWith('.tsx')));
     }
 
     files.forEach(file => {
