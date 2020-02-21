@@ -6,6 +6,7 @@ import fileMatchesConfigGlob from '../utils/fileMatchesConfigGlob';
 import fileHasNecessaryTag from '../utils/fileHasNecessaryTag';
 import { reportViolation } from '../core/result';
 import ImportRecord from '../core/ImportRecord';
+import ViolationType from '../types/ViolationType';
 
 export default function validateExportRules(
     sourceFile: NormalizedPath,
@@ -34,7 +35,7 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
     }
 
     // If we made it here, the import is invalid
-    reportViolation('Module is not exported', sourceFile, importRecord, config);
+    reportViolation('Module is not exported', sourceFile, importRecord, config, ViolationType.Module);
 }
 
 function hasMatchingExport(config: Config, sourceFile: NormalizedPath, importFile: NormalizedPath) {

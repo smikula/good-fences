@@ -160,6 +160,19 @@ Default         | CLI                                    | API
 ----------------|----------------------------------------|----
 `process.cwd()` | `--rootDir <string>`<br/>`-r <string>` | `rootDir: string`
 
+### Fix Imports and Dependencies
+
+Fix import and dependency violations automatically instead of printing the violations.
+
+Default         | CLI                                    | API
+----------------|----------------------------------------|----
+`false`| `--fixImportsAndDependencies `<br/>`-f` | `fixImportsAndDependencies: boolean`
+
+### Specify files to fix
+
+Any additional parameters are interpreted as files to fix. If no files are specified, will run on every file
+
+
 ## Return value
 
 When running good-fences via the API, the results are returned in a structure like the following:

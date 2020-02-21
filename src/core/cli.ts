@@ -10,10 +10,11 @@ const options = commander
     .version(packageVersion)
     .option('-p, --project <string>', 'tsconfig.json file')
     .option('-r, --rootDir <string>', 'root directory of the project')
-    .parse(process.argv) as RawOptions;
+    .option('-f, --fixImportsAndDependencies', 'fix import and dependency violations')
+    .parse(process.argv);
 
 // Run good-fences
-const result = run(options);
+const result = run(options as RawOptions, options.args);
 
 // Write results to the console
 for (const error of result.errors) {

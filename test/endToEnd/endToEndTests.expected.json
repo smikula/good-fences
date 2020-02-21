@@ -4,25 +4,29 @@
             "message": "Module is not exported",
             "sourceFile": "sample/src/componentA/helperA1.ts",
             "rawImport": "../componentB/helperB1",
-            "fencePath": "sample/src/componentB/fence.json"
+            "fencePath": "sample/src/componentB/fence.json",
+            "violationType": 0
         },
         {
             "message": "Import not allowed",
             "sourceFile": "sample/src/componentA/helperA1.ts",
             "rawImport": "../componentB/helperB1",
-            "fencePath": "sample/src/componentA/fence.json"
+            "fencePath": "sample/src/componentA/fence.json",
+            "violationType": 1
         },
         {
             "message": "Import not allowed",
             "sourceFile": "sample/src/componentA/componentA.ts",
             "rawImport": "../componentB/componentB",
-            "fencePath": "sample/src/componentA/fence.json"
+            "fencePath": "sample/src/componentA/fence.json",
+            "violationType": 1
         },
         {
             "message": "Module is not exported",
             "sourceFile": "sample/src/index.ts",
             "rawImport": "./componentB/componentB",
-            "fencePath": "sample/src/componentB/fence.json"
+            "fencePath": "sample/src/componentB/fence.json",
+            "violationType": 0
         }
     ],
     "warnings": [
