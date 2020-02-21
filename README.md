@@ -46,7 +46,7 @@ A typical **fence.json** might look like the following.
             "modules": "internals/*",
             "accessibleTo": "tag3"
         }
-    },
+    ],
     "imports": [
         "tag4",
         "tag5"
