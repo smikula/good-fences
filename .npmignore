@@ -1,8 +1,8 @@
 node_modules/
 src/
 sample/
+.github/
 .vscode
-.travis.yml
 jest.*
 tsconfig.json
 yarn.lock
