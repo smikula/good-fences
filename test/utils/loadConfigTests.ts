@@ -3,6 +3,8 @@ import RawConfig from '../../src/types/rawConfig/RawConfig';
 import loadConfig, { normalizeExportRules } from '../../src/utils/loadConfig';
 import * as normalizePath from '../../src/utils/normalizePath';
 import ConfigSet from '../../src/types/ConfigSet';
+import RawTagRule from '../../src/types/rawConfig/RawTagRule';
+import TagRule from '../../src/types/config/TagRule';
 
 describe('loadConfig', () => {
     const configPath = 'configPath';
@@ -40,24 +42,32 @@ describe('loadConfig', () => {
         expect(configSet[normalizedPath].path).toBe(normalizedPath);
     });
 
-    it('includes the tags', () => {
+    it('normalizes the tag rules', () => {
         // Arrange
-        let tags = ['tag1', 'tag2'];
+        let tags: RawTagRule[] = [
+            'tag1',
+            {
+                applicableTo: '**/*',
+                tag: 'tag2'
+            },
+            {
+                applicableTo: ['*.a', '*.b'],
+                tag: 'tag3'
+            }
+        ];
         rawConfig = { tags };
+
+        let normalizedTags: TagRule[] = [
+            { applicableTo: null, tag: 'tag1' },
+            { applicableTo: ['**/*'], tag: 'tag2' },
+            { applicableTo: ['*.a', '*.b'], tag: 'tag3' }
+        ];
 
         // Act
         loadConfig(configPath, configSet);
 
         // Assert
-        expect(configSet[normalizedPath].tags).toHaveLength(2);
-        expect(configSet[normalizedPath].tags[0]).toEqual({
-            applicableTo: null,
-            tag: tags[0]
-        });
-        expect(configSet[normalizedPath].tags[1]).toEqual({
-            applicableTo: null,
-            tag: tags[1]
-        });
+        expect(configSet[normalizedPath].tags).toEqual(normalizedTags);
     });
 
     it('includes the imports', () => {
