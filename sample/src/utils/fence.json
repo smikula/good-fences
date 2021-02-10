@@ -1,0 +1,9 @@
+{
+  "tags": [
+      "utils",
+      {
+        "applicableTo": "*.forA.*",
+        "tag": "utils-only-for-a"
+      }
+  ]
+}
