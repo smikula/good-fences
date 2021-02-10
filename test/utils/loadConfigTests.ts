@@ -49,7 +49,15 @@ describe('loadConfig', () => {
         loadConfig(configPath, configSet);
 
         // Assert
-        expect(configSet[normalizedPath].tags).toBe(tags);
+        expect(configSet[normalizedPath].tags).toHaveLength(2);
+        expect(configSet[normalizedPath].tags[0]).toEqual({
+            applicableTo: null,
+            tag: tags[0]
+        });
+        expect(configSet[normalizedPath].tags[1]).toEqual({
+            applicableTo: null,
+            tag: tags[1]
+        });
     });
 
     it('includes the imports', () => {
