@@ -21,7 +21,7 @@ export default class ImportRecord {
     // Is this import an external dependency (i.e. is it under node_modules or outside the rootDir)?
     get isExternal() {
         let isInNodeModules = this.filePath.split(path.sep).indexOf('node_modules') != -1;
-        let isUnderRootFolder = this.filePath.startsWith(getOptions().rootDir);
+        let isUnderRootFolder = getOptions().rootDir.some(rootDir => this.filePath.startsWith(rootDir));
         let isLocalRelativePath = this.filePath.startsWith('./');
         let isExternalPath = !isUnderRootFolder && !isLocalRelativePath;
         return isInNodeModules || isExternalPath;

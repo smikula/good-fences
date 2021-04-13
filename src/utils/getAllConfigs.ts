@@ -11,7 +11,11 @@ export default function getAllConfigs(): ConfigSet {
         configSet = {};
 
         let files: string[] = [];
-        accumulateFences(getOptions().rootDir, files, getOptions().ignoreExternalFences);
+        const rootDirOption = getOptions().rootDir;
+        const rootDirs: string[] = Array.isArray(rootDirOption) ? rootDirOption : [rootDirOption];
+        for (let rootDir of rootDirs) {
+            accumulateFences(rootDir, files, getOptions().ignoreExternalFences);
+        }
 
         files.forEach(file => {
             loadConfig(file, configSet);
