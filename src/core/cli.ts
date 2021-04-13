@@ -6,11 +6,12 @@ import { run } from './runner';
 const packageVersion = require('../../package.json').version;
 
 // Parse command line options
-const options = commander
+const program = commander
     .version(packageVersion)
-    .option('-p, --project <string>', 'tsconfig.json file')
-    .option('-r, --rootDir <string>', 'root directory of the project')
-    .parse(process.argv) as RawOptions;
+    .option('-p, --project <string> ', 'tsconfig.json file')
+    .option('-r, --rootDir <string...>', 'root directories of the project');
+program.parse(process.argv);
+const options = program.opts() as RawOptions;
 
 // Run good-fences
 const result = run(options);

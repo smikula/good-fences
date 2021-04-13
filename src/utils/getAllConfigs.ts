@@ -11,9 +11,7 @@ export default function getAllConfigs(): ConfigSet {
         configSet = {};
 
         let files: string[] = [];
-        const rootDirOption = getOptions().rootDir;
-        const rootDirs: string[] = Array.isArray(rootDirOption) ? rootDirOption : [rootDirOption];
-        for (let rootDir of rootDirs) {
+        for (let rootDir of getOptions().rootDir) {
             accumulateFences(rootDir, files, getOptions().ignoreExternalFences);
         }
 
