@@ -14,12 +14,14 @@ export function setOptions(rawOptions: RawOptions) {
     const nonNormalizedRoots: string[] = Array.isArray(rawOptions.rootDir)
         ? rawOptions.rootDir
         : [rawOptions.rootDir || process.cwd()];
-    const rootDir: NormalizedPath[] = nonNormalizedRoots.map(
-        (individualRootDirPath: string) => normalizePath(individualRootDirPath)
+
+    const rootDir: NormalizedPath[] = nonNormalizedRoots.map((individualRootDirPath: string) =>
+        normalizePath(individualRootDirPath)
     );
+
     const project = rawOptions.project
         ? normalizePath(rawOptions.project)
-        : normalizePath(rootDir[0], "tsconfig.json");
+        : normalizePath(rootDir[0], 'tsconfig.json');
 
     options = {
         project,

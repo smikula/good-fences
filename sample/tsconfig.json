@@ -8,10 +8,6 @@
         "noImplicitAny": false,
         "noUnusedLocals": true
     },
-    "exclude": [
-        "lib"
-    ],
-    "include": [
-        "src/**/*"
-    ]
+    "exclude": ["lib"],
+    "include": ["src/**/*"]
 }

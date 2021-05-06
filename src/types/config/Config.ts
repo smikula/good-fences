@@ -8,4 +8,4 @@ export default interface Config {
     exports: ExportRule[];
     dependencies: DependencyRule[];
     imports: string[];
-};
+}

@@ -4,4 +4,4 @@ export default interface GoodFencesError {
     rawImport?: string;
     fencePath: string;
     detailedMessage: string;
-};
+}
