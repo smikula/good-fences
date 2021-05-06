@@ -1,0 +1,1 @@
+export function util1(): void {}

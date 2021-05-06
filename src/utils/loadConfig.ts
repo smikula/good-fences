@@ -5,8 +5,10 @@ import Config from '../types/config/Config';
 import normalizePath from './normalizePath';
 import RawDependencyRule from '../types/rawConfig/RawDependencyRule';
 import RawExportRule from '../types/rawConfig/RawExportRule';
+import RawTagRule from '../types/rawConfig/RawTagRule';
 import ConfigSet from '../types/ConfigSet';
 import ExportRule from '../types/config/ExportRule';
+import TagRule from '../types/config/TagRule';
 import validateRawConfig from '../validation/validateRawConfig';
 
 export default function loadConfig(file: string, configSet: ConfigSet) {
@@ -19,7 +21,7 @@ export default function loadConfig(file: string, configSet: ConfigSet) {
         // Normalize it
         const config: Config = {
             path: configPath,
-            tags: rawConfig.tags,
+            tags: normalizeTagRules(rawConfig.tags),
             exports: normalizeExportRules(rawConfig.exports),
             dependencies: normalizeDependencyRules(rawConfig.dependencies),
             imports: rawConfig.imports,
@@ -63,5 +65,34 @@ export function normalizeExportRules(rules: RawExportRule[]): ExportRule[] {
         } else {
             return exportRule;
         }
+    });
+}
+
+function normalizeTagRules(rules: RawTagRule[]): TagRule[] {
+    if (!rules) {
+        return null;
+    }
+
+    return rules.map((tag): TagRule => {
+        // Upgrade simple strings to DependencyRule structs
+        if (typeof tag == 'string') {
+            return {
+                applicableTo: null,
+                tag,
+            };
+        }
+
+        // If only a single string was provided, convert it into an array
+        if (typeof tag.applicableTo === 'string') {
+            return {
+                applicableTo: [tag.applicableTo],
+                tag: tag.tag
+            };
+        }
+
+        return {
+            applicableTo: tag.applicableTo,
+            tag: tag.tag
+        };
     });
 }

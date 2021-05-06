@@ -14,6 +14,12 @@
         },
         {
             "message": "Import not allowed",
+            "sourceFile": "sample/src/componentA/helperA2.ts",
+            "rawImport": "../utils/util1",
+            "fencePath": "sample/src/componentA/fence.json"
+        },
+        {
+            "message": "Import not allowed",
             "sourceFile": "sample/src/componentA/componentA.ts",
             "rawImport": "../componentB/componentB",
             "fencePath": "sample/src/componentA/fence.json"

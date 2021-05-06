@@ -1,0 +1,1 @@
+export function util2ForA(): void {}

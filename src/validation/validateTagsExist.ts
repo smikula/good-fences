@@ -12,7 +12,7 @@ export function validateTagsExist() {
 
         if (config.tags) {
             for (const tag of config.tags) {
-                allTags.add(tag);
+                allTags.add(tag.tag);
             }
         }
     }

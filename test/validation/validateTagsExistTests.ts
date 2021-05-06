@@ -138,13 +138,22 @@ describe('validateTagsExist', () => {
         );
     });
 
-    function initializeAllConfigs(testConfig: any) {
+    function initializeAllConfigs(testConfig: any): void {
         allConfigs = {
             config1: {
-                tags: ['tag1', 'tag2'],
+                tags: [{
+                    applicableTo: null,
+                    tag: 'tag1'
+                }, {
+                    applicableTo: null,
+                    tag: 'tag2'
+                }],
             },
             config2: {
-                tags: ['tag3'],
+                tags: [{
+                    applicableTo: null,
+                    tag: 'tag3'
+                }],
             },
             testConfig,
         } as any;
