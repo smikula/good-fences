@@ -1,7 +1,7 @@
-import RawOptions from "../types/RawOptions";
-import Options from "../types/Options";
-import normalizePath from "./normalizePath";
-import NormalizedPath from "../types/NormalizedPath";
+import RawOptions from '../types/RawOptions';
+import Options from '../types/Options';
+import normalizePath from './normalizePath';
+import NormalizedPath from '../types/NormalizedPath';
 
 let options: Options;
 
