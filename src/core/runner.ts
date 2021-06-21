@@ -6,8 +6,9 @@ import normalizePath from '../utils/normalizePath';
 import { getResult } from './result';
 import { validateTagsExist } from '../validation/validateTagsExist';
 import getConfigsForFile from '../utils/getConfigsForFile';
-import { GlobSourceFileProvider } from './GlobSourceFileProvider';
+// import { GlobSourceFileProvider } from './GlobSourceFileProvider';
 import { SourceFileProvider } from './SourceFileProvider';
+import { FDirSourceFileProvider } from './FdirSourceFileProvider';
 
 let lastUptime = 0;
 function tick() {
@@ -29,7 +30,7 @@ export async function run(rawOptions: RawOptions) {
     console.log('finished starting up in', tick());
     console.log('constructing source file provider...');
     let sourceFileProvider: SourceFileProvider = options.looseRootFileDiscovery
-        ? new GlobSourceFileProvider(options.project, options.rootDir)
+        ? new FDirSourceFileProvider(options.project, options.rootDir)
         : new TypeScriptProgram(options.project);
     console.log('took', tick());
     console.log(
