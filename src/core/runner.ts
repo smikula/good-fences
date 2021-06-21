@@ -21,7 +21,7 @@ function tick() {
     return diff;
 }
 
-const MAX_VALIDATION_BATCHSIZE = 5000;
+const MAX_VALIDATION_BATCHSIZE = 6000;
 
 export async function run(rawOptions: RawOptions) {
     // Store options so they can be globally available
@@ -48,7 +48,7 @@ export async function run(rawOptions: RawOptions) {
     console.log('normalizing paths...');
     const normalizedFiles = files.map(file => normalizePath(file));
     console.log('took', tick());
-    console.log('loading all tsconfigs...');
+    console.log('loading all fences...');
     getAllConfigs();
     console.log('took', tick());
     console.log('performing validation...');
@@ -66,7 +66,7 @@ export async function run(rawOptions: RawOptions) {
             (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider)
         );
     } else {
-        // validate all files in batches to avoid EMFILE
+        // validate all files in batches to avoid MFILE
         await batchRunAll(
             MAX_VALIDATION_BATCHSIZE,
             normalizedFiles,
