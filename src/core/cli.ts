@@ -42,4 +42,7 @@ async function main() {
     process.exitCode = result.errors.length > 0 ? 1 : 0;
 }
 
-main();
+main().catch(e => {
+    console.error(e);
+    process.exit(1);
+});

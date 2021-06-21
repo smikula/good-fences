@@ -9,6 +9,9 @@ import getConfigsForFile from '../utils/getConfigsForFile';
 // import { GlobSourceFileProvider } from './GlobSourceFileProvider';
 import { SourceFileProvider } from './SourceFileProvider';
 import { FDirSourceFileProvider } from './FdirSourceFileProvider';
+import { batchRunAll } from '../utils/batchRunAll';
+import NormalizedPath from '../types/NormalizedPath';
+import getAllConfigs from '../utils/getAllConfigs';
 
 let lastUptime = 0;
 function tick() {
@@ -17,6 +20,8 @@ function tick() {
     lastUptime = now;
     return diff;
 }
+
+const MAX_VALIDATION_BATCHSIZE = 5000;
 
 export async function run(rawOptions: RawOptions) {
     // Store options so they can be globally available
@@ -43,6 +48,9 @@ export async function run(rawOptions: RawOptions) {
     console.log('normalizing paths...');
     const normalizedFiles = files.map(file => normalizePath(file));
     console.log('took', tick());
+    console.log('loading all tsconfigs...');
+    getAllConfigs();
+    console.log('took', tick());
     console.log('performing validation...');
     if (options.partialCheck) {
         // validate only those files specified on the command line,
@@ -52,17 +60,17 @@ export async function run(rawOptions: RawOptions) {
                 options.partialCheck.fences.includes(config.path)
             )
         );
-        await Promise.all(
-            [...options.partialCheck.sourceFiles, ...fenceScopeFiles].map(normalizedFile => {
-                validateFile(normalizedFile, sourceFileProvider);
-            })
+        await batchRunAll(
+            MAX_VALIDATION_BATCHSIZE,
+            [...options.partialCheck.sourceFiles, ...fenceScopeFiles],
+            (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider)
         );
     } else {
-        // validate all files
-        await Promise.all(
-            normalizedFiles.map(normalizedFile => {
-                validateFile(normalizedFile, sourceFileProvider);
-            })
+        // validate all files in batches to avoid EMFILE
+        await batchRunAll(
+            MAX_VALIDATION_BATCHSIZE,
+            normalizedFiles,
+            (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider)
         );
     }
     console.log('took', tick());
