@@ -26,7 +26,7 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             this.rootDirs.map(
                 rootDir =>
                     new fdir()
-                        .glob(includeJsFiles ? '**/@(*.js|*.ts)' : '**/*.ts')
+                        .glob(includeJsFiles ? '**/!(.d)*@(.js|.ts)' : '**/*!(.d)*.ts')
                         .withFullPaths()
                         .crawl(rootDir)
                         .withPromise() as Promise<string[]>
