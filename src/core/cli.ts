@@ -9,7 +9,15 @@ const packageVersion = require('../../package.json').version;
 const program = commander
     .version(packageVersion)
     .option('-p, --project <string> ', 'tsconfig.json file')
-    .option('-r, --rootDir <string...>', 'root directories of the project');
+    .option('-r, --rootDir <string...>', 'root directories of the project')
+    .option(
+        '-i, --ignoreExternalFences',
+        'Whether to ignore external fences (e.g. those from node_modules)'
+    )
+    .option(
+        '-c, --checkFiles <string...>',
+        'Specific fences and source files to check. If unspecified, all files in rootDir will be checked.'
+    );
 program.parse(process.argv);
 const options = program.opts() as RawOptions;
 

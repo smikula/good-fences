@@ -23,9 +23,21 @@ export function setOptions(rawOptions: RawOptions) {
         ? normalizePath(rawOptions.project)
         : normalizePath(rootDir[0], 'tsconfig.json');
 
+    console.log(rawOptions);
+
     options = {
         project,
         rootDir,
         ignoreExternalFences: rawOptions.ignoreExternalFences,
+        partialCheck: rawOptions?.checkFiles
+            ? {
+                  fences: rawOptions.checkFiles
+                      .filter(f => f.endsWith('fence.json'))
+                      .map(p => normalizePath(p)),
+                  sourceFiles: rawOptions.checkFiles
+                      .filter(f => !f.endsWith('fence.json'))
+                      .map(p => normalizePath(p)),
+              }
+            : undefined,
     };
 }
