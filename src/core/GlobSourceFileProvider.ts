@@ -27,7 +27,7 @@ export class GlobSourceFileProvider implements SourceFileProvider {
                 rootDir =>
                     new Promise<string[]>((res, rej) =>
                         glob(
-                            includeJsFiles ? '**/@(*.js|*.ts)' : '**/*.ts',
+                            includeJsFiles ? '**/!(.d)*@(.js|.ts)' : '**/*!(.d)*.ts',
                             {
                                 root: rootDir,
                             },
