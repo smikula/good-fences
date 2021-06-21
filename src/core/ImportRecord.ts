@@ -1,5 +1,4 @@
 import NormalizedPath from '../types/NormalizedPath';
-import TypeScriptProgram from './TypeScriptProgram';
 import normalizePath from '../utils/normalizePath';
 import * as path from 'path';
 import getOptions from '../utils/getOptions';
@@ -7,12 +6,7 @@ import getOptions from '../utils/getOptions';
 export default class ImportRecord {
     public filePath: NormalizedPath;
 
-    constructor(
-        public rawImport: string,
-        sourceFile: NormalizedPath,
-        tsProgram: TypeScriptProgram
-    ) {
-        const resolvedFileName = tsProgram.resolveImportFromFile(rawImport, sourceFile);
+    constructor(public rawImport: string, resolvedFileName: string | undefined) {
         if (resolvedFileName) {
             this.filePath = normalizePath(resolvedFileName);
         }

@@ -6,8 +6,18 @@ import normalizePath from '../utils/normalizePath';
 import { getResult } from './result';
 import { validateTagsExist } from '../validation/validateTagsExist';
 import getConfigsForFile from '../utils/getConfigsForFile';
+import { GlobSourceFileProvider } from './GlobSourceFileProvider';
+import { SourceFileProvider } from './SourceFileProvider';
 
-export function run(rawOptions: RawOptions) {
+let lastUptime = 0;
+function tick() {
+    const now = process.uptime();
+    const diff = now - lastUptime;
+    lastUptime = now;
+    return diff;
+}
+
+export async function run(rawOptions: RawOptions) {
     // Store options so they can be globally available
     setOptions(rawOptions);
 
@@ -16,13 +26,23 @@ export function run(rawOptions: RawOptions) {
 
     // Run validation
     let options = getOptions();
-    console.log('constructing program...', process.uptime());
-    let tsProgram = new TypeScriptProgram(options.project);
-    console.log('fetching files..', process.uptime());
-    let files = tsProgram.getSourceFiles();
-    console.log('normalizing paths...', process.uptime());
+    console.log('finished starting up in', tick());
+    console.log('constructing source file provider...');
+    let sourceFileProvider: SourceFileProvider = options.looseRootFileDiscovery
+        ? new GlobSourceFileProvider(options.project, options.rootDir)
+        : new TypeScriptProgram(options.project);
+    console.log('took', tick());
+    console.log(
+        'instantiated provider',
+        Object.getPrototypeOf(sourceFileProvider).constructor.name
+    );
+    console.log('fetching files..');
+    let files = await sourceFileProvider.getSourceFiles();
+    console.log('took', tick());
+    console.log('normalizing paths...');
     const normalizedFiles = files.map(file => normalizePath(file));
-    console.log('performing validation...', process.uptime());
+    console.log('took', tick());
+    console.log('performing validation...');
     if (options.partialCheck) {
         // validate only those files specified on the command line,
         // or included in the scope of changed fence files.
@@ -31,15 +51,19 @@ export function run(rawOptions: RawOptions) {
                 options.partialCheck.fences.includes(config.path)
             )
         );
-        [...options.partialCheck.sourceFiles, ...fenceScopeFiles].forEach(normalizedFile => {
-            validateFile(normalizedFile, tsProgram);
-        });
+        await Promise.all(
+            [...options.partialCheck.sourceFiles, ...fenceScopeFiles].map(normalizedFile => {
+                validateFile(normalizedFile, sourceFileProvider);
+            })
+        );
     } else {
         // validate all files
-        normalizedFiles.forEach(normalizedFile => {
-            validateFile(normalizedFile, tsProgram);
-        });
+        await Promise.all(
+            normalizedFiles.map(normalizedFile => {
+                validateFile(normalizedFile, sourceFileProvider);
+            })
+        );
     }
-    console.log('getting result..', process.uptime());
+    console.log('took', tick());
     return getResult();
 }

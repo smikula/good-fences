@@ -3,4 +3,5 @@ export default interface RawOptions {
     rootDir?: string | string[];
     checkFiles?: string[];
     ignoreExternalFences?: boolean;
+    looseRootFileDiscovery?: boolean;
 }

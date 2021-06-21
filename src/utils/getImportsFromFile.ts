@@ -1,10 +1,20 @@
-import TypeScriptProgram from '../core/TypeScriptProgram';
 import NormalizedPath from '../types/NormalizedPath';
 import ImportRecord from '../core/ImportRecord';
+import { SourceFileProvider } from '../core/SourceFileProvider';
 
-export default function getImportsFromFile(filePath: NormalizedPath, tsProgram: TypeScriptProgram) {
-    const importedFiles = tsProgram.getImportsForFile(filePath);
-    return importedFiles
-        .map(importInfo => new ImportRecord(importInfo.fileName, filePath, tsProgram))
-        .filter(importRecord => importRecord.filePath);
+export default async function getImportsFromFile(
+    filePath: NormalizedPath,
+    sourceFileProvider: SourceFileProvider
+) {
+    const rawImports = await sourceFileProvider.getImportsForFile(filePath);
+    const resolvedImports = await Promise.all(
+        rawImports.map(
+            async rawImport =>
+                new ImportRecord(
+                    rawImport,
+                    await sourceFileProvider.resolveImportFromFile(filePath, rawImport)
+                )
+        )
+    );
+    return resolvedImports.filter(importRecord => importRecord.filePath);
 }

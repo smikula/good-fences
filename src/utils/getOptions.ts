@@ -23,8 +23,6 @@ export function setOptions(rawOptions: RawOptions) {
         ? normalizePath(rawOptions.project)
         : normalizePath(rootDir[0], 'tsconfig.json');
 
-    console.log(rawOptions);
-
     options = {
         project,
         rootDir,
@@ -39,5 +37,6 @@ export function setOptions(rawOptions: RawOptions) {
                       .map(p => normalizePath(p)),
               }
             : undefined,
+        looseRootFileDiscovery: rawOptions.looseRootFileDiscovery || false,
     };
 }

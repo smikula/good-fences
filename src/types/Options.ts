@@ -4,6 +4,7 @@ export default interface Options {
     project: NormalizedPath;
     rootDir: NormalizedPath[];
     ignoreExternalFences: boolean;
+    looseRootFileDiscovery: boolean;
     /**
      * Specific source files to validate.
      */
