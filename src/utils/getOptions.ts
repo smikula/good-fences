@@ -23,6 +23,10 @@ export function setOptions(rawOptions: RawOptions) {
         ? normalizePath(rawOptions.project)
         : normalizePath(rootDir[0], 'tsconfig.json');
 
+    if (rawOptions.checkFiles && rawOptions.sinceGitHash) {
+        throw new Error('Cannot specify --checkFiles and --sinceGitHash');
+    }
+
     options = {
         project,
         rootDir,
@@ -37,6 +41,7 @@ export function setOptions(rawOptions: RawOptions) {
                       .map(p => normalizePath(p)),
               }
             : undefined,
+        sinceGitHash: rawOptions.sinceGitHash,
         looseRootFileDiscovery: rawOptions.looseRootFileDiscovery || false,
     };
 }

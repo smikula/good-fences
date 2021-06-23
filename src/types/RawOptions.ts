@@ -4,4 +4,5 @@ export default interface RawOptions {
     checkFiles?: string[];
     ignoreExternalFences?: boolean;
     looseRootFileDiscovery?: boolean;
+    sinceGitHash?: string;
 }

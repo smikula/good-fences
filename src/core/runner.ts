@@ -12,6 +12,9 @@ import { FDirSourceFileProvider } from './FdirSourceFileProvider';
 import { batchRunAll } from '../utils/batchRunAll';
 import NormalizedPath from '../types/NormalizedPath';
 import getAllConfigs from '../utils/getAllConfigs';
+import Options from '../types/Options';
+import { getFenceAndImportDiffsFromGit } from '../utils/getFenceAndImportDiffsFromGit';
+import { getPartialCheckFromImportDiffs } from '../utils/getPartialCheckFromImportDiffs';
 
 let lastUptime = 0;
 function tick() {
@@ -23,16 +26,26 @@ function tick() {
 
 const MAX_VALIDATION_BATCHSIZE = 6000;
 
-export async function run(rawOptions: RawOptions) {
-    // Store options so they can be globally available
-    setOptions(rawOptions);
-
-    // Do some sanity checks on the fences
-    validateTagsExist();
-
-    // Run validation
+async function getParitalCheck(): Promise<Options['partialCheck']> {
     let options = getOptions();
-    console.log('finished starting up in', tick());
+    let partialCheck: Options['partialCheck'] = undefined;
+    if (options.partialCheck) {
+        partialCheck = options.partialCheck;
+    } else if (options.sinceGitHash) {
+        console.log('getting diff from git...', tick());
+        const diffs = await getFenceAndImportDiffsFromGit(options.sinceGitHash);
+        console.log('getting partial check from fence / import diff...', tick());
+        if (diffs) {
+            partialCheck = await getPartialCheckFromImportDiffs(diffs);
+        }
+        console.log('took', tick());
+    }
+
+    return partialCheck;
+}
+
+async function getAllFiles(): Promise<[SourceFileProvider, NormalizedPath[]]> {
+    let options = getOptions();
     console.log('constructing source file provider...');
     let sourceFileProvider: SourceFileProvider = options.looseRootFileDiscovery
         ? new FDirSourceFileProvider(options.project, options.rootDir)
@@ -48,21 +61,41 @@ export async function run(rawOptions: RawOptions) {
     console.log('normalizing paths...');
     const normalizedFiles = files.map(file => normalizePath(file));
     console.log('took', tick());
+    return [sourceFileProvider, normalizedFiles];
+}
+
+export async function run(rawOptions: RawOptions) {
+    // Store options so they can be globally available
+    setOptions(rawOptions);
+
+    // Do some sanity checks on the fences
+    validateTagsExist();
+    // Run validation
+    console.log('finished starting up in', tick());
+
+    // const [[sourceFileProvider, normalizedFiles], partialCheck] = await Promise.all([
+    //     getAllFiles(),
+    //     getParitalCheck(),
+    // ]);
+    const partialCheck = await getParitalCheck();
+    const [sourceFileProvider, normalizedFiles] = await getAllFiles();
+
     console.log('loading all fences...');
     getAllConfigs();
     console.log('took', tick());
+
     console.log('performing validation...');
-    if (options.partialCheck) {
+    if (partialCheck) {
         // validate only those files specified on the command line,
         // or included in the scope of changed fence files.
         const fenceScopeFiles = normalizedFiles.filter(normalizedFile =>
             getConfigsForFile(normalizedFile).some(config =>
-                options.partialCheck.fences.includes(config.path)
+                partialCheck.fences.includes(config.path)
             )
         );
         await batchRunAll(
             MAX_VALIDATION_BATCHSIZE,
-            [...options.partialCheck.sourceFiles, ...fenceScopeFiles],
+            [...partialCheck.sourceFiles, ...fenceScopeFiles],
             (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider)
         );
     } else {

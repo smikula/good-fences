@@ -3,16 +3,16 @@ import ImportRecord from '../core/ImportRecord';
 import { SourceFileProvider } from '../core/SourceFileProvider';
 
 export default async function getImportsFromFile(
-    filePath: NormalizedPath,
+    sourceFilePath: NormalizedPath,
     sourceFileProvider: SourceFileProvider
 ) {
-    const rawImports = await sourceFileProvider.getImportsForFile(filePath);
+    const rawImports = await sourceFileProvider.getImportsForFile(sourceFilePath);
     const resolvedImports = await Promise.all(
         rawImports.map(
             async rawImport =>
                 new ImportRecord(
                     rawImport,
-                    await sourceFileProvider.resolveImportFromFile(filePath, rawImport)
+                    await sourceFileProvider.resolveImportFromFile(sourceFilePath, rawImport)
                 )
         )
     );

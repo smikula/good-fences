@@ -22,6 +22,10 @@ async function main() {
         .option(
             '-c, --checkFiles <string...>',
             'Specific fences and source files to check. If unspecified, all files in rootDir will be checked.'
+        )
+        .option(
+            '-g, --sinceGitHash <string>',
+            'Infer files and fences to check based on changes since the last git hash'
         );
     program.parse(process.argv);
     const options = program.opts() as RawOptions;
