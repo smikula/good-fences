@@ -15,14 +15,7 @@ import getAllConfigs from '../utils/getAllConfigs';
 import Options from '../types/Options';
 import { getFenceAndImportDiffsFromGit } from '../utils/getFenceAndImportDiffsFromGit';
 import { getPartialCheckFromImportDiffs } from '../utils/getPartialCheckFromImportDiffs';
-
-let lastUptime = 0;
-function tick() {
-    const now = process.uptime();
-    const diff = now - lastUptime;
-    lastUptime = now;
-    return diff;
-}
+import { tick } from '../utils/tick';
 
 const MAX_VALIDATION_BATCHSIZE = 6000;
 
@@ -65,13 +58,10 @@ async function getAllFiles(): Promise<[SourceFileProvider, NormalizedPath[]]> {
 }
 
 export async function run(rawOptions: RawOptions) {
+    console.log('storing options', tick());
+
     // Store options so they can be globally available
     setOptions(rawOptions);
-
-    // Do some sanity checks on the fences
-    validateTagsExist();
-    // Run validation
-    console.log('finished starting up in', tick());
 
     // const [[sourceFileProvider, normalizedFiles], partialCheck] = await Promise.all([
     //     getAllFiles(),
@@ -82,6 +72,9 @@ export async function run(rawOptions: RawOptions) {
 
     console.log('loading all fences...');
     getAllConfigs();
+    console.log('took', tick());
+    console.log('validating tags on all fences...');
+    validateTagsExist();
     console.log('took', tick());
 
     console.log('performing validation...');

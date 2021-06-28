@@ -7,6 +7,7 @@ import * as ts from 'typescript';
 import { isImportDeclaration, ScriptTarget, SourceFile } from 'typescript';
 import NormalizedPath from '../types/NormalizedPath';
 import DependencyRule from '../types/config/DependencyRule';
+import { tick } from '../utils/tick';
 
 function emptyFence(path: NormalizedPath): Config {
     return {
@@ -31,32 +32,36 @@ async function resolveToCommit(
     return await Git.Commit.lookup(repo, oid);
 }
 
-async function getFenceAndSourcePatches(repo: Git.Repository, commit: Git.Commit) {
-    console.log('loading target tree..');
-    const treeOnTarget = await commit.getTree();
-    console.log('diffing target tree..');
-    const diffSinceHash = await Git.Diff.treeToWorkdirWithIndex(repo, treeOnTarget, {
+async function getFenceAndSourcePatches(
+    repo: Git.Repository,
+    index: Git.Index,
+    commitTree: Git.Tree
+) {
+    console.log('loaded in:', tick());
+    const diffSinceHash = await Git.Diff.treeToIndex(repo, commitTree, index, {
         contextLines: 0,
-        pathspec: '*.json',
+        pathspec: '*.json *.ts *.tsx *.js *.jsx',
     });
+    console.log('diffed in:', tick());
     const patches = await diffSinceHash.patches();
     const fencePatches = [];
     const sourcePatches = [];
     for (let patch of patches) {
         const oldFile = patch.oldFile();
         const newFile = patch.newFile();
-        console.log(oldFile.path(), newFile.path());
         if (oldFile.path().endsWith('fence.json') || newFile.path().endsWith('fence.json')) {
             fencePatches.push(patch);
         } else if (
             oldFile.path().endsWith('.ts') ||
-            newFile.path().endsWith('.ts') ||
-            oldFile.path().endsWith('.tsx') ||
-            newFile.path().endsWith('.tsx')
+            newFile.path().endsWith('.tsx') ||
+            oldFile.path().endsWith('.js') ||
+            newFile.path().endsWith('.jsx')
         ) {
             sourcePatches.push(patch);
+        } else {
         }
     }
+    console.log('filtered in:', tick());
     return [fencePatches, sourcePatches];
 }
 
@@ -100,7 +105,7 @@ function getFenceDiff(oldFence: Config, newFence: Config): FenceDiff | null {
         removedDependencies: [],
     };
     let isDirty = false;
-    for (let oldFenceExport of oldFence.exports) {
+    for (let oldFenceExport of oldFence.exports || []) {
         if (
             !newFence.exports.some(newFenceExport => isSameExport(oldFenceExport, newFenceExport))
         ) {
@@ -108,7 +113,7 @@ function getFenceDiff(oldFence: Config, newFence: Config): FenceDiff | null {
             diff.removedExports.push(oldFenceExport);
         }
     }
-    for (let newFenceExport of newFence.exports) {
+    for (let newFenceExport of newFence.exports || []) {
         if (
             !oldFence.exports.some(oldFenceExport => isSameExport(oldFenceExport, newFenceExport))
         ) {
@@ -117,26 +122,26 @@ function getFenceDiff(oldFence: Config, newFence: Config): FenceDiff | null {
         }
     }
 
-    for (let oldFenceImport of oldFence.imports) {
+    for (let oldFenceImport of oldFence.imports || []) {
         if (!newFence.imports.some(i => i == oldFenceImport)) {
             isDirty = true;
             diff.removedImports.push(oldFenceImport);
         }
     }
-    for (let newFenceImport of newFence.imports) {
+    for (let newFenceImport of newFence.imports || []) {
         if (!oldFence.imports.some(i => i == newFenceImport)) {
             isDirty = true;
             diff.addedImports.push(newFenceImport);
         }
     }
 
-    for (let oldFenceDependency of oldFence.dependencies) {
+    for (let oldFenceDependency of oldFence.dependencies || []) {
         if (!newFence.dependencies.some(i => isSameDependencyRule(i, oldFenceDependency))) {
             isDirty = true;
             diff.removedDependencies.push(oldFenceDependency);
         }
     }
-    for (let newFenceDependency of newFence.dependencies) {
+    for (let newFenceDependency of newFence.dependencies || []) {
         if (!oldFence.dependencies.some(i => isSameDependencyRule(i, newFenceDependency))) {
             isDirty = true;
             diff.addedDependencies.push(newFenceDependency);
@@ -157,7 +162,10 @@ function getTsImportSet(fileName: string, tsSource: string): Set<string> {
 
     sourceFile.forEachChild(c => {
         if (isImportDeclaration(c)) {
-            importSet.add(c.moduleSpecifier.getText());
+            if (!ts.isStringLiteral(c.moduleSpecifier)) {
+                throw new Error('encountered dynamic import? ' + c.moduleSpecifier.getFullText());
+            }
+            importSet.add(c.moduleSpecifier.text);
         }
     });
 
@@ -168,18 +176,21 @@ export async function getFenceAndImportDiffsFromGit(
     compareOidOrRefName: string
 ): Promise<FenceAndImportDiffs | null> {
     const repo = await Git.Repository.open(process.cwd());
-    const compareCommit = await resolveToCommit(repo, compareOidOrRefName);
-    const [fencePatches, sourcePatches] = await getFenceAndSourcePatches(repo, compareCommit);
+    const [index, compareTree] = await Promise.all([
+        repo.index(),
+        resolveToCommit(repo, compareOidOrRefName).then(commit => commit.getTree()),
+    ]);
+    const [fencePatches, sourcePatches] = await getFenceAndSourcePatches(repo, index, compareTree);
 
     // if any folders or fences were moved, abort.
     // TODO: track files across moves
+    console.log('scanning for moved files');
     for (let patch of [...fencePatches, ...sourcePatches]) {
         if (patch.oldFile().path() && patch.oldFile().path() !== patch.newFile().path()) {
+            console.log('detected moved file -- aborting!');
             return null;
         }
     }
-
-    const [index, compareTree] = await Promise.all([repo.index(), compareCommit.getTree()]);
 
     const fenceAndImportDiffs: FenceAndImportDiffs = {
         fenceDiffs: new Map(),
@@ -188,31 +199,33 @@ export async function getFenceAndImportDiffsFromGit(
 
     const loadFencePatchesPromise = Promise.all(
         fencePatches.map(async fencePatch => {
-            const newPath = fencePatch.newFile().path();
-            const newPathNormalized = newPath && normalizePath(newPath);
-            const oldPath = fencePatch.oldFile().path();
-            const oldPathNormalized = oldPath && normalizePath(oldPath);
+            const newPath = !fencePatch.newFile().id().iszero()
+                ? fencePatch.newFile().path()
+                : null;
+            const oldPath = !fencePatch.oldFile().id().iszero()
+                ? fencePatch.oldFile().path()
+                : null;
 
-            const newFenceContentPromise: Promise<Config> | Config = newPathNormalized
+            const newFenceContentPromise: Promise<Config> | Config = newPath
                 ? (async () => {
-                      const indexEntry = await index.getByPath(newPathNormalized);
+                      const indexEntry = await index.getByPath(newPath);
                       const newFenceBlob = await repo.getBlob(indexEntry.id);
                       return loadConfigFromString(
-                          normalizePath(fencePatch.newFile().path()),
+                          normalizePath(newPath),
                           newFenceBlob.content().toString('utf-8')
                       );
                   })()
-                : emptyFence(oldPathNormalized);
-            const oldFenceContentPromise: Promise<Config> | Config = oldPathNormalized
+                : emptyFence(normalizePath(oldPath));
+            const oldFenceContentPromise: Promise<Config> | Config = oldPath
                 ? (async () => {
-                      const oldFenceEntry = await compareTree.getEntry(oldPathNormalized);
+                      const oldFenceEntry = await compareTree.getEntry(oldPath);
                       const oldFenceBlob = await oldFenceEntry.getBlob();
                       return loadConfigFromString(
-                          normalizePath(fencePatch.newFile().path()),
+                          normalizePath(oldPath),
                           oldFenceBlob.content().toString('utf-8')
                       );
                   })()
-                : emptyFence(oldPathNormalized);
+                : emptyFence(normalizePath(newPath));
 
             const [newFence, oldFence] = await Promise.all([
                 newFenceContentPromise,
@@ -230,30 +243,26 @@ export async function getFenceAndImportDiffsFromGit(
     );
 
     const loadSourcePatchesPromise = Promise.all(
-        fencePatches.map(async sourcePatch => {
-            const newPath = sourcePatch.newFile().path();
-            const newPathNormalized = newPath && normalizePath(newPath);
-            const oldPath = sourcePatch.oldFile().path();
-            const oldPathNormalized = oldPath && normalizePath(oldPath);
+        sourcePatches.map(async sourcePatch => {
+            const newPath = !sourcePatch.newFile().id().iszero()
+                ? sourcePatch.newFile().path()
+                : null;
+            const oldPath = !sourcePatch.oldFile().id().iszero()
+                ? sourcePatch.oldFile().path()
+                : null;
 
-            const newSourceImportsPromise: Promise<Set<string>> | Set<string> = newPathNormalized
+            const newSourceImportsPromise: Promise<Set<string>> | Set<string> = newPath
                 ? (async () => {
-                      const indexEntry = await index.getByPath(newPathNormalized);
+                      const indexEntry = await index.getByPath(newPath);
                       const newSourceBlob = await repo.getBlob(indexEntry.id);
-                      return getTsImportSet(
-                          normalizePath(newPathNormalized),
-                          newSourceBlob.content().toString('utf-8')
-                      );
+                      return getTsImportSet(newPath, newSourceBlob.content().toString('utf-8'));
                   })()
                 : new Set();
-            const oldSourceImportsPromise: Promise<Set<string>> | Set<string> = oldPathNormalized
+            const oldSourceImportsPromise: Promise<Set<string>> | Set<string> = oldPath
                 ? (async () => {
-                      const oldSourceEntry = await compareTree.getEntry(oldPathNormalized);
+                      const oldSourceEntry = await compareTree.getEntry(oldPath);
                       const oldSourceBlob = await oldSourceEntry.getBlob();
-                      return getTsImportSet(
-                          normalizePath(oldPathNormalized),
-                          oldSourceBlob.content().toString('utf-8')
-                      );
+                      return getTsImportSet(oldPath, oldSourceBlob.content().toString('utf-8'));
                   })()
                 : new Set();
 
@@ -268,7 +277,7 @@ export async function getFenceAndImportDiffsFromGit(
             };
 
             if (
-                sourceImportDiff.removedImports.length > 0 &&
+                sourceImportDiff.removedImports.length > 0 ||
                 sourceImportDiff.addedImports.length
             ) {
                 fenceAndImportDiffs.sourceImportDiffs.set(

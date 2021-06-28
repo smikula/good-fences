@@ -5,6 +5,13 @@ import { FenceAndImportDiffs } from './getFenceAndImportDiffsFromGit';
 export async function getPartialCheckFromImportDiffs(
     graphDiff: FenceAndImportDiffs
 ): Promise<Options['partialCheck']> {
+    console.log(
+        'computed diff',
+        require('util').inspect(graphDiff, {
+            depth: 11,
+        })
+    );
+
     let fences = new Set<NormalizedPath>();
     let sourceFiles = new Set<NormalizedPath>();
 

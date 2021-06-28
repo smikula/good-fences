@@ -31,6 +31,7 @@ async function main() {
     const options = program.opts() as RawOptions;
 
     // Run good-fences
+    console.log('finished commander args at', process.uptime());
     const result = await run(options);
 
     // Write results to the console
@@ -46,7 +47,31 @@ async function main() {
     process.exitCode = result.errors.length > 0 ? 1 : 0;
 }
 
-main().catch(e => {
-    console.error(e);
-    process.exit(1);
+console.log('finished parse after', process.uptime());
+
+const inspector = require('inspector');
+const session = new inspector.Session();
+session.connect();
+
+session.post('Profiler.enable', () => {
+    session.post('Profiler.start', () => {
+        // Invoke business logic under measurement here...
+        main()
+            .catch(e => {
+                console.error(e.stack);
+                process.exit(1);
+            })
+            .then(() => {
+                // some time later...
+                session.post('Profiler.stop', (err: any, { profile }: { profile: any }) => {
+                    // Write profile to disk, upload, etc.
+                    if (!err) {
+                        require('fs').writeFileSync(
+                            './profile.cpuprofile',
+                            JSON.stringify(profile)
+                        );
+                    }
+                });
+            });
+    });
 });

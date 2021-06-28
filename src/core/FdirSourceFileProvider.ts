@@ -5,6 +5,7 @@ import * as ts from 'typescript';
 import { readAndParseTsConfigFile } from './readAndParseTsConfigFile';
 import { promisify } from 'util';
 import * as fs from 'fs';
+import { tick } from '../utils/tick';
 const readFile = promisify(fs.readFile);
 
 export class FDirSourceFileProvider implements SourceFileProvider {
@@ -13,9 +14,13 @@ export class FDirSourceFileProvider implements SourceFileProvider {
     private compilerHost: ts.CompilerHost;
 
     constructor(configFile: NormalizedPath, private rootDirs: string[]) {
+        console.log('parsing config', tick());
         this.parsedConfig = readAndParseTsConfigFile(configFile);
+        console.log('parsed in:', tick());
+        console.log('parsed to:', this.parsedConfig);
         this.compilerOptions = this.parsedConfig.options;
         this.compilerHost = ts.createCompilerHost(this.compilerOptions);
+        console.log('host initialized in:', tick());
     }
 
     async getSourceFiles(): Promise<string[]> {
