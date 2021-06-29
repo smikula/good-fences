@@ -28,8 +28,17 @@ async function getParitalCheck(): Promise<Options['partialCheck']> {
         console.log('getting diff from git...', tick());
         const diffs = await getFenceAndImportDiffsFromGit(options.sinceGitHash);
         console.log('getting partial check from fence / import diff...', tick());
+        console.log(
+            'diffs in fences:',
+            diffs.fenceDiffs.size,
+            'diffs in sources:',
+            diffs.sourceImportDiffs.size
+        );
         if (diffs) {
+            console.log(diffs);
             partialCheck = await getPartialCheckFromImportDiffs(diffs);
+        } else {
+            console.log('cannot perform partial check');
         }
         console.log('took', tick());
     }
@@ -68,6 +77,12 @@ export async function run(rawOptions: RawOptions) {
     //     getParitalCheck(),
     // ]);
     const partialCheck = await getParitalCheck();
+    if (partialCheck && partialCheck.fences.length == 0 && partialCheck.sourceFiles.length == 0) {
+        console.warn(
+            'performing no validation with good-fences: no fences or source files have changed'
+        );
+        return getResult();
+    }
     const [sourceFileProvider, normalizedFiles] = await getAllFiles();
 
     console.log('loading all fences...');

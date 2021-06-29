@@ -5,12 +5,12 @@ import { FenceAndImportDiffs } from './getFenceAndImportDiffsFromGit';
 export async function getPartialCheckFromImportDiffs(
     graphDiff: FenceAndImportDiffs
 ): Promise<Options['partialCheck']> {
-    console.log(
-        'computed diff',
-        require('util').inspect(graphDiff, {
-            depth: 11,
-        })
-    );
+    // console.log(
+    //     'computed diff',
+    //     require('util').inspect(graphDiff, {
+    //         depth: 11,
+    //     })
+    // );
 
     let fences = new Set<NormalizedPath>();
     let sourceFiles = new Set<NormalizedPath>();
@@ -47,7 +47,9 @@ export async function getPartialCheckFromImportDiffs(
             // if we removed an export, we have to re-evaluate all importers
             // which mean we can't resolve from the repo diff
             console.warn(
-                `Cannot perform partial evaluation: removed exports ${fenceDiff.removedExports} from fence ${normalizedFencePath}`
+                `Cannot perform partial evaluation: removed exports ${JSON.stringify(
+                    fenceDiff.removedExports
+                )} from fence ${normalizedFencePath}`
             );
             canResolve = false;
         }

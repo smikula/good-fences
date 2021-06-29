@@ -20,6 +20,7 @@
         "glob": "^7.1.7",
         "minimatch": "^3.0.4",
         "nodegit": "^0.27.0",
+        "tsconfig-paths": "^3.9.0",
         "typescript": "^4.0.3"
     },
     "devDependencies": {

@@ -32,17 +32,7 @@ async function resolveToCommit(
     return await Git.Commit.lookup(repo, oid);
 }
 
-async function getFenceAndSourcePatches(
-    repo: Git.Repository,
-    index: Git.Index,
-    commitTree: Git.Tree
-) {
-    console.log('loaded in:', tick());
-    const diffSinceHash = await Git.Diff.treeToIndex(repo, commitTree, index, {
-        contextLines: 0,
-        pathspec: '*.json *.ts *.tsx *.js *.jsx',
-    });
-    console.log('diffed in:', tick());
+async function getFenceAndSourcePatches(diffSinceHash: Git.Diff) {
     const patches = await diffSinceHash.patches();
     const fencePatches = [];
     const sourcePatches = [];
@@ -176,21 +166,55 @@ export async function getFenceAndImportDiffsFromGit(
     compareOidOrRefName: string
 ): Promise<FenceAndImportDiffs | null> {
     const repo = await Git.Repository.open(process.cwd());
-    const [index, compareTree] = await Promise.all([
+    console.log('loading source and target commits', tick());
+    const [index, headCommitTree, compareTree] = await Promise.all([
         repo.index(),
+        repo.getHeadCommit().then(headCommit => headCommit.getTree()),
         resolveToCommit(repo, compareOidOrRefName).then(commit => commit.getTree()),
     ]);
-    const [fencePatches, sourcePatches] = await getFenceAndSourcePatches(repo, index, compareTree);
+
+    console.log('diffing..', tick());
+    let repoDiff: Git.Diff;
+    const indexToHead = await Git.Diff.treeToIndex(repo, headCommitTree, index);
+    const indexIsEmpty = indexToHead.patches.length === 0;
+
+    if (!indexIsEmpty) {
+        repoDiff = await Git.Diff.treeToIndex(repo, compareTree, index, {
+            contextLines: 0,
+            pathspec: ['*.json', '*.ts', '*.tsx', '*.js', '*.jsx'],
+        });
+    } else {
+        console.log('empty index -- diffing compareTree against HEAD commit');
+        repoDiff = await Git.Diff.treeToTree(repo, compareTree, headCommitTree, {
+            contextLines: 0,
+            pathspec: ['*.json', '*.ts', '*.tsx', '*.js', '*.jsx'],
+        });
+    }
+    console.log('diffed', tick());
+    const [fencePatches, sourcePatches] = await getFenceAndSourcePatches(repoDiff);
 
     // if any folders or fences were moved, abort.
     // TODO: track files across moves
     console.log('scanning for moved files');
     for (let patch of [...fencePatches, ...sourcePatches]) {
+        if (patch.oldFile().path().indexOf('getCalculatedFolderId') !== -1) {
+            console.log(
+                patch.oldFile().path(),
+                patch.newFile().path(),
+                patch.oldFile().path() === patch.newFile().path(),
+                patch.isRenamed()
+            );
+        }
         if (patch.oldFile().path() && patch.oldFile().path() !== patch.newFile().path()) {
             console.log('detected moved file -- aborting!');
             return null;
         }
     }
+
+    // console.log(`patches!, ${fencePatches.length + sourcePatches.length}`)
+    // for (let patch of [...fencePatches, ...sourcePatches]) {
+    //     console.log(patch.oldFile().path(), patch.newFile().path())
+    // }
 
     const fenceAndImportDiffs: FenceAndImportDiffs = {
         fenceDiffs: new Map(),
