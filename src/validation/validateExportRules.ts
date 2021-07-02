@@ -33,7 +33,7 @@ function validateConfig(config: Config, sourceFile: NormalizedPath, importRecord
         return;
     }
 
-    console.log('ERR validateConfig', config, sourceFile, importRecord);
+    console.log('ERR validateExportConfig', config, sourceFile, importRecord);
 
     // If we made it here, the import is invalid
     reportViolation('Module is not exported', sourceFile, importRecord, config);

@@ -10,6 +10,8 @@ const stat = promisify(fs.stat);
 import { createMatchPathAsync, MatchPathAsync } from 'tsconfig-paths';
 import { tick } from '../utils/tick';
 
+const ALLOWED_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '', '.json'];
+
 export class FDirSourceFileProvider implements SourceFileProvider {
     parsedCommandLine: ts.ParsedCommandLine;
     matchPath: MatchPathAsync;
@@ -79,12 +81,10 @@ export class FDirSourceFileProvider implements SourceFileProvider {
     ): Promise<string | undefined> {
         if (importSpecifier.startsWith('.')) {
             // resolve relative and check extensions
-            return await checkExtensions(path.join(path.dirname(importer), importSpecifier), [
-                '.ts',
-                '.tsx',
-                '.js',
-                '.jsx',
-            ]);
+            return await checkExtensions(
+                path.join(path.dirname(importer), importSpecifier),
+                ALLOWED_EXTENSIONS
+            );
         } else {
             // resolve with tsconfig-paths (use the paths map, then fall back to node-modules)
             return await new Promise((res, rej) =>
@@ -92,12 +92,24 @@ export class FDirSourceFileProvider implements SourceFileProvider {
                     importSpecifier,
                     undefined,
                     undefined,
-                    ['.ts', '.tsx', '.js', '.jsx'],
-                    (err: Error, result: string) => {
+                    ALLOWED_EXTENSIONS,
+                    async (err: Error, result: string) => {
                         if (err) {
                             rej(err);
+                        } else if (!result) {
+                            res(result);
+                        } else {
+                            const withoutIndex = await checkExtensions(result, ALLOWED_EXTENSIONS);
+                            if (withoutIndex) {
+                                res(withoutIndex);
+                            } else {
+                                // fallback -- check if tsconfig-paths resolved to a
+                                // folder index file
+                                res(
+                                    checkExtensions(path.join(result, 'index'), ALLOWED_EXTENSIONS)
+                                );
+                            }
                         }
-                        res(result);
                     }
                 )
             );
@@ -108,9 +120,14 @@ export class FDirSourceFileProvider implements SourceFileProvider {
 async function checkExtensions(noext: string, extensions: string[]): Promise<string | undefined> {
     for (let ext of extensions) {
         const joinedPath = noext + ext;
-        const statResult = await stat(joinedPath);
-        if (statResult.isFile) {
-            return joinedPath;
+        try {
+            // access will throw if the file does no~t exist
+            const statRes = await stat(joinedPath);
+            if (statRes.isFile()) {
+                return joinedPath;
+            }
+        } catch {
+            // file does not exist, smother the ENOENT
         }
     }
     return undefined;

@@ -197,14 +197,6 @@ export async function getFenceAndImportDiffsFromGit(
     // TODO: track files across moves
     console.log('scanning for moved files');
     for (let patch of [...fencePatches, ...sourcePatches]) {
-        if (patch.oldFile().path().indexOf('getCalculatedFolderId') !== -1) {
-            console.log(
-                patch.oldFile().path(),
-                patch.newFile().path(),
-                patch.oldFile().path() === patch.newFile().path(),
-                patch.isRenamed()
-            );
-        }
         if (patch.oldFile().path() && patch.oldFile().path() !== patch.newFile().path()) {
             console.log('detected moved file -- aborting!');
             return null;
@@ -274,6 +266,11 @@ export async function getFenceAndImportDiffsFromGit(
             const oldPath = !sourcePatch.oldFile().id().iszero()
                 ? sourcePatch.oldFile().path()
                 : null;
+
+            if (!newPath) {
+                // only check files that actually exist now
+                return;
+            }
 
             const newSourceImportsPromise: Promise<Set<string>> | Set<string> = newPath
                 ? (async () => {

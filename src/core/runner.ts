@@ -35,7 +35,7 @@ async function getParitalCheck(): Promise<Options['partialCheck']> {
             diffs.sourceImportDiffs.size
         );
         if (diffs) {
-            console.log(diffs);
+            console.log(require('util').inspect(diffs, {depth: 11});
             partialCheck = await getPartialCheckFromImportDiffs(diffs);
         } else {
             console.log('cannot perform partial check');

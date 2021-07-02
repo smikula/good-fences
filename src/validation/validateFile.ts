@@ -10,6 +10,7 @@ export default async function validateFile(
     fileProvider: SourceFileProvider
 ) {
     const imports = await getImportsFromFile(filePath, fileProvider);
+
     for (let importRecord of imports) {
         validateExportRules(filePath, importRecord);
 
