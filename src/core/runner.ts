@@ -11,7 +11,7 @@ import { SourceFileProvider } from './SourceFileProvider';
 import { FDirSourceFileProvider } from './FdirSourceFileProvider';
 import { batchRunAll } from '../utils/batchRunAll';
 import NormalizedPath from '../types/NormalizedPath';
-import getAllConfigs from '../utils/getAllConfigs';
+import getConfigManager from '../utils/getConfigManager';
 import Options from '../types/Options';
 import { getFenceAndImportDiffsFromGit } from '../utils/getFenceAndImportDiffsFromGit';
 import { getPartialCheckFromImportDiffs } from '../utils/getPartialCheckFromImportDiffs';
@@ -35,7 +35,7 @@ async function getParitalCheck(): Promise<Options['partialCheck']> {
             diffs.sourceImportDiffs.size
         );
         if (diffs) {
-            console.log(require('util').inspect(diffs, {depth: 11});
+            console.log(require('util').inspect(diffs, { depth: 11 }));
             partialCheck = await getPartialCheckFromImportDiffs(diffs);
         } else {
             console.log('cannot perform partial check');
@@ -66,6 +66,8 @@ async function getAllFiles(): Promise<[SourceFileProvider, NormalizedPath[]]> {
     return [sourceFileProvider, normalizedFiles];
 }
 
+const MAX_PARTIAL_CHECK_CHANGES = 1000;
+
 export async function run(rawOptions: RawOptions) {
     console.log('storing options', tick());
 
@@ -76,26 +78,40 @@ export async function run(rawOptions: RawOptions) {
     //     getAllFiles(),
     //     getParitalCheck(),
     // ]);
-    const partialCheck = await getParitalCheck();
+    let partialCheck = await getParitalCheck();
     if (partialCheck && partialCheck.fences.length == 0 && partialCheck.sourceFiles.length == 0) {
         console.warn(
             'performing no validation with good-fences: no fences or source files have changed'
         );
         return getResult();
     }
+
+    if (
+        partialCheck &&
+        partialCheck.fences.length + partialCheck.sourceFiles.length > MAX_PARTIAL_CHECK_CHANGES
+    ) {
+        console.warn(
+            `aborting partial check because there were more than ${MAX_PARTIAL_CHECK_CHANGES} changes`
+        );
+    }
+
     const [sourceFileProvider, normalizedFiles] = await getAllFiles();
 
-    console.log('loading all fences...');
-    getAllConfigs();
-    console.log('took', tick());
-    console.log('validating tags on all fences...');
-    validateTagsExist();
+    if (!partialCheck) {
+        console.log('preloading all fences...');
+        getConfigManager().all;
+        console.log('took', tick());
+
+        console.log('validating tags on all fences...');
+        validateTagsExist();
+    }
     console.log('took', tick());
 
     console.log('performing validation...');
     if (partialCheck) {
         // validate only those files specified on the command line,
         // or included in the scope of changed fence files.
+        // TODO partial file discovery
         const fenceScopeFiles = normalizedFiles.filter(normalizedFile =>
             getConfigsForFile(normalizedFile).some(config =>
                 partialCheck.fences.includes(config.path)

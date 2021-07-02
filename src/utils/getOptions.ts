@@ -9,6 +9,8 @@ export default function getOptions() {
     return options;
 }
 
+const DEFAULT_MAX_PARTIAL_CHECK_LIMIT = 1000;
+
 export function setOptions(rawOptions: RawOptions) {
     // Normalize and apply defaults
     const nonNormalizedRoots: string[] = Array.isArray(rawOptions.rootDir)
@@ -27,6 +29,12 @@ export function setOptions(rawOptions: RawOptions) {
         throw new Error('Cannot specify --checkFiles and --sinceGitHash');
     }
 
+    if (rawOptions.partialCheckLimit && !rawOptions.checkFiles && !rawOptions.sinceGitHash) {
+        throw new Error(
+            'Cannot specify --partialCheckLimit without --checkFiles or --sinceGitHash'
+        );
+    }
+
     options = {
         project,
         rootDir,
@@ -41,6 +49,7 @@ export function setOptions(rawOptions: RawOptions) {
                       .map(p => normalizePath(p)),
               }
             : undefined,
+        partialCheckLimit: rawOptions?.partialCheckLimit || DEFAULT_MAX_PARTIAL_CHECK_LIMIT,
         sinceGitHash: rawOptions.sinceGitHash,
         looseRootFileDiscovery: rawOptions.looseRootFileDiscovery || false,
     };

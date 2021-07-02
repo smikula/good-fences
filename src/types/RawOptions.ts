@@ -5,4 +5,5 @@ export default interface RawOptions {
     ignoreExternalFences?: boolean;
     looseRootFileDiscovery?: boolean;
     sinceGitHash?: string;
+    partialCheckLimit?: number;
 }

@@ -12,5 +12,6 @@ export default interface Options {
         fences: NormalizedPath[];
         sourceFiles: NormalizedPath[];
     };
+    partialCheckLimit: number;
     sinceGitHash?: string;
 }
