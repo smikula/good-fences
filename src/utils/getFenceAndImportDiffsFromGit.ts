@@ -97,7 +97,9 @@ function getFenceDiff(oldFence: Config, newFence: Config): FenceDiff | null {
     let isDirty = false;
     for (let oldFenceExport of oldFence.exports || []) {
         if (
-            !newFence.exports.some(newFenceExport => isSameExport(oldFenceExport, newFenceExport))
+            !(newFence.exports || []).some(newFenceExport =>
+                isSameExport(oldFenceExport, newFenceExport)
+            )
         ) {
             isDirty = true;
             diff.removedExports.push(oldFenceExport);
@@ -105,7 +107,9 @@ function getFenceDiff(oldFence: Config, newFence: Config): FenceDiff | null {
     }
     for (let newFenceExport of newFence.exports || []) {
         if (
-            !oldFence.exports.some(oldFenceExport => isSameExport(oldFenceExport, newFenceExport))
+            !(oldFence.exports || []).some(oldFenceExport =>
+                isSameExport(oldFenceExport, newFenceExport)
+            )
         ) {
             isDirty = true;
             diff.addedExports.push(newFenceExport);
@@ -113,26 +117,26 @@ function getFenceDiff(oldFence: Config, newFence: Config): FenceDiff | null {
     }
 
     for (let oldFenceImport of oldFence.imports || []) {
-        if (!newFence.imports.some(i => i == oldFenceImport)) {
+        if (!(newFence.imports || []).some(i => i == oldFenceImport)) {
             isDirty = true;
             diff.removedImports.push(oldFenceImport);
         }
     }
     for (let newFenceImport of newFence.imports || []) {
-        if (!oldFence.imports.some(i => i == newFenceImport)) {
+        if (!(oldFence.imports || []).some(i => i == newFenceImport)) {
             isDirty = true;
             diff.addedImports.push(newFenceImport);
         }
     }
 
     for (let oldFenceDependency of oldFence.dependencies || []) {
-        if (!newFence.dependencies.some(i => isSameDependencyRule(i, oldFenceDependency))) {
+        if (!(newFence.dependencies || []).some(i => isSameDependencyRule(i, oldFenceDependency))) {
             isDirty = true;
             diff.removedDependencies.push(oldFenceDependency);
         }
     }
     for (let newFenceDependency of newFence.dependencies || []) {
-        if (!oldFence.dependencies.some(i => isSameDependencyRule(i, newFenceDependency))) {
+        if (!(oldFence.dependencies || []).some(i => isSameDependencyRule(i, newFenceDependency))) {
             isDirty = true;
             diff.addedDependencies.push(newFenceDependency);
         }
