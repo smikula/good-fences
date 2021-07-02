@@ -51,10 +51,11 @@ export class FDirSourceFileProvider implements SourceFileProvider {
         console.log('created matchpath', tick());
     }
 
-    async getSourceFiles(): Promise<string[]> {
+    async getSourceFiles(searchRoots?: string[]): Promise<string[]> {
+        console.log('search roots', searchRoots);
         const allRootsDiscoveredFiles: string[][] = await Promise.all(
-            this.rootDirs.map(
-                rootDir =>
+            (searchRoots || this.rootDirs).map(
+                (rootDir: string) =>
                     new fdir()
                         .glob(
                             this.parsedCommandLine.options.allowJs
@@ -67,7 +68,7 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             )
         );
 
-        return allRootsDiscoveredFiles.reduce((a, b) => a.concat(b), []);
+        return [...new Set<string>(allRootsDiscoveredFiles.reduce((a, b) => a.concat(b), []))];
     }
 
     async getImportsForFile(filePath: string): Promise<string[]> {

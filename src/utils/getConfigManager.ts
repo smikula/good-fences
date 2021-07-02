@@ -12,11 +12,10 @@ class ConfigManager {
     private discoveredPaths: Set<string> = new Set();
 
     public get all(): ConfigSet {
-        if (this.configSet !== null) {
-            return this.configSet;
-        } else {
+        if (this.configSet === null) {
             this._getAllConfigs();
         }
+        return this.configSet;
     }
 
     public partialConfigSetForPath(configSourcePath: NormalizedPath): ConfigSet {
@@ -24,7 +23,9 @@ class ConfigManager {
 
         if (this.configSet) {
             for (let configPathCandidate of getConfigPathCandidatesForFile(configSourcePath)) {
-                partialSet[configPathCandidate] = this.configSet[configPathCandidate];
+                if (this.configSet[configPathCandidate]) {
+                    partialSet[configPathCandidate] = this.configSet[configPathCandidate];
+                }
             }
         } else {
             for (let configPathCandidate of getConfigPathCandidatesForFile(configSourcePath)) {
