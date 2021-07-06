@@ -29,23 +29,25 @@ class ConfigManager {
             }
         } else {
             for (let configPathCandidate of getConfigPathCandidatesForFile(configSourcePath)) {
-                if (this.discoveredPaths.has(configPathCandidate)) {
+                const configPathCandidateFull = path.join(configPathCandidate, 'fence.json');
+                if (this.discoveredPaths.has(configPathCandidateFull)) {
                     const discoveredConfig = this.partialDiscoveredConfigs[configPathCandidate];
                     if (discoveredConfig) {
-                        partialSet[configPathCandidate] = discoveredConfig;
+                        partialSet[configPathCandidateFull] = discoveredConfig;
                     }
                 } else {
                     try {
-                        const stat = fs.statSync(path.join(configPathCandidate, 'fence.json'));
+                        const stat = fs.statSync(configPathCandidateFull);
                         if (stat?.isFile()) {
-                            loadConfig(configPathCandidate, partialSet);
+                            loadConfig(configPathCandidateFull, partialSet);
                         }
                     } catch {
                         // pass e.g. for EACCESS
                     }
-                    this.discoveredPaths.add(configPathCandidate);
+                    this.discoveredPaths.add(configPathCandidateFull);
                 }
             }
+            Object.assign(this.partialDiscoveredConfigs, partialSet);
         }
 
         return partialSet;

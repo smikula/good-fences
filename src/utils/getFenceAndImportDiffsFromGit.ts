@@ -303,7 +303,7 @@ export async function getFenceAndImportDiffsFromGit(
 
             if (
                 sourceImportDiff.removedImports.length > 0 ||
-                sourceImportDiff.addedImports.length
+                sourceImportDiff.addedImports.length > 0
             ) {
                 fenceAndImportDiffs.sourceImportDiffs.set(
                     normalizePath(sourcePatch.newFile().path()),
