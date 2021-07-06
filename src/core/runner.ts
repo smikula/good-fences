@@ -3,7 +3,7 @@ import getOptions, { setOptions } from '../utils/getOptions';
 import validateFile from '../validation/validateFile';
 import TypeScriptProgram from './TypeScriptProgram';
 import normalizePath from '../utils/normalizePath';
-import { getResult } from './result';
+import { getResult, reportWarning } from './result';
 import { validateTagsExist } from '../validation/validateTagsExist';
 // import { GlobSourceFileProvider } from './GlobSourceFileProvider';
 import { SourceFileProvider } from './SourceFileProvider';
@@ -64,8 +64,6 @@ async function getFilesNormalized(
     return normalizedFiles;
 }
 
-const MAX_PARTIAL_CHECK_CHANGES = 1000;
-
 export async function run(rawOptions: RawOptions) {
     console.log('storing options', tick());
 
@@ -74,22 +72,28 @@ export async function run(rawOptions: RawOptions) {
 
     let partialCheck = await getParitalCheck();
     if (partialCheck && partialCheck.fences.length == 0 && partialCheck.sourceFiles.length == 0) {
-        console.warn(
-            'performing no validation with good-fences: no fences or source files have changed'
-        );
+        reportWarning('Skipping fence validation -- no fences or source files have changed');
         return getResult();
     }
 
-    if (
-        partialCheck &&
-        partialCheck.fences.length + partialCheck.sourceFiles.length > MAX_PARTIAL_CHECK_CHANGES
-    ) {
-        console.warn(
-            `aborting partial check because there were more than ${MAX_PARTIAL_CHECK_CHANGES} changes`
-        );
+    let options = getOptions();
+    if (options.partialCheckLimit) {
+        if (!partialCheck) {
+            reportWarning(
+                `Skipping fence validation -- Could not calculate a partial check, but partialCheckLimit was specified in options`
+            );
+            return getResult();
+        }
+        if (
+            partialCheck.fences.length + partialCheck.sourceFiles.length >
+            options.partialCheckLimit
+        ) {
+            reportWarning(
+                `Skipping fence validation -- the partial check had more than ${options.partialCheckLimit} changes`
+            );
+        }
     }
 
-    let options = getOptions();
     console.log('constructing source file provider...');
     let sourceFileProvider: SourceFileProvider = options.looseRootFileDiscovery
         ? new FDirSourceFileProvider(options.project, options.rootDir)

@@ -17,10 +17,12 @@ echo "incremental fence-checking $LEN commits of history before $REF"
 
 for oid in $(git rev-list $REF | head -n $LEN); do
     git checkout $oid --quiet
-    echo -n "checking $oid .. "
+    PREVIOUS=`git rev-parse HEAD~1`
+    FILECOUNT=$(git diff $PREVIOUS --name-only | wc -l)
+    printf "checking $oid %4s file(s) .. " $FILECOUNT
 
     start_time=$(date +%s.%3N)
-    OUTPUT=$(node --unhandled-rejections=strict --async-stack-traces ./node_modules/good-fences/lib/core/cli.js -p tsconfig.noprojects.json --rootDir packages shared -x --sinceGitHash $(git rev-parse HEAD~) 2>&1)
+    OUTPUT=$(node --unhandled-rejections=strict --async-stack-traces ./node_modules/good-fences/lib/core/cli.js -p tsconfig.noprojects.json --rootDir packages shared --partialCheckLimit 1000 --sinceGitHash $PREVIOUS -x 2>&1)
     EXITCODE=$?
     end_time=$(date +%s.%3N)
 

@@ -1,6 +1,8 @@
+import { reportWarning } from '../core/result';
 import NormalizedPath from '../types/NormalizedPath';
 import Options from '../types/Options';
 import { FenceAndImportDiffs } from './getFenceAndImportDiffsFromGit';
+import * as path from 'path';
 
 export async function getPartialCheckFromImportDiffs(
     graphDiff: FenceAndImportDiffs
@@ -46,10 +48,16 @@ export async function getPartialCheckFromImportDiffs(
         if (fenceDiff.removedExports.length) {
             // if we removed an export, we have to re-evaluate all importers
             // which mean we can't resolve from the repo diff
-            console.warn(
-                `Cannot perform partial evaluation: removed exports ${JSON.stringify(
-                    fenceDiff.removedExports
-                )} from fence ${normalizedFencePath}`
+            reportWarning(
+                `Cannot perform partial evaluation -- removed export(s) ${fenceDiff.removedExports
+                    .map(x => {
+                        const v = { ...x };
+                        if (v.accessibleTo === null) {
+                            delete v.accessibleTo;
+                        }
+                        return JSON.stringify(v);
+                    })
+                    .join(', ')} from fence ${path.relative(process.cwd(), normalizedFencePath)}`
             );
             canResolve = false;
         }

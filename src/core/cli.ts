@@ -53,9 +53,9 @@ async function main() {
 
 console.log('finished parse after', process.uptime());
 
-const inspector = require('inspector');
-const session = new inspector.Session();
-session.connect();
+// const inspector = require('inspector');
+// const session = new inspector.Session();
+// session.connect();
 
 main().catch(e => {
     console.error('Error while running fences:', e);
