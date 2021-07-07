@@ -7,7 +7,7 @@ import { getResult, reportWarning } from './result';
 import { validateTagsExist } from '../validation/validateTagsExist';
 import { SourceFileProvider } from './SourceFileProvider';
 import { FDirSourceFileProvider } from './FdirSourceFileProvider';
-import { batchRunAll } from '../utils/batchRunAll';
+import { runWithConcurrentLimit } from '../utils/runWithConcurrentLimit';
 import NormalizedPath from '../types/NormalizedPath';
 import getConfigManager from '../utils/getConfigManager';
 import Options from '../types/Options';
@@ -23,7 +23,7 @@ async function getParitalCheck(): Promise<Options['partialCheck']> {
     } else if (options.sinceGitHash) {
         const diffs = await getFenceAndImportDiffsFromGit(options.sinceGitHash);
         if (diffs) {
-            partialCheck = await getPartialCheckFromImportDiffs(diffs);
+            partialCheck = getPartialCheckFromImportDiffs(diffs);
         }
     }
 
@@ -79,7 +79,7 @@ export async function run(rawOptions: RawOptions) {
         validateTagsExist();
     } else {
         reportWarning(
-            `skipping validateTagsExist -- cannot validate tag existence while performing checks`
+            `skipping validateTagsExist -- cannot validate tag existence while performing partial checks`
         );
     }
 
@@ -96,7 +96,7 @@ export async function run(rawOptions: RawOptions) {
         // we have to limit the concurrent executed promises because
         // otherwise we will open all the files at the same time and
         // hit the MFILE error (when we hit rlimit)
-        await batchRunAll(
+        await runWithConcurrentLimit(
             options.maxConcurrentFenceJobs,
             fenceJobs,
             (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider),
@@ -108,7 +108,7 @@ export async function run(rawOptions: RawOptions) {
         // we have to limit the concurrent executed promises because
         // otherwise we will open all the files at the same time and
         // hit the MFILE error (when we hit rlimit)
-        await batchRunAll(
+        await runWithConcurrentLimit(
             options.maxConcurrentFenceJobs,
             normalizedFiles,
             (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider),

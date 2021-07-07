@@ -4,25 +4,21 @@ import Options from '../types/Options';
 import { FenceAndImportDiffs } from './getFenceAndImportDiffsFromGit';
 import * as path from 'path';
 
-export async function getPartialCheckFromImportDiffs(
+export function getPartialCheckFromImportDiffs(
     graphDiff: FenceAndImportDiffs
-): Promise<Options['partialCheck']> {
+): Options['partialCheck'] {
     let fences = new Set<NormalizedPath>();
     let sourceFiles = new Set<NormalizedPath>();
 
     let canResolve = true;
 
-    await Promise.all(
-        [...graphDiff.sourceImportDiffs.entries()].map(
-            async ([normalizedSourceFilePath, importDiff]) => {
-                if (importDiff.addedImports) {
-                    // we need to re-check this file, since the new imports
-                    // might violate the importing fence.
-                    sourceFiles.add(normalizedSourceFilePath);
-                }
-            }
-        )
-    );
+    for (let [normalizedSourceFilePath, importDiff] of graphDiff.sourceImportDiffs.entries()) {
+        if (importDiff.addedImports) {
+            // we need to re-check this file, since the new imports
+            // might violate the importing fence.
+            sourceFiles.add(normalizedSourceFilePath);
+        }
+    }
 
     for (let [normalizedFencePath, fenceDiff] of graphDiff.fenceDiffs.entries()) {
         if (fenceDiff.removedExports.length) {

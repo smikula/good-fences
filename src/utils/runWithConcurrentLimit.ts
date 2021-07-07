@@ -1,6 +1,6 @@
 import * as CliProgress from 'cli-progress';
 
-export async function batchRunAll<I>(
+export async function runWithConcurrentLimit<I>(
     maxBatchSize: number,
     inputs: I[],
     cb: (input: I) => Promise<void>,
@@ -14,7 +14,7 @@ export async function batchRunAll<I>(
     if (progress) {
         progressBar = new CliProgress.SingleBar(
             {
-                etaBuffer: 20,
+                etaBuffer: maxBatchSize,
             },
             CliProgress.Presets.shades_grey
         );

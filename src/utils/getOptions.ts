@@ -24,12 +24,12 @@ export function setOptions(rawOptions: RawOptions) {
         : normalizePath(rootDir[0], 'tsconfig.json');
 
     if (rawOptions.checkFiles && rawOptions.sinceGitHash) {
-        throw new Error('Cannot specify --checkFiles and --sinceGitHash');
+        throw new Error('Cannot specify both --checkFiles and --sinceGitHash');
     }
 
     if (rawOptions.partialCheckLimit && !rawOptions.checkFiles && !rawOptions.sinceGitHash) {
         throw new Error(
-            'Cannot specify --partialCheckLimit without --checkFiles or --sinceGitHash'
+            'Cannot specify --partialCheckLimit without one of --checkFiles or --sinceGitHash'
         );
     }
 

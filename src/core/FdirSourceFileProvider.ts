@@ -22,9 +22,14 @@ export class FDirSourceFileProvider implements SourceFileProvider {
     matchPath: MatchPathAsync;
 
     constructor(configFileName: NormalizedPath, private rootDirs: string[]) {
+        // Load the full config file, relying on typescript to recursively walk the "extends" fields,
+        // while stubbing readDirectory calls to stop the full file walk of the include() patterns.
+        //
+        // We do this because we need to access the parsed compilerOptions, but do not care about
+        // the full file list.
         this.parsedCommandLine = ts.getParsedCommandLineOfConfigFile(
             configFileName,
-            {},
+            {}, // optionsToExtend
             {
                 getCurrentDirectory: process.cwd,
                 fileExists: fs.existsSync,
@@ -58,8 +63,12 @@ export class FDirSourceFileProvider implements SourceFileProvider {
                     new fdir()
                         .glob(
                             this.parsedCommandLine.options.allowJs
-                                ? '**/!(.d)*@(.js|.ts)'
-                                : '**/*!(.d)*.ts'
+                                ? `**/!(.d)*@(.js|.ts${
+                                      this.parsedCommandLine.options.jsx ? '|.jsx|.tsx' : ''
+                                  })`
+                                : `**/*!(.d)*.ts${
+                                      this.parsedCommandLine.options.jsx ? '|.tsx' : ''
+                                  }`
                         )
                         .withFullPaths()
                         .crawl(rootDir)
@@ -90,15 +99,17 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             return await new Promise((res, rej) =>
                 this.matchPath(
                     importSpecifier,
-                    undefined,
-                    undefined,
+                    undefined, // readJson
+                    undefined, // fileExists
                     ALLOWED_EXTENSIONS,
                     async (err: Error, result: string) => {
                         if (err) {
                             rej(err);
                         } else if (!result) {
-                            res(result);
+                            res(undefined);
                         } else {
+                            // tsconfig-paths returns a path without an extension, and if it resolved to
+                            // an index file, it returns the path to the directory of the index file.
                             const withoutIndex = await checkExtensions(result, ALLOWED_EXTENSIONS);
                             if (withoutIndex) {
                                 res(withoutIndex);
@@ -124,7 +135,7 @@ async function checkExtensions(
     for (let ext of extensions) {
         const joinedPath = filePathNoExt + ext;
         try {
-            // access will throw if the file does no~t exist
+            // stat will throw if the file does no~t exist
             const statRes = await stat(joinedPath);
             if (statRes.isFile()) {
                 return joinedPath;
