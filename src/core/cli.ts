@@ -30,12 +30,15 @@ async function main() {
         .option(
             '-l, --partialCheckLimit <number>',
             'Maximum files to check during a partial check run. If more files than this limit are changed, the partial check will be aborted and good-fences will exit with code 0.'
+        )
+        .option(
+            '-j, --maxConcurrentJobs <number>',
+            'Maximum concurrent fences to check. This should be set under the system rlimit, otherwise you will hit the mFILE error when we try to open too many files concurrently.'
         );
     program.parse(process.argv);
     const options = program.opts() as RawOptions;
 
     // Run good-fences
-    console.log('finished commander args at', process.uptime());
     const result = await run(options);
 
     // Write results to the console
@@ -51,38 +54,7 @@ async function main() {
     process.exitCode = result.errors.length > 0 ? 1 : 0;
 }
 
-console.log('finished parse after', process.uptime());
-
-// const inspector = require('inspector');
-// const session = new inspector.Session();
-// session.connect();
-
 main().catch(e => {
-    console.error('Error while running fences:', e);
-    console.log(e.stack);
-    console.log(require('util').inspect(e, { depth: 11 }));
+    console.error('Error while running fences:', e.stack);
     process.exit(1);
 });
-
-// session.post('Profiler.enable', () => {
-//     session.post('Profiler.start', () => {
-//         // Invoke business logic under measurement here...
-//         main()
-//             // .catch(e => {
-//             //     console.error('Error while running fences:', e, e.stack);
-//             //     process.exit(1);
-//             // })
-//             .then(() => {
-//                 // some time later...
-//                 session.post('Profiler.stop', (err: any, { profile }: { profile: any }) => {
-//                     // Write profile to disk, upload, etc.
-//                     if (!err) {
-//                         require('fs').writeFileSync(
-//                             './profile.cpuprofile',
-//                             JSON.stringify(profile)
-//                         );
-//                     }
-//                 });
-//             });
-//     });
-// });

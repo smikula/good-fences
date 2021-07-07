@@ -52,5 +52,6 @@ export function setOptions(rawOptions: RawOptions) {
         partialCheckLimit: rawOptions?.partialCheckLimit || DEFAULT_MAX_PARTIAL_CHECK_LIMIT,
         sinceGitHash: rawOptions.sinceGitHash,
         looseRootFileDiscovery: rawOptions.looseRootFileDiscovery || false,
+        maxConcurrentFenceJobs: rawOptions.maxConcurrentJobs || 6000,
     };
 }

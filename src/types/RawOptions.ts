@@ -6,4 +6,5 @@ export default interface RawOptions {
     looseRootFileDiscovery?: boolean;
     sinceGitHash?: string;
     partialCheckLimit?: number;
+    maxConcurrentJobs?: number;
 }

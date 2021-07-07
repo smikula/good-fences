@@ -8,8 +8,13 @@ import * as path from 'path';
 const readFile = promisify(fs.readFile);
 const stat = promisify(fs.stat);
 import { createMatchPathAsync, MatchPathAsync } from 'tsconfig-paths';
-import { tick } from '../utils/tick';
 
+/**
+ * Extensions to check for when resolving with tsconfig-paths or from relative requires
+ *
+ * TODO: Should this be settable in options / from the CLI when using FdirSourceFileProvider?
+ * Or possibly parsed out of the tsconfig.json?
+ */
 const ALLOWED_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '', '.json'];
 
 export class FDirSourceFileProvider implements SourceFileProvider {
@@ -17,8 +22,6 @@ export class FDirSourceFileProvider implements SourceFileProvider {
     matchPath: MatchPathAsync;
 
     constructor(configFileName: NormalizedPath, private rootDirs: string[]) {
-        console.log('parsing config', tick());
-
         this.parsedCommandLine = ts.getParsedCommandLineOfConfigFile(
             configFileName,
             {},
@@ -41,18 +44,14 @@ export class FDirSourceFileProvider implements SourceFileProvider {
                 },
             }
         );
-        console.log('parsed', tick());
 
-        console.log('matching paths');
         this.matchPath = createMatchPathAsync(
             this.parsedCommandLine.options.baseUrl,
             this.parsedCommandLine.options.paths
         );
-        console.log('created matchpath', tick());
     }
 
     async getSourceFiles(searchRoots?: string[]): Promise<string[]> {
-        console.log('search roots', searchRoots);
         const allRootsDiscoveredFiles: string[][] = await Promise.all(
             (searchRoots || this.rootDirs).map(
                 (rootDir: string) =>
@@ -118,9 +117,12 @@ export class FDirSourceFileProvider implements SourceFileProvider {
     }
 }
 
-async function checkExtensions(noext: string, extensions: string[]): Promise<string | undefined> {
+async function checkExtensions(
+    filePathNoExt: string,
+    extensions: string[]
+): Promise<string | undefined> {
     for (let ext of extensions) {
-        const joinedPath = noext + ext;
+        const joinedPath = filePathNoExt + ext;
         try {
             // access will throw if the file does no~t exist
             const statRes = await stat(joinedPath);

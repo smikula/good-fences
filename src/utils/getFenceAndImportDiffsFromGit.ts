@@ -7,7 +7,7 @@ import * as ts from 'typescript';
 import { isImportDeclaration, ScriptTarget, SourceFile } from 'typescript';
 import NormalizedPath from '../types/NormalizedPath';
 import DependencyRule from '../types/config/DependencyRule';
-import { tick } from '../utils/tick';
+import { reportWarning } from '../core/result';
 
 function emptyFence(path: NormalizedPath): Config {
     return {
@@ -51,7 +51,6 @@ async function getFenceAndSourcePatches(diffSinceHash: Git.Diff) {
         } else {
         }
     }
-    console.log('filtered in:', tick());
     return [fencePatches, sourcePatches];
 }
 
@@ -170,14 +169,12 @@ export async function getFenceAndImportDiffsFromGit(
     compareOidOrRefName: string
 ): Promise<FenceAndImportDiffs | null> {
     const repo = await Git.Repository.open(process.cwd());
-    console.log('loading source and target commits', tick());
     const [index, headCommitTree, compareTree] = await Promise.all([
         repo.index(),
         repo.getHeadCommit().then(headCommit => headCommit.getTree()),
         resolveToCommit(repo, compareOidOrRefName).then(commit => commit.getTree()),
     ]);
 
-    console.log('diffing..', tick());
     let repoDiff: Git.Diff;
     const indexToHead = await Git.Diff.treeToIndex(repo, headCommitTree, index);
     const indexIsEmpty = indexToHead.patches.length === 0;
@@ -188,29 +185,22 @@ export async function getFenceAndImportDiffsFromGit(
             pathspec: ['*.json', '*.ts', '*.tsx', '*.js', '*.jsx'],
         });
     } else {
-        console.log('empty index -- diffing compareTree against HEAD commit');
         repoDiff = await Git.Diff.treeToTree(repo, compareTree, headCommitTree, {
             contextLines: 0,
             pathspec: ['*.json', '*.ts', '*.tsx', '*.js', '*.jsx'],
         });
     }
-    console.log('diffed', tick());
     const [fencePatches, sourcePatches] = await getFenceAndSourcePatches(repoDiff);
 
-    // if any folders or fences were moved, abort.
-    // TODO: track files across moves
-    console.log('scanning for moved files');
+    // TODO: track files across moves (Should just be a fence removal and addition)
     for (let patch of [...fencePatches, ...sourcePatches]) {
         if (patch.oldFile().path() && patch.oldFile().path() !== patch.newFile().path()) {
-            console.log('detected moved file -- aborting!');
+            reportWarning(
+                'Detected a moved fence or source file -- aborting partial check from git'
+            );
             return null;
         }
     }
-
-    // console.log(`patches!, ${fencePatches.length + sourcePatches.length}`)
-    // for (let patch of [...fencePatches, ...sourcePatches]) {
-    //     console.log(patch.oldFile().path(), patch.newFile().path())
-    // }
 
     const fenceAndImportDiffs: FenceAndImportDiffs = {
         fenceDiffs: new Map(),
