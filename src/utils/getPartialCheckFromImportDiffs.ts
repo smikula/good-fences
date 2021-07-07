@@ -20,19 +20,6 @@ export async function getPartialCheckFromImportDiffs(
                     // might violate the importing fence.
                     sourceFiles.add(normalizedSourceFilePath);
                 }
-                // TODO: I don't think we actually need to do this, since
-                // we resolve imports and check all fences against each import
-                // since each import is validated when we validateExportRules.
-                //
-                // for (let newImport of importDiff.addedImports) {
-                //     // If a new import was added, we need to check
-                //     // each of the imported files
-                //     const resolvedImportedFile = await sourceProvider.resolveImportFromFile(
-                //         normalizedSourceFilePath,
-                //         newImport
-                //     );
-                //     sourceFiles.add(normalizePath(resolvedImportedFile));
-                // }
             }
         )
     );
