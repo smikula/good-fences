@@ -21,4 +21,5 @@ export default interface Options {
     // otherwise you will hit the MFILE error when
     // we try to open too many files concurrently.
     maxConcurrentFenceJobs: number;
+    progress: boolean;
 }

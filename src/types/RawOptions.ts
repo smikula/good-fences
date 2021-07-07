@@ -7,4 +7,5 @@ export default interface RawOptions {
     sinceGitHash?: string;
     partialCheckLimit?: number;
     maxConcurrentJobs?: number;
+    progress?: boolean;
 }

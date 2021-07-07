@@ -35,6 +35,8 @@ export function setOptions(rawOptions: RawOptions) {
         );
     }
 
+    const isPartialCheck = rawOptions.checkFiles || rawOptions.sinceGitHash;
+
     options = {
         project,
         rootDir,
@@ -49,9 +51,12 @@ export function setOptions(rawOptions: RawOptions) {
                       .map(p => normalizePath(p)),
               }
             : undefined,
-        partialCheckLimit: rawOptions?.partialCheckLimit || DEFAULT_MAX_PARTIAL_CHECK_LIMIT,
+        partialCheckLimit:
+            rawOptions?.partialCheckLimit ||
+            (isPartialCheck ? DEFAULT_MAX_PARTIAL_CHECK_LIMIT : undefined),
         sinceGitHash: rawOptions.sinceGitHash,
         looseRootFileDiscovery: rawOptions.looseRootFileDiscovery || false,
         maxConcurrentFenceJobs: rawOptions.maxConcurrentJobs || 6000,
+        progress: rawOptions.progress || false,
     };
 }

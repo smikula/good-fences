@@ -34,7 +34,8 @@ async function main() {
         .option(
             '-j, --maxConcurrentJobs <number>',
             'Maximum concurrent fences to check. This should be set under the system rlimit, otherwise you will hit the mFILE error when we try to open too many files concurrently.'
-        );
+        )
+        .option('-p, --progress', 'Show a progress bar while evaluating fences');
     program.parse(process.argv);
     const options = program.opts() as RawOptions;
 

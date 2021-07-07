@@ -90,23 +90,29 @@ export async function run(rawOptions: RawOptions) {
             sourceFileProvider,
             partialCheck.fences.map(fencePath => path.dirname(fencePath))
         );
+
+        const fenceJobs = [...partialCheck.sourceFiles, ...fenceScopeFiles];
+
         // we have to limit the concurrent executed promises because
         // otherwise we will open all the files at the same time and
         // hit the MFILE error (when we hit rlimit)
         await batchRunAll(
             options.maxConcurrentFenceJobs,
-            [...partialCheck.sourceFiles, ...fenceScopeFiles],
-            (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider)
+            fenceJobs,
+            (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider),
+            options.progress
         );
     } else {
         const normalizedFiles = await getFilesNormalized(sourceFileProvider);
+
         // we have to limit the concurrent executed promises because
         // otherwise we will open all the files at the same time and
         // hit the MFILE error (when we hit rlimit)
         await batchRunAll(
             options.maxConcurrentFenceJobs,
             normalizedFiles,
-            (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider)
+            (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider),
+            options.progress
         );
     }
     return getResult();
