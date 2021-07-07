@@ -23,9 +23,34 @@ export function setOptions(rawOptions: RawOptions) {
         ? normalizePath(rawOptions.project)
         : normalizePath(rootDir[0], 'tsconfig.json');
 
+    if (rawOptions.checkFiles && rawOptions.sinceGitHash) {
+        throw new Error('Cannot specify both --checkFiles and --sinceGitHash');
+    }
+
+    if (rawOptions.partialCheckLimit && !rawOptions.checkFiles && !rawOptions.sinceGitHash) {
+        throw new Error(
+            'Cannot specify --partialCheckLimit without one of --checkFiles or --sinceGitHash'
+        );
+    }
+
     options = {
         project,
         rootDir,
         ignoreExternalFences: rawOptions.ignoreExternalFences,
+        partialCheck: rawOptions?.checkFiles
+            ? {
+                  fences: rawOptions.checkFiles
+                      .filter(f => f.endsWith('fence.json'))
+                      .map(p => normalizePath(p)),
+                  sourceFiles: rawOptions.checkFiles
+                      .filter(f => !f.endsWith('fence.json'))
+                      .map(p => normalizePath(p)),
+              }
+            : undefined,
+        partialCheckLimit: rawOptions?.partialCheckLimit,
+        sinceGitHash: rawOptions.sinceGitHash,
+        looseRootFileDiscovery: rawOptions.looseRootFileDiscovery || false,
+        maxConcurrentFenceJobs: rawOptions.maxConcurrentJobs || 6000,
+        progress: rawOptions.progress || false,
     };
 }
