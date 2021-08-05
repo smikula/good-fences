@@ -4,4 +4,12 @@ export default interface Options {
     project: NormalizedPath;
     rootDir: NormalizedPath[];
     ignoreExternalFences: boolean;
+    // Maximum number of fence validation jobs that can
+    // be run at the same time.
+    //
+    // this should be set under the system rlimit,
+    // otherwise you will hit the MFILE error when
+    // we try to open too many files concurrently.
+    maxConcurrentFenceJobs: number;
+    progress: boolean;
 }
