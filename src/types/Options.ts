@@ -4,7 +4,7 @@ export default interface Options {
     project: NormalizedPath;
     rootDir: NormalizedPath[];
     ignoreExternalFences: boolean;
-
+    looseRootFileDiscovery: boolean;
     // Maximum number of fence validation jobs that can
     // be run at the same time.
     //
