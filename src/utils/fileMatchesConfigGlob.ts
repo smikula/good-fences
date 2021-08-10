@@ -21,5 +21,5 @@ export default function fileMatchesConfigGlob(
 function removeFileExtension(filePath: NormalizedPath): NormalizedPath {
     // Special case for .d.ts files
     let extension = filePath.endsWith('.d.ts') ? '.d.ts' : path.extname(filePath);
-    return <NormalizedPath>filePath.slice(0, -extension.length);
+    return <NormalizedPath>filePath.slice(0, filePath.length - extension.length);
 }
