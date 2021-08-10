@@ -52,9 +52,12 @@ export function reportConfigError(message: string, configPath: string) {
     result.errors.push(error);
 }
 
-export function reportWarning(message: string, configPath: string) {
+export function reportWarning(message: string, configPath?: string) {
     let fencePath = configPath + path.sep + 'fence.json';
-    let detailedMessage = `Good-fences warning: ${message}\n` + `    Fence: ${fencePath}`;
+    let detailedMessage = `Good-fences warning: ${message}\n`;
+    if (configPath) {
+        detailedMessage += `    Fence: ${fencePath}`;
+    }
 
     const warning: GoodFencesError = {
         message,
