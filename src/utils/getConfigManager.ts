@@ -8,8 +8,10 @@ import NormalizedPath from '../types/NormalizedPath';
 
 class ConfigManager {
     private configSet: ConfigSet = null;
+
     // The subset of configs that has been loaded
     private partialDiscoveredConfigs: ConfigSet = {};
+
     // The set of paths we have checked for configs in the filesystem
     private discoveredPaths: Set<string> = new Set();
 
