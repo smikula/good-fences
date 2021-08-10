@@ -16,5 +16,6 @@ export default async function getImportsFromFile(
                 )
         )
     );
+
     return resolvedImports.filter(importRecord => importRecord.filePath);
 }
