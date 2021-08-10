@@ -30,7 +30,7 @@ export async function run(rawOptions: RawOptions) {
 
     const normalizedFiles = await getSourceFilesNormalized(sourceFileProvider);
 
-    // we have to limit the concurrent executed promises because
+    // Limit the concurrent executed promises because
     // otherwise we will open all the files at the same time and
     // hit the MFILE error (when we hit rlimit)
     await runWithConcurrentLimit(
@@ -39,5 +39,6 @@ export async function run(rawOptions: RawOptions) {
         (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider),
         options.progress
     );
+
     return getResult();
 }
