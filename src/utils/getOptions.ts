@@ -29,6 +29,6 @@ export function setOptions(rawOptions: RawOptions) {
         ignoreExternalFences: rawOptions.ignoreExternalFences,
         looseRootFileDiscovery: rawOptions.looseRootFileDiscovery || false,
         maxConcurrentFenceJobs: rawOptions.maxConcurrentJobs || 6000,
-        progress: rawOptions.progress || false,
+        progress: rawOptions.progressBar || false,
     };
 }
