@@ -24,16 +24,12 @@ export async function runWithConcurrentLimit<I>(
     const queueNext = (): Promise<void> | void => {
         const next = i.shift();
         completedJobs += 1;
-        if (progressBar) {
-            progressBar.update(completedJobs);
-        }
+        progressBar?.update(completedJobs);
         if (next) {
             return cb(next).then(queueNext);
         }
     };
     await Promise.all(initialWorkingSet.map(i => cb(i).then(queueNext)));
 
-    if (progressBar) {
-        progressBar.stop();
-    }
+    progressBar?.stop();
 }
