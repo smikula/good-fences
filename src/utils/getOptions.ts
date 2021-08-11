@@ -33,7 +33,6 @@ export function setOptions(rawOptions: RawOptions) {
         ignoreExternalFences: rawOptions.ignoreExternalFences,
         partialCheckLimit: rawOptions?.partialCheckLimit,
         sinceGitHash: rawOptions.sinceGitHash,
-        looseRootFileDiscovery: rawOptions.looseRootFileDiscovery || false,
         maxConcurrentFenceJobs: rawOptions.maxConcurrentJobs || 6000,
         progress: rawOptions.progressBar || false,
     };

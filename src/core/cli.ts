@@ -12,14 +12,6 @@ async function main() {
         .option('-p, --project <string> ', 'tsconfig.json file')
         .option('-r, --rootDir <string...>', 'root directories of the project')
         .option(
-            '-x, --looseRootFileDiscovery',
-            '(UNSTABLE) Check source files under rootDirs instead of instantiating a full typescript program.'
-        )
-        .option(
-            '-i, --ignoreExternalFences',
-            'Whether to ignore external fences (e.g. those from node_modules)'
-        )
-        .option(
             '-g, --sinceGitHash <string>',
             'Infer files and fences to check based on changes since the specified git hash'
         )
