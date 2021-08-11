@@ -15,7 +15,7 @@ import { createMatchPathAsync, MatchPathAsync } from 'tsconfig-paths';
  * TODO: Should this be settable in options / from the CLI when using FdirSourceFileProvider?
  * Or possibly parsed out of the tsconfig.json?
  */
-const ALLOWED_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '', '.json'];
+const ALLOWED_EXTENSIONS = ['.d.ts', '.d.tsx', '.ts', '.tsx', '.js', '.jsx', '.json'];
 
 export class FDirSourceFileProvider implements SourceFileProvider {
     parsedCommandLine: ts.ParsedCommandLine;
@@ -63,12 +63,10 @@ export class FDirSourceFileProvider implements SourceFileProvider {
                     new fdir()
                         .glob(
                             this.parsedCommandLine.options.allowJs
-                                ? `**/!(.d)*@(.js|.ts${
+                                ? `**/*@(.js|.ts${
                                       this.parsedCommandLine.options.jsx ? '|.jsx|.tsx' : ''
                                   })`
-                                : `**/*!(.d)*.ts${
-                                      this.parsedCommandLine.options.jsx ? '|.tsx' : ''
-                                  }`
+                                : `**/**@(.ts${this.parsedCommandLine.options.jsx ? '|.tsx' : ''})`
                         )
                         .withFullPaths()
                         .crawl(rootDir)
@@ -90,10 +88,28 @@ export class FDirSourceFileProvider implements SourceFileProvider {
     ): Promise<string | undefined> {
         if (importSpecifier.startsWith('.')) {
             // resolve relative and check extensions
-            return await checkExtensions(
+            const directImportResult = await checkExtensions(
                 path.join(path.dirname(importer), importSpecifier),
-                ALLOWED_EXTENSIONS
+                [
+                    ...ALLOWED_EXTENSIONS,
+                    // Also check for no-exension to permit import specifiers that
+                    // already have an extension (e.g. require('foo.js'))
+                    '',
+                    // also check for directory index imports
+                    ...ALLOWED_EXTENSIONS.map(x => '/index' + x),
+                ]
             );
+
+            if (
+                directImportResult &&
+                ALLOWED_EXTENSIONS.some(extension => directImportResult.endsWith(extension))
+            ) {
+                // this is an allowed script file
+                return directImportResult;
+            } else {
+                // this is an asset file
+                return undefined;
+            }
         } else {
             // resolve with tsconfig-paths (use the paths map, then fall back to node-modules)
             return await new Promise((res, rej) =>
@@ -101,24 +117,34 @@ export class FDirSourceFileProvider implements SourceFileProvider {
                     importSpecifier,
                     undefined, // readJson
                     undefined, // fileExists
-                    ALLOWED_EXTENSIONS,
+                    [...ALLOWED_EXTENSIONS, ''],
                     async (err: Error, result: string) => {
                         if (err) {
                             rej(err);
                         } else if (!result) {
                             res(undefined);
                         } else {
-                            // tsconfig-paths returns a path without an extension, and if it resolved to
-                            // an index file, it returns the path to the directory of the index file.
-                            const withoutIndex = await checkExtensions(result, ALLOWED_EXTENSIONS);
-                            if (withoutIndex) {
-                                res(withoutIndex);
+                            if (
+                                isFile(result) &&
+                                ALLOWED_EXTENSIONS.some(extension => result.endsWith(extension))
+                            ) {
+                                // this is an exact require of a known script extension, resolve
+                                // it up front
+                                res(result);
                             } else {
-                                // fallback -- check if tsconfig-paths resolved to a
-                                // folder index file
-                                res(
-                                    checkExtensions(path.join(result, 'index'), ALLOWED_EXTENSIONS)
-                                );
+                                // tsconfig-paths returns a path without an extension.
+                                // if it resolved to an index file, it returns the path to
+                                // the directory of the index file.
+                                if (await isDirectory(result)) {
+                                    res(
+                                        checkExtensions(
+                                            path.join(result, 'index'),
+                                            ALLOWED_EXTENSIONS
+                                        )
+                                    );
+                                } else {
+                                    res(checkExtensions(result, ALLOWED_EXTENSIONS));
+                                }
                             }
                         }
                     }
@@ -128,20 +154,40 @@ export class FDirSourceFileProvider implements SourceFileProvider {
     }
 }
 
+async function isFile(filePath: string): Promise<boolean> {
+    try {
+        // stat will throw if the file does not exist
+        const statRes = await stat(filePath);
+        if (statRes.isFile()) {
+            return true;
+        }
+    } catch {
+        // file does not exist
+        return false;
+    }
+}
+
+async function isDirectory(filePath: string): Promise<boolean> {
+    try {
+        // stat will throw if the file does not exist
+        const statRes = await stat(filePath);
+        if (statRes.isDirectory()) {
+            return true;
+        }
+    } catch {
+        // file does not exist
+        return false;
+    }
+}
+
 async function checkExtensions(
     filePathNoExt: string,
     extensions: string[]
 ): Promise<string | undefined> {
     for (let ext of extensions) {
         const joinedPath = filePathNoExt + ext;
-        try {
-            // stat will throw if the file does no~t exist
-            const statRes = await stat(joinedPath);
-            if (statRes.isFile()) {
-                return joinedPath;
-            }
-        } catch {
-            // file does not exist, smother the ENOENT
+        if (await isFile(joinedPath)) {
+            return joinedPath;
         }
     }
     return undefined;
