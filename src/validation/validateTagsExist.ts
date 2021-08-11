@@ -1,9 +1,9 @@
 import Config from '../types/config/Config';
-import getAllConfigs from '../utils/getAllConfigs';
+import getConfigManager from '../utils/getConfigManager';
 import { reportWarning } from '../core/result';
 
 export function validateTagsExist() {
-    const allConfigs = getAllConfigs();
+    const allConfigs = getConfigManager().getAllConfigs();
     const allTags = new Set<string>();
 
     // Accumulate all tags that are defined
