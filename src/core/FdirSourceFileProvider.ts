@@ -8,14 +8,7 @@ import * as path from 'path';
 const readFile = promisify(fs.readFile);
 const stat = promisify(fs.stat);
 import { createMatchPathAsync, MatchPathAsync } from 'tsconfig-paths';
-
-/**
- * Extensions to check for when resolving with tsconfig-paths or from relative requires
- *
- * TODO: Should this be settable in options / from the CLI when using FdirSourceFileProvider?
- * Or possibly parsed out of the tsconfig.json?
- */
-const ALLOWED_EXTENSIONS = ['.d.ts', '.d.tsx', '.ts', '.tsx', '.js', '.jsx', '.json'];
+import { getScriptFileExtensions } from '../utils/getScriptFileExtensions';
 
 export class FDirSourceFileProvider implements SourceFileProvider {
     parsedCommandLine: ts.ParsedCommandLine;
@@ -91,18 +84,18 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             const directImportResult = await checkExtensions(
                 path.join(path.dirname(importer), importSpecifier),
                 [
-                    ...ALLOWED_EXTENSIONS,
+                    ...getScriptFileExtensions(),
                     // Also check for no-exension to permit import specifiers that
                     // already have an extension (e.g. require('foo.js'))
                     '',
                     // also check for directory index imports
-                    ...ALLOWED_EXTENSIONS.map(x => '/index' + x),
+                    ...getScriptFileExtensions().map(x => '/index' + x),
                 ]
             );
 
             if (
                 directImportResult &&
-                ALLOWED_EXTENSIONS.some(extension => directImportResult.endsWith(extension))
+                getScriptFileExtensions().some(extension => directImportResult.endsWith(extension))
             ) {
                 // this is an allowed script file
                 return directImportResult;
@@ -117,7 +110,7 @@ export class FDirSourceFileProvider implements SourceFileProvider {
                     importSpecifier,
                     undefined, // readJson
                     undefined, // fileExists
-                    [...ALLOWED_EXTENSIONS, ''],
+                    [...getScriptFileExtensions(), ''],
                     async (err: Error, result: string) => {
                         if (err) {
                             rej(err);
@@ -126,7 +119,9 @@ export class FDirSourceFileProvider implements SourceFileProvider {
                         } else {
                             if (
                                 isFile(result) &&
-                                ALLOWED_EXTENSIONS.some(extension => result.endsWith(extension))
+                                getScriptFileExtensions().some(extension =>
+                                    result.endsWith(extension)
+                                )
                             ) {
                                 // this is an exact require of a known script extension, resolve
                                 // it up front
@@ -139,11 +134,11 @@ export class FDirSourceFileProvider implements SourceFileProvider {
                                     res(
                                         checkExtensions(
                                             path.join(result, 'index'),
-                                            ALLOWED_EXTENSIONS
+                                            getScriptFileExtensions()
                                         )
                                     );
                                 } else {
-                                    res(checkExtensions(result, ALLOWED_EXTENSIONS));
+                                    res(checkExtensions(result, getScriptFileExtensions()));
                                 }
                             }
                         }
