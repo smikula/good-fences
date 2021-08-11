@@ -1,5 +1,5 @@
 import * as result from '../../src/core/result';
-import * as getAllConfigs from '../../src/utils/getAllConfigs';
+import * as getConfigManager from '../../src/utils/getConfigManager';
 import ConfigSet from '../../src/types/ConfigSet';
 import { validateTagsExist } from '../../src/validation/validateTagsExist';
 
@@ -8,7 +8,9 @@ describe('validateTagsExist', () => {
 
     beforeEach(() => {
         spyOn(result, 'reportWarning');
-        spyOn(getAllConfigs, 'default').and.callFake(() => allConfigs);
+        spyOn(getConfigManager, 'default').and.callFake(() => ({
+            getAllConfigs: () => allConfigs,
+        }));
     });
 
     it('passes for an empty config', () => {
