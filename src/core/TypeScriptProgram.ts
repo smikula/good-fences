@@ -1,17 +1,18 @@
-import * as path from 'path';
 import * as ts from 'typescript';
+import * as path from 'path';
 import NormalizedPath from '../types/NormalizedPath';
+import { SourceFileProvider } from './SourceFileProvider';
 
 // Helper class for interacting with TypeScript
-export default class TypeScriptProgram {
+export default class TypeScriptProgram implements SourceFileProvider {
     private compilerOptions: ts.CompilerOptions;
     private compilerHost: ts.CompilerHost;
     private program: ts.Program;
 
     constructor(configFile: NormalizedPath) {
         // Parse the config file
-        const projectPath = path.dirname(configFile);
         const config = readConfigFile(configFile);
+        const projectPath = path.dirname(configFile);
         const parsedConfig = ts.parseJsonConfigFileContent(config, ts.sys, projectPath);
         this.compilerOptions = parsedConfig.options;
 
@@ -35,11 +36,11 @@ export default class TypeScriptProgram {
     // Get all imports from a given file
     getImportsForFile(fileName: NormalizedPath) {
         let fileInfo = ts.preProcessFile(ts.sys.readFile(fileName), true, true);
-        return fileInfo.importedFiles;
+        return fileInfo.importedFiles.map(importedFile => importedFile.fileName);
     }
 
     // Resolve an imported module
-    resolveImportFromFile(moduleName: string, containingFile: NormalizedPath) {
+    resolveImportFromFile(containingFile: NormalizedPath, moduleName: string) {
         const resolvedFile = ts.resolveModuleName(
             moduleName,
             containingFile.replace(/\\/g, '/'), // TypeScript doesn't like backslashes here

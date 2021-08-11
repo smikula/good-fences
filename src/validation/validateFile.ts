@@ -1,12 +1,16 @@
 import NormalizedPath from '../types/NormalizedPath';
-import TypeScriptProgram from '../core/TypeScriptProgram';
 import validateExportRules from './validateExportRules';
 import getImportsFromFile from '../utils/getImportsFromFile';
 import validateDependencyRules from './validateDependencyRules';
 import validateImportRules from './validateImportRules';
+import { SourceFileProvider } from '../core/SourceFileProvider';
 
-export default function validateFile(filePath: NormalizedPath, tsProgram: TypeScriptProgram) {
-    const imports = getImportsFromFile(filePath, tsProgram);
+export default async function validateFile(
+    filePath: NormalizedPath,
+    fileProvider: SourceFileProvider
+) {
+    const imports = await getImportsFromFile(filePath, fileProvider);
+
     for (let importRecord of imports) {
         validateExportRules(filePath, importRecord);
 
