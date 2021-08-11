@@ -3,12 +3,12 @@ import GoodFencesResult from '../../src/types/GoodFencesResult';
 import normalizePath from '../../src/utils/normalizePath';
 
 describe('runner', () => {
-    it('returns the expected results', () => {
+    it('returns the expected results', async () => {
         // Arrange
         const expectedResults = require('./endToEndTests.expected.json');
 
         // Act
-        const actualResults = run({
+        const actualResults = await run({
             rootDir: './sample',
         });
 
