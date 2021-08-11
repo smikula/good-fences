@@ -4,5 +4,5 @@ export default interface RawOptions {
     ignoreExternalFences?: boolean;
     looseRootFileDiscovery?: boolean;
     maxConcurrentJobs?: number;
-    progress?: boolean;
+    progressBar?: boolean;
 }
