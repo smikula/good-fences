@@ -82,14 +82,14 @@ export async function run(rawOptions: RawOptions) {
             partialCheck.fences.map((fencePath: NormalizedPath) => path.dirname(fencePath))
         );
 
-        const fenceJobs = [...partialCheck.sourceFiles, ...fenceScopeFiles];
+        const normalizedFiles = [...partialCheck.sourceFiles, ...fenceScopeFiles];
 
         // we have to limit the concurrent executed promises because
         // otherwise we will open all the files at the same time and
         // hit the MFILE error (when we hit rlimit)
         await runWithConcurrentLimit(
             options.maxConcurrentFenceJobs,
-            fenceJobs,
+            normalizedFiles,
             (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider),
             options.progress
         );
