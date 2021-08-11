@@ -3,6 +3,8 @@ export default interface RawOptions {
     rootDir?: string | string[];
     ignoreExternalFences?: boolean;
     looseRootFileDiscovery?: boolean;
+    sinceGitHash?: string;
+    partialCheckLimit?: number;
     maxConcurrentJobs?: number;
     progressBar?: boolean;
 }

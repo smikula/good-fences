@@ -20,6 +20,14 @@ async function main() {
             'Whether to ignore external fences (e.g. those from node_modules)'
         )
         .option(
+            '-g, --sinceGitHash <string>',
+            'Infer files and fences to check based on changes since the specified git hash'
+        )
+        .option(
+            '-l, --partialCheckLimit <number>',
+            'Maximum files to check during a partial check run. If more files than this limit are changed, the partial check will be aborted and good-fences will exit with code 0.'
+        )
+        .option(
             '-j, --maxConcurrentFenceJobs',
             'Maximum number of concurrent fence jobs to run. Default 6000'
         )

@@ -5,6 +5,8 @@ export default interface Options {
     rootDir: NormalizedPath[];
     ignoreExternalFences: boolean;
     looseRootFileDiscovery: boolean;
+    partialCheckLimit: number;
+    sinceGitHash?: string;
     // Maximum number of fence validation jobs that can
     // be run at the same time.
     //
