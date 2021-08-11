@@ -9,7 +9,7 @@ describe('validateTagsExist', () => {
     beforeEach(() => {
         spyOn(result, 'reportWarning');
         spyOn(getConfigManager, 'default').and.callFake(() => ({
-            all: allConfigs,
+            getAllConfigs: () => allConfigs,
         }));
     });
 

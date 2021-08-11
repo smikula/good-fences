@@ -3,7 +3,7 @@ import getConfigManager from '../utils/getConfigManager';
 import { reportWarning } from '../core/result';
 
 export function validateTagsExist() {
-    const allConfigs = getConfigManager().all;
+    const allConfigs = getConfigManager().getAllConfigs();
     const allTags = new Set<string>();
 
     // Accumulate all tags that are defined

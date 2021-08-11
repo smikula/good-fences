@@ -10,10 +10,7 @@ import ExportRule from '../types/config/ExportRule';
 import validateRawConfig from '../validation/validateRawConfig';
 import NormalizedPath from '../types/NormalizedPath';
 
-export function loadConfigFromString(
-    configPath: NormalizedPath,
-    fileContent: string
-): Config | null {
+function loadConfigFromString(configPath: NormalizedPath, fileContent: string): Config | null {
     // Load the raw config
     let rawConfig: RawConfig = JSON.parse(fileContent);
 
