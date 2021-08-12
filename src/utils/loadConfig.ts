@@ -9,6 +9,7 @@ import ConfigSet from '../types/ConfigSet';
 import ExportRule from '../types/config/ExportRule';
 import validateRawConfig from '../validation/validateRawConfig';
 import NormalizedPath from '../types/NormalizedPath';
+import DependencyRule from '../types/config/DependencyRule';
 
 export function loadConfigFromString(
     configPath: NormalizedPath,
@@ -44,7 +45,7 @@ export default function loadConfig(file: string, configSet: ConfigSet) {
     }
 }
 
-function normalizeDependencyRules(rules: RawDependencyRule[]) {
+function normalizeDependencyRules(rules: RawDependencyRule[]): DependencyRule[] | null {
     if (!rules) {
         return null;
     }
@@ -62,7 +63,7 @@ function normalizeDependencyRules(rules: RawDependencyRule[]) {
     });
 }
 
-export function normalizeExportRules(rules: RawExportRule[]): ExportRule[] {
+export function normalizeExportRules(rules: RawExportRule[]): ExportRule[] | null {
     if (!rules) {
         return null;
     }

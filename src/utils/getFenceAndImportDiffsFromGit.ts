@@ -1,14 +1,13 @@
 import * as Git from 'nodegit';
-import ExportRule from '../types/config/ExportRule';
 import { loadConfigFromString } from './loadConfig';
 import Config from '../types/config/Config';
 import normalizePath from './normalizePath';
 import * as ts from 'typescript';
 import { isImportDeclaration, ScriptTarget, SourceFile } from 'typescript';
 import NormalizedPath from '../types/NormalizedPath';
-import DependencyRule from '../types/config/DependencyRule';
 import { reportWarning } from '../core/result';
 import { getScriptFileExtensions } from './getScriptFileExtensions';
+import { FenceDiff, getFenceDiff } from './getFenceDiff';
 
 /**
  * Creates an empty fence given a path.
@@ -18,9 +17,9 @@ import { getScriptFileExtensions } from './getScriptFileExtensions';
 function emptyFence(path: NormalizedPath): Config {
     return {
         tags: [],
-        imports: [],
-        exports: [],
-        dependencies: [],
+        imports: null,
+        exports: null,
+        dependencies: null,
         path: path,
     };
 }
@@ -66,15 +65,6 @@ async function getFenceAndSourcePatches(diffSinceHash: Git.Diff) {
     return [fencePatches, sourcePatches];
 }
 
-export type FenceDiff = {
-    addedExports: ExportRule[];
-    addedImports: string[];
-    removedExports: ExportRule[];
-    removedImports: string[];
-    addedDependencies: DependencyRule[];
-    removedDependencies: DependencyRule[];
-};
-
 export type SourceImportDiff = {
     addedImports: string[];
     removedImports: string[];
@@ -84,77 +74,6 @@ export type FenceAndImportDiffs = {
     fenceDiffs: Map<NormalizedPath, FenceDiff>;
     sourceImportDiffs: Map<NormalizedPath, SourceImportDiff>;
 };
-
-const isSameExport = (exportA: ExportRule, exportB: ExportRule) => {
-    return exportA.accessibleTo === exportB.accessibleTo && exportA.modules === exportB.modules;
-};
-
-const isSameDependencyRule = (dependencyA: DependencyRule, dependencyB: DependencyRule) => {
-    return (
-        dependencyA.accessibleTo === dependencyB.accessibleTo &&
-        dependencyA.dependency === dependencyB.dependency
-    );
-};
-
-function getFenceDiff(oldFence: Config, newFence: Config): FenceDiff | null {
-    let diff: FenceDiff = {
-        addedExports: [],
-        removedExports: [],
-        addedImports: [],
-        removedImports: [],
-        addedDependencies: [],
-        removedDependencies: [],
-    };
-    let isDirty = false;
-    for (let oldFenceExport of oldFence.exports || []) {
-        if (
-            !(newFence.exports || []).some(newFenceExport =>
-                isSameExport(oldFenceExport, newFenceExport)
-            )
-        ) {
-            isDirty = true;
-            diff.removedExports.push(oldFenceExport);
-        }
-    }
-    for (let newFenceExport of newFence.exports || []) {
-        if (
-            !(oldFence.exports || []).some(oldFenceExport =>
-                isSameExport(oldFenceExport, newFenceExport)
-            )
-        ) {
-            isDirty = true;
-            diff.addedExports.push(newFenceExport);
-        }
-    }
-
-    for (let oldFenceImport of oldFence.imports || []) {
-        if (!(newFence.imports || []).some(i => i == oldFenceImport)) {
-            isDirty = true;
-            diff.removedImports.push(oldFenceImport);
-        }
-    }
-    for (let newFenceImport of newFence.imports || []) {
-        if (!(oldFence.imports || []).some(i => i == newFenceImport)) {
-            isDirty = true;
-            diff.addedImports.push(newFenceImport);
-        }
-    }
-
-    for (let oldFenceDependency of oldFence.dependencies || []) {
-        if (!(newFence.dependencies || []).some(i => isSameDependencyRule(i, oldFenceDependency))) {
-            isDirty = true;
-            diff.removedDependencies.push(oldFenceDependency);
-        }
-    }
-    for (let newFenceDependency of newFence.dependencies || []) {
-        if (!(oldFence.dependencies || []).some(i => isSameDependencyRule(i, newFenceDependency))) {
-            isDirty = true;
-            diff.addedDependencies.push(newFenceDependency);
-        }
-    }
-
-    return isDirty ? diff : null;
-}
 
 function getTsImportSet(fileName: string, tsSource: string): Set<string> {
     const sourceFile: SourceFile = ts.createSourceFile(

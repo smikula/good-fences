@@ -4,8 +4,8 @@ import ExportRule from './ExportRule';
 
 export default interface Config {
     path: NormalizedPath;
-    tags: string[];
-    exports: ExportRule[];
-    dependencies: DependencyRule[];
-    imports: string[];
+    tags: string[] | null;
+    exports: ExportRule[] | null;
+    dependencies: DependencyRule[] | null;
+    imports: string[] | null;
 }
