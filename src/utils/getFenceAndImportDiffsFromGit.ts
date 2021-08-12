@@ -2,12 +2,11 @@ import * as Git from 'nodegit';
 import { loadConfigFromString } from './loadConfig';
 import Config from '../types/config/Config';
 import normalizePath from './normalizePath';
-import * as ts from 'typescript';
-import { isImportDeclaration, ScriptTarget, SourceFile } from 'typescript';
 import NormalizedPath from '../types/NormalizedPath';
 import { reportWarning } from '../core/result';
 import { getScriptFileExtensions } from './getScriptFileExtensions';
 import { FenceDiff, getFenceDiff } from './getFenceDiff';
+import { getTsImportSetFromSourceString } from './getTsImportSetFromSourceString';
 
 /**
  * Creates an empty fence given a path.
@@ -74,27 +73,6 @@ export type FenceAndImportDiffs = {
     fenceDiffs: Map<NormalizedPath, FenceDiff>;
     sourceImportDiffs: Map<NormalizedPath, SourceImportDiff>;
 };
-
-function getTsImportSet(fileName: string, tsSource: string): Set<string> {
-    const sourceFile: SourceFile = ts.createSourceFile(
-        fileName,
-        tsSource,
-        ScriptTarget.Latest // langugeVersion
-    );
-
-    const importSet = new Set<string>();
-
-    sourceFile.forEachChild(c => {
-        if (isImportDeclaration(c)) {
-            if (!ts.isStringLiteral(c.moduleSpecifier)) {
-                throw new Error('encountered dynamic import? ' + c.moduleSpecifier.getFullText());
-            }
-            importSet.add(c.moduleSpecifier.text);
-        }
-    });
-
-    return importSet;
-}
 
 /**
  * Given a git OID (commit hash) or ref name (refs/heads/master, HEAD~1),
@@ -214,14 +192,18 @@ export async function getFenceAndImportDiffsFromGit(
                 ? (async () => {
                       const indexEntry = await index.getByPath(newPath);
                       const newSourceBlob = await repo.getBlob(indexEntry.id);
-                      return getTsImportSet(newPath, newSourceBlob.content().toString('utf-8'));
+                      return getTsImportSetFromSourceString(
+                          newSourceBlob.content().toString('utf-8')
+                      );
                   })()
                 : new Set();
             const oldSourceImportsPromise: Promise<Set<string>> | Set<string> = oldPath
                 ? (async () => {
                       const oldSourceEntry = await compareTree.getEntry(oldPath);
                       const oldSourceBlob = await oldSourceEntry.getBlob();
-                      return getTsImportSet(oldPath, oldSourceBlob.content().toString('utf-8'));
+                      return getTsImportSetFromSourceString(
+                          oldSourceBlob.content().toString('utf-8')
+                      );
                   })()
                 : new Set();
 
