@@ -57,8 +57,7 @@ export function getPartialCheckFromImportDiffs(
             fenceDiff.imports.added !== null;
         const fenceHadImportsRemoved = fenceDiff.imports?.removed?.length;
         if (fenceHadImportsRemoved || fenceHadImportsSectionAdded) {
-            // add this to the fence set: this will force us to check all source files
-            // in the scope of the fence.
+            // Forces a check on all fence children
             fences.add(normalizedFencePath);
         }
 
@@ -68,8 +67,13 @@ export function getPartialCheckFromImportDiffs(
             fenceDiff.dependencies.removed === null &&
             fenceDiff.dependencies.added !== null;
         if (fenceHadDependenciesRemoved || fenceHadDependenciesSectionAdded) {
-            // add this to the fence set: this will force us to check all source files
-            // in the scope of the fence.
+            // Forces a check on all fence children
+            fences.add(normalizedFencePath);
+        }
+
+        const fenceHadTagsRemoved = fenceDiff.tags?.removed?.length;
+        if (fenceHadTagsRemoved) {
+            // Forces a check on all fence children
             fences.add(normalizedFencePath);
         }
     }

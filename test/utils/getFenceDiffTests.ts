@@ -155,7 +155,7 @@ describe('getFenceDiff', () => {
         });
     });
 
-    describe('when diffing two fences that have different imports, exports, and dependencies', () => {
+    describe('when diffing two fences that have different imports, exports, dependencies, and tags', () => {
         it('returns the diff of each list', () => {
             expect(
                 getFenceDiff(
@@ -167,7 +167,7 @@ describe('getFenceDiff', () => {
                                 accessibleTo: null,
                             },
                         ],
-                        tags: ['a', 'b'],
+                        tags: ['tag-a', 'tag-b'],
                         dependencies: null,
                         path: '/mock/path1' as NormalizedPath,
                     },
@@ -179,7 +179,7 @@ describe('getFenceDiff', () => {
                                 accessibleTo: null,
                             },
                         ],
-                        tags: ['a', 'b'],
+                        tags: ['tag-b'],
                         dependencies: [
                             {
                                 dependency: 'react-router',
@@ -190,6 +190,7 @@ describe('getFenceDiff', () => {
                     }
                 )
             ).toEqual({
+                tags: { removed: ['tag-a'], added: [] },
                 imports: { added: ['b'], removed: [] },
                 dependencies: {
                     added: [{ accessibleTo: 'src/router/*', dependency: 'react-router' }],

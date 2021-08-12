@@ -21,6 +21,7 @@ function testGraphDiff({
             ] => [
                 fencePath as NormalizedPath,
                 {
+                    tags: null,
                     imports: null,
                     exports: null,
                     dependencies: null,
@@ -120,7 +121,7 @@ describe('getPartialCheckFromImportDiffs', () => {
                                 added: [
                                     {
                                         dependency: 'react-dom',
-                                        accessibleTo: 'src/react/domEntrypoint.ts',
+                                        accessibleTo: 'ui-mount-tag',
                                     },
                                 ],
                                 removed: [],
@@ -142,7 +143,7 @@ describe('getPartialCheckFromImportDiffs', () => {
                                 removed: [
                                     {
                                         dependency: 'react-dom',
-                                        accessibleTo: 'src/react/domEntrypoint.ts',
+                                        accessibleTo: 'ui-mount-tag',
                                     },
                                 ],
                             },
@@ -254,10 +255,39 @@ describe('getPartialCheckFromImportDiffs', () => {
         });
 
         describe('when tags are added', () => {
-            it.todo('performs no additional checks');
+            it('performs no additional checks', () => {
+                const graphDiff = testGraphDiff({
+                    fenceDiffs: {
+                        '/path/to/fence': {
+                            tags: {
+                                added: ['some-tag'],
+                                removed: [],
+                            },
+                        },
+                    },
+                });
+
+                const partialCheck = getPartialCheckFromImportDiffs(graphDiff);
+                expect(partialCheck).toEqual({ fences: [], sourceFiles: [] });
+            });
         });
+
         describe('when tags are removed', () => {
-            it.todo("re-checks the fence's children");
+            it("re-checks the fence's children", () => {
+                const graphDiff = testGraphDiff({
+                    fenceDiffs: {
+                        '/path/to/fence': {
+                            tags: {
+                                added: [],
+                                removed: ['some-tag'],
+                            },
+                        },
+                    },
+                });
+
+                const partialCheck = getPartialCheckFromImportDiffs(graphDiff);
+                expect(partialCheck).toEqual({ fences: ['/path/to/fence'], sourceFiles: [] });
+            });
         });
     });
 

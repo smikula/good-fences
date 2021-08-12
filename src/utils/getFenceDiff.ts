@@ -14,18 +14,10 @@ const isSameDependencyRule = (dependencyA: DependencyRule, dependencyB: Dependen
 };
 
 export type FenceDiff = {
-    exports: {
-        added: ExportRule[] | null;
-        removed: ExportRule[] | null;
-    } | null;
-    imports: {
-        added: string[] | null;
-        removed: string[] | null;
-    } | null;
-    dependencies: {
-        added: DependencyRule[] | null;
-        removed: DependencyRule[] | null;
-    } | null;
+    tags: DiffList<string> | null;
+    exports: DiffList<ExportRule> | null;
+    imports: DiffList<string> | null;
+    dependencies: DiffList<DependencyRule> | null;
 };
 
 type DiffList<T> = {
@@ -76,6 +68,7 @@ export function diffList<T>(
 
 export function getFenceDiff(oldFence: Config, newFence: Config): FenceDiff | null {
     let diff: FenceDiff = {
+        tags: diffList(oldFence.tags, newFence.tags, (a: string, b: string) => a === b),
         exports: diffList(oldFence.exports, newFence.exports, isSameExport),
         imports: diffList(oldFence.imports, newFence.imports, (a: string, b: string) => a === b),
         dependencies: diffList(oldFence.dependencies, newFence.dependencies, isSameDependencyRule),
