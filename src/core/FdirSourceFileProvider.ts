@@ -1,7 +1,6 @@
 import { SourceFileProvider } from './SourceFileProvider';
 import { fdir } from 'fdir';
 import NormalizedPath from '../types/NormalizedPath';
-import * as ts from 'typescript';
 import { promisify } from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -9,10 +8,18 @@ const readFile = promisify(fs.readFile);
 const stat = promisify(fs.stat);
 import { createMatchPathAsync, MatchPathAsync } from 'tsconfig-paths';
 import { getScriptFileExtensions } from '../utils/getScriptFileExtensions';
+import {
+    getParsedCommandLineOfConfigFile,
+    JsxEmit,
+    ParsedCommandLine,
+    preProcessFile,
+} from 'typescript';
 
 export class FDirSourceFileProvider implements SourceFileProvider {
-    parsedCommandLine: ts.ParsedCommandLine;
+    parsedCommandLine: ParsedCommandLine;
     matchPath: MatchPathAsync;
+    private sourceFileGlob: string;
+    private extensionsToCheckDuringImportResolution: string[];
 
     constructor(configFileName: NormalizedPath, private rootDirs: string[]) {
         // Load the full config file, relying on typescript to recursively walk the "extends" fields,
@@ -20,7 +27,7 @@ export class FDirSourceFileProvider implements SourceFileProvider {
         //
         // We do this because we need to access the parsed compilerOptions, but do not care about
         // the full file list.
-        this.parsedCommandLine = ts.getParsedCommandLineOfConfigFile(
+        this.parsedCommandLine = getParsedCommandLineOfConfigFile(
             configFileName,
             {}, // optionsToExtend
             {
@@ -43,6 +50,33 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             }
         );
 
+        this.sourceFileGlob = `**/*@(${getScriptFileExtensions({
+            // Derive these settings from the typescript project itself
+            allowJs: this.parsedCommandLine.options.allowJs || false,
+            jsx: this.parsedCommandLine.options.jsx !== JsxEmit.None,
+            // Since we're trying to find script files that can have imports,
+            // we explicitly exclude json modules
+            includeJson: false,
+            // since definition files are '.d.ts', the extra
+            // definition extensions here are covered by the glob '*.ts' from
+            // the above settings.
+            //
+            // Here as an optimization we avoid adding these definition files while
+            // globbing
+            includeDefinitions: false,
+        }).join('|')})`;
+
+        // Script extensions to check when looking for imports.
+        this.extensionsToCheckDuringImportResolution = getScriptFileExtensions({
+            // Derive these settings from the typescript project itself
+            allowJs: this.parsedCommandLine.options.allowJs || false,
+            jsx: this.parsedCommandLine.options.jsx !== JsxEmit.None,
+            includeJson: this.parsedCommandLine.options.resolveJsonModule,
+            // When scanning for imports, we always consider importing
+            // definition files.
+            includeDefinitions: true,
+        });
+
         this.matchPath = createMatchPathAsync(
             this.parsedCommandLine.options.baseUrl,
             this.parsedCommandLine.options.paths
@@ -54,13 +88,7 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             (searchRoots || this.rootDirs).map(
                 (rootDir: string) =>
                     new fdir()
-                        .glob(
-                            this.parsedCommandLine.options.allowJs
-                                ? `**/*@(.js|.ts${
-                                      this.parsedCommandLine.options.jsx ? '|.jsx|.tsx' : ''
-                                  })`
-                                : `**/**@(.ts${this.parsedCommandLine.options.jsx ? '|.tsx' : ''})`
-                        )
+                        .glob(this.sourceFileGlob)
                         .withFullPaths()
                         .crawl(rootDir)
                         .withPromise() as Promise<string[]>
@@ -71,7 +99,7 @@ export class FDirSourceFileProvider implements SourceFileProvider {
     }
 
     async getImportsForFile(filePath: string): Promise<string[]> {
-        const fileInfo = ts.preProcessFile(await readFile(filePath, 'utf-8'), true, true);
+        const fileInfo = preProcessFile(await readFile(filePath, 'utf-8'), true, true);
         return fileInfo.importedFiles.map(importedFile => importedFile.fileName);
     }
 
@@ -84,18 +112,20 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             const directImportResult = await checkExtensions(
                 path.join(path.dirname(importer), importSpecifier),
                 [
-                    ...getScriptFileExtensions(),
+                    ...this.extensionsToCheckDuringImportResolution,
                     // Also check for no-exension to permit import specifiers that
                     // already have an extension (e.g. require('foo.js'))
                     '',
                     // also check for directory index imports
-                    ...getScriptFileExtensions().map(x => '/index' + x),
+                    ...this.extensionsToCheckDuringImportResolution.map(x => '/index' + x),
                 ]
             );
 
             if (
                 directImportResult &&
-                getScriptFileExtensions().some(extension => directImportResult.endsWith(extension))
+                this.extensionsToCheckDuringImportResolution.some(extension =>
+                    directImportResult.endsWith(extension)
+                )
             ) {
                 // this is an allowed script file
                 return directImportResult;
@@ -105,40 +135,45 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             }
         } else {
             // resolve with tsconfig-paths (use the paths map, then fall back to node-modules)
-            return await new Promise((res, rej) =>
+            return await new Promise((resolve, reject) =>
                 this.matchPath(
                     importSpecifier,
                     undefined, // readJson
                     undefined, // fileExists
-                    [...getScriptFileExtensions(), ''],
+                    [...this.extensionsToCheckDuringImportResolution, ''],
                     async (err: Error, result: string) => {
                         if (err) {
-                            rej(err);
+                            reject(err);
                         } else if (!result) {
-                            res(undefined);
+                            resolve(undefined);
                         } else {
                             if (
                                 isFile(result) &&
-                                getScriptFileExtensions().some(extension =>
+                                this.extensionsToCheckDuringImportResolution.some(extension =>
                                     result.endsWith(extension)
                                 )
                             ) {
                                 // this is an exact require of a known script extension, resolve
                                 // it up front
-                                res(result);
+                                resolve(result);
                             } else {
                                 // tsconfig-paths returns a path without an extension.
                                 // if it resolved to an index file, it returns the path to
                                 // the directory of the index file.
                                 if (await isDirectory(result)) {
-                                    res(
+                                    resolve(
                                         checkExtensions(
                                             path.join(result, 'index'),
-                                            getScriptFileExtensions()
+                                            this.extensionsToCheckDuringImportResolution
                                         )
                                     );
                                 } else {
-                                    res(checkExtensions(result, getScriptFileExtensions()));
+                                    resolve(
+                                        checkExtensions(
+                                            result,
+                                            this.extensionsToCheckDuringImportResolution
+                                        )
+                                    );
                                 }
                             }
                         }
