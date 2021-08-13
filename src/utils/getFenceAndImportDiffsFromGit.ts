@@ -41,7 +41,7 @@ async function resolveToCommit(
  * into diffs between fences or script files. Ignores any paths
  * that are neither fences nor script files
  */
-async function getFenceAndSourcePatches(diffSinceHash: Git.Diff) {
+async function getFenceAndSourcePatches(diffSinceHash: Git.Diff, extensions: string[]) {
     const patches = await diffSinceHash.patches();
     const fencePatches = [];
     const sourcePatches = [];
@@ -51,7 +51,7 @@ async function getFenceAndSourcePatches(diffSinceHash: Git.Diff) {
         if (oldFile.path().endsWith('fence.json') || newFile.path().endsWith('fence.json')) {
             fencePatches.push(patch);
         } else if (
-            getScriptFileExtensions().some(
+            extensions.some(
                 scriptFileExtension =>
                     oldFile.path().endsWith(scriptFileExtension) ||
                     newFile.path().endsWith(scriptFileExtension)
@@ -97,18 +97,34 @@ export async function getFenceAndImportDiffsFromGit(
     const indexToHead = await Git.Diff.treeToIndex(repo, headCommitTree, index);
     const indexIsEmpty = indexToHead.patches.length === 0;
 
+    // Permit all extensions in the extension set. If we are
+    // overly-permissive here, the script files we detect for
+    // checking should be filtered out while providing source
+    // files.
+    const mostPermissiveExtensionSet = getScriptFileExtensions({
+        includeJson: true,
+        jsx: true,
+        allowJs: true,
+        // This is used as a glob of for *${dotExt}, so .d.ts files
+        // will be included in by the *.ts glob. Likewise for .d.tsx
+        includeDefinitions: false,
+    });
+
     if (!indexIsEmpty) {
         repoDiff = await Git.Diff.treeToIndex(repo, compareTree, index, {
             contextLines: 0,
-            pathspec: getScriptFileExtensions().map(dotExt => '*' + dotExt),
+            pathspec: mostPermissiveExtensionSet.map(dotExt => '*' + dotExt),
         });
     } else {
         repoDiff = await Git.Diff.treeToTree(repo, compareTree, headCommitTree, {
             contextLines: 0,
-            pathspec: getScriptFileExtensions().map(dotExt => '*' + dotExt),
+            pathspec: mostPermissiveExtensionSet.map(dotExt => '*' + dotExt),
         });
     }
-    const [fencePatches, sourcePatches] = await getFenceAndSourcePatches(repoDiff);
+    const [fencePatches, sourcePatches] = await getFenceAndSourcePatches(
+        repoDiff,
+        mostPermissiveExtensionSet
+    );
 
     // TODO: track files across moves (Should just be a fence removal and addition)
     for (let patch of [...fencePatches, ...sourcePatches]) {
