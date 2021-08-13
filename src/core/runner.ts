@@ -6,6 +6,7 @@ import normalizePath from '../utils/normalizePath';
 import { getResult } from './result';
 import { validateTagsExist } from '../validation/validateTagsExist';
 import { SourceFileProvider } from './SourceFileProvider';
+import { FDirSourceFileProvider } from './FdirSourceFileProvider';
 import NormalizedPath from '../types/NormalizedPath';
 import { runWithConcurrentLimit } from '../utils/runWithConcurrentLimit';
 
@@ -23,7 +24,9 @@ export async function run(rawOptions: RawOptions) {
     setOptions(rawOptions);
     let options = getOptions();
 
-    let sourceFileProvider: SourceFileProvider = new TypeScriptProgram(options.project);
+    let sourceFileProvider: SourceFileProvider = options.looseRootFileDiscovery
+        ? new FDirSourceFileProvider(options.project, options.rootDir)
+        : new TypeScriptProgram(options.project);
 
     // Do some sanity checks on the fences
     validateTagsExist();

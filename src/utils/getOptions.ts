@@ -27,6 +27,7 @@ export function setOptions(rawOptions: RawOptions) {
         project,
         rootDir,
         ignoreExternalFences: rawOptions.ignoreExternalFences,
+        looseRootFileDiscovery: rawOptions.looseRootFileDiscovery || false,
         maxConcurrentFenceJobs: rawOptions.maxConcurrentJobs || 6000,
         progress: rawOptions.progressBar || false,
     };
