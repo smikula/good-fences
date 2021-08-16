@@ -6,6 +6,7 @@ import normalizePath from '../utils/normalizePath';
 import { getResult, reportWarning } from './result';
 import { validateTagsExist } from '../validation/validateTagsExist';
 import { SourceFileProvider } from './SourceFileProvider';
+import { FDirSourceFileProvider } from './FdirSourceFileProvider';
 import NormalizedPath from '../types/NormalizedPath';
 import { runWithConcurrentLimit } from '../utils/runWithConcurrentLimit';
 import getConfigManager from '../utils/getConfigManager';
@@ -57,7 +58,9 @@ export async function run(rawOptions: RawOptions) {
         }
     }
 
-    let sourceFileProvider: SourceFileProvider = new TypeScriptProgram(options.project);
+    let sourceFileProvider: SourceFileProvider = options.looseRootFileDiscovery
+        ? new FDirSourceFileProvider(options.project, options.rootDir)
+        : new TypeScriptProgram(options.project);
 
     if (!partialCheck) {
         // validating tags exist requires a full load of all fences

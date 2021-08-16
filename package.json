@@ -17,8 +17,11 @@
     "dependencies": {
         "cli-progress": "^3.9.0",
         "commander": "^7.2.0",
+        "fdir": "^5.1.0",
         "minimatch": "^3.0.4",
         "nodegit": "^0.27.0",
+        "picomatch": "^2.3.0",
+        "tsconfig-paths": "^3.10.1",
         "typescript": "^4.0.3"
     },
     "devDependencies": {

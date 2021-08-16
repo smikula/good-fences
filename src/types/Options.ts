@@ -6,6 +6,7 @@ export default interface Options {
     ignoreExternalFences: boolean;
     partialCheckLimit: number;
     sinceGitHash?: string;
+    looseRootFileDiscovery: boolean;
     // Maximum number of fence validation jobs that can
     // be run at the same time.
     //

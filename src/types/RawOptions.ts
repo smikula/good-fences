@@ -4,6 +4,7 @@ export default interface RawOptions {
     ignoreExternalFences?: boolean;
     sinceGitHash?: string;
     partialCheckLimit?: number;
+    looseRootFileDiscovery?: boolean;
     maxConcurrentJobs?: number;
     progressBar?: boolean;
 }
