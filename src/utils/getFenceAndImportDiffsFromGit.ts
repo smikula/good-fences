@@ -89,13 +89,13 @@ export async function getFenceAndImportDiffsFromGit(
     const repo = await Git.Repository.open(process.cwd());
     const [index, headCommitTree, compareTree] = await Promise.all([
         repo.index(),
-        repo.getHeadCommit().then(headCommit => headCommit.getTree()),
+        repo.getHeadCommit().then(headCommit => headCommit?.getTree?.()),
         resolveToCommit(repo, compareOidOrRefName).then(commit => commit.getTree()),
     ]);
 
     let repoDiff: Git.Diff;
-    const indexToHead = await Git.Diff.treeToIndex(repo, headCommitTree, index);
-    const indexIsEmpty = indexToHead.patches.length === 0;
+    const indexToHead = await Git.Diff.treeToIndex(repo, headCommitTree, null);
+    const indexIsEmpty = indexToHead.numDeltas() === 0;
 
     // Permit all extensions in the extension set. If we are
     // overly-permissive here, the script files we detect for
