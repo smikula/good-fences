@@ -54,9 +54,9 @@ export function reportConfigError(message: string, configPath: string) {
 
 export function reportWarning(message: string, configPath?: string) {
     let fencePath = configPath + path.sep + 'fence.json';
-    let detailedMessage = `Good-fences warning: ${message}\n`;
+    let detailedMessage = `Good-fences warning: ${message}`;
     if (configPath) {
-        detailedMessage += `    Fence: ${fencePath}`;
+        detailedMessage += `\n    Fence: ${fencePath}`;
     }
 
     const warning: GoodFencesError = {
