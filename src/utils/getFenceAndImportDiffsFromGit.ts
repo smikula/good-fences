@@ -129,9 +129,7 @@ export async function getFenceAndImportDiffsFromGit(
     // TODO: track files across moves (Should just be a fence removal and addition)
     for (let patch of [...fencePatches, ...sourcePatches]) {
         if (patch.oldFile().path() && patch.oldFile().path() !== patch.newFile().path()) {
-            reportWarning(
-                'Detected a moved fence or source file -- aborting partial check from git'
-            );
+            reportWarning('Detected a moved fence or source file. Aborting partial check from git');
             return null;
         }
     }

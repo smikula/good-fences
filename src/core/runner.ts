@@ -43,7 +43,7 @@ export async function run(rawOptions: RawOptions) {
     if (options.partialCheckLimit) {
         if (!partialCheck) {
             reportWarning(
-                `Skipping fence validation -- Could not calculate a partial check, but partialCheckLimit was specified in options`
+                `Skipping fence validation. Could not calculate a partial check, but partialCheckLimit was specified in options`
             );
             return getResult();
         }
@@ -52,7 +52,7 @@ export async function run(rawOptions: RawOptions) {
             options.partialCheckLimit
         ) {
             reportWarning(
-                `Skipping fence validation -- the partial check had more than ${options.partialCheckLimit} changes`
+                `Skipping fence validation. The partial check had more than ${options.partialCheckLimit} changes`
             );
             return getResult();
         }
@@ -73,7 +73,7 @@ export async function run(rawOptions: RawOptions) {
         validateTagsExist();
     } else {
         reportWarning(
-            `skipping validateTagsExist -- cannot validate tag existence while performing partial checks`
+            `skipping validateTagsExist. Cannot validate tag existence during partial checks`
         );
     }
 
