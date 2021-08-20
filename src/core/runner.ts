@@ -63,7 +63,7 @@ export async function run(rawOptions: RawOptions) {
         : new TypeScriptProgram(options.project);
 
     if (!partialCheck) {
-        // validating tags exist requires a full load of all fences
+        // Validating tags exist requires a full load of all fences
         // we can't do this in partial check mode.
         //
         // Prefetching the full config set here avoids the overhead
@@ -73,12 +73,12 @@ export async function run(rawOptions: RawOptions) {
         validateTagsExist();
     } else {
         reportWarning(
-            `skipping validateTagsExist. Cannot validate tag existence during partial checks`
+            `Skipping validateTagsExist. Cannot validate tag existence during partial checks`
         );
     }
 
     if (partialCheck) {
-        // validate only those files specified on the command line,
+        // Validate only those files specified on the command line,
         // or included in the scope of changed fence files.
         const fenceScopeFiles = await getSourceFilesNormalized(
             sourceFileProvider,
@@ -99,7 +99,7 @@ export async function run(rawOptions: RawOptions) {
     } else {
         const normalizedFiles = await getSourceFilesNormalized(sourceFileProvider);
 
-        // we have to limit the concurrent executed promises because
+        // Limit the concurrent executed promises because
         // otherwise we will open all the files at the same time and
         // hit the MFILE error (when we hit rlimit)
         await runWithConcurrentLimit(
