@@ -71,10 +71,6 @@ export async function run(rawOptions: RawOptions) {
         // the full fence set.
         getConfigManager().getAllConfigs();
         validateTagsExist();
-    } else {
-        reportWarning(
-            `Skipping validateTagsExist. Cannot validate tag existence during partial checks`
-        );
     }
 
     if (partialCheck) {
