@@ -1,5 +1,5 @@
-import NormalizedPath from '../../src/types/NormalizedPath';
-import { diffList, getFenceDiff } from '../../src/utils/getFenceDiff';
+import type NormalizedPath from '../../src/types/NormalizedPath';
+import { diffList, getFenceDiff } from '../../src/utils/diffing/getFenceDiff';
 
 let strictCmp = (a: any, b: any): boolean => {
     return a === b;

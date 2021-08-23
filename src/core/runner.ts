@@ -10,8 +10,8 @@ import { FDirSourceFileProvider } from './FdirSourceFileProvider';
 import NormalizedPath from '../types/NormalizedPath';
 import { runWithConcurrentLimit } from '../utils/runWithConcurrentLimit';
 import getConfigManager from '../utils/getConfigManager';
-import { getFenceAndImportDiffsFromGit } from '../utils/getFenceAndImportDiffsFromGit';
-import { getPartialCheckFromImportDiffs } from '../utils/getPartialCheckFromImportDiffs';
+import { getFenceAndImportDiffsFromGit } from '../utils/diffing/getFenceAndImportDiffsFromGit';
+import { getPartialCheckFromImportDiffs } from '../utils/diffing/getPartialCheckFromImportDiffs';
 import * as path from 'path';
 import { PartialCheck } from '../types/PartialCheck';
 

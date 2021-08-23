@@ -1,6 +1,6 @@
-import Config from '../types/config/Config';
-import DependencyRule from '../types/config/DependencyRule';
-import ExportRule from '../types/config/ExportRule';
+import type Config from '../../types/config/Config';
+import type DependencyRule from '../../types/config/DependencyRule';
+import type ExportRule from '../../types/config/ExportRule';
 
 const isSameExport = (exportA: ExportRule, exportB: ExportRule) => {
     return exportA.accessibleTo === exportB.accessibleTo && exportA.modules === exportB.modules;
@@ -45,8 +45,8 @@ export function diffList<T>(
         return null;
     } else {
         let listDiff: DiffList<T> = {
-            added: newList === null ? null : [],
-            removed: oldList === null ? null : [],
+            added: [],
+            removed: [],
         };
 
         // both lists had content, diff them

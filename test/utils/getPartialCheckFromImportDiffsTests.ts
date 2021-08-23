@@ -2,9 +2,9 @@ import NormalizedPath from '../../src/types/NormalizedPath';
 import {
     FenceAndImportDiffs,
     SourceImportDiff,
-} from '../../src/utils/getFenceAndImportDiffsFromGit';
-import { FenceDiff } from '../../src/utils/getFenceDiff';
-import { getPartialCheckFromImportDiffs } from '../../src/utils/getPartialCheckFromImportDiffs';
+} from '../../src/utils/diffing/getFenceAndImportDiffsFromGit';
+import { FenceDiff } from '../../src/utils/diffing/getFenceDiff';
+import { getPartialCheckFromImportDiffs } from '../../src/utils/diffing/getPartialCheckFromImportDiffs';
 
 function testGraphDiff({
     fenceDiffs,

@@ -1,8 +1,8 @@
-import { reportWarning } from '../core/result';
-import NormalizedPath from '../types/NormalizedPath';
+import { reportWarning } from '../../core/result';
+import NormalizedPath from '../../types/NormalizedPath';
 import { FenceAndImportDiffs } from './getFenceAndImportDiffsFromGit';
 import * as path from 'path';
-import { PartialCheck } from '../types/PartialCheck';
+import { PartialCheck } from '../../types/PartialCheck';
 
 export function getPartialCheckFromImportDiffs(
     graphDiff: FenceAndImportDiffs

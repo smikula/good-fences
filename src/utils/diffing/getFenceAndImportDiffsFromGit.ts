@@ -1,12 +1,14 @@
 import * as Git from 'nodegit';
-import { loadConfigFromString } from './loadConfig';
-import Config from '../types/config/Config';
-import normalizePath from './normalizePath';
-import NormalizedPath from '../types/NormalizedPath';
-import { reportWarning } from '../core/result';
-import { getScriptFileExtensions } from './getScriptFileExtensions';
+import { loadConfigFromString } from '../loadConfig';
+import Config from '../../types/config/Config';
+import normalizePath from '../normalizePath';
+import NormalizedPath from '../../types/NormalizedPath';
+import { reportWarning } from '../../core/result';
+import { getScriptFileExtensions } from '../getScriptFileExtensions';
 import { FenceDiff, getFenceDiff } from './getFenceDiff';
-import { getTsImportSetFromSourceString } from './getTsImportSetFromSourceString';
+import { getTsImportSetFromSourceString } from '../getTsImportSetFromSourceString';
+import { resolveHashOrRefToCommit } from './resolveHashOrRefToCommit';
+import { getFenceAndSourcePatches } from './getFenceAndSourcePatches';
 
 /**
  * Creates an empty fence given a path.
@@ -21,46 +23,6 @@ function emptyFence(path: NormalizedPath): Config {
         dependencies: null,
         path: path,
     };
-}
-
-async function resolveToCommit(
-    repo: Git.Repository,
-    compareOidOrRefName: string
-): Promise<Git.Commit> {
-    let oid: Git.Oid;
-    try {
-        oid = Git.Oid.fromString(compareOidOrRefName);
-    } catch {
-        oid = await Git.Reference.nameToId(repo, compareOidOrRefName);
-    }
-    return await Git.Commit.lookup(repo, oid);
-}
-
-/**
- * Given a nodegit Diff object, partitions it by path
- * into diffs between fences or script files. Ignores any paths
- * that are neither fences nor script files
- */
-async function getFenceAndSourcePatches(diffSinceHash: Git.Diff, extensions: string[]) {
-    const patches = await diffSinceHash.patches();
-    const fencePatches = [];
-    const sourcePatches = [];
-    for (let patch of patches) {
-        const oldFile = patch.oldFile();
-        const newFile = patch.newFile();
-        if (oldFile.path().endsWith('fence.json') || newFile.path().endsWith('fence.json')) {
-            fencePatches.push(patch);
-        } else if (
-            extensions.some(
-                scriptFileExtension =>
-                    oldFile.path().endsWith(scriptFileExtension) ||
-                    newFile.path().endsWith(scriptFileExtension)
-            )
-        ) {
-            sourcePatches.push(patch);
-        }
-    }
-    return [fencePatches, sourcePatches];
 }
 
 export type SourceImportDiff = {
@@ -89,7 +51,7 @@ export async function getFenceAndImportDiffsFromGit(
     const [index, headCommitTree, compareTree] = await Promise.all([
         repo.index(),
         repo.getHeadCommit().then(headCommit => headCommit?.getTree?.()),
-        resolveToCommit(repo, compareOidOrRefName).then(commit => commit.getTree()),
+        resolveHashOrRefToCommit(repo, compareOidOrRefName).then(commit => commit.getTree()),
     ]);
 
     let repoDiff: Git.Diff;
@@ -127,6 +89,10 @@ export async function getFenceAndImportDiffsFromGit(
 
     // TODO: track files across moves (Should just be a fence removal and addition)
     for (let patch of [...fencePatches, ...sourcePatches]) {
+        // nodegit represents a file being created or deleted by
+        // setting the object hash of the old / new file as 0,
+        // and reports the oldFile and newFile's path as the same,
+        // so the below only triggers on moved files.
         if (patch.oldFile().path() && patch.oldFile().path() !== patch.newFile().path()) {
             reportWarning('Detected a moved fence or source file. Aborting partial check from git');
             return null;
