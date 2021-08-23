@@ -167,15 +167,11 @@ export async function getFenceAndImportDiffsFromGit(
                 return;
             }
 
-            const newSourceImportsPromise: Promise<Set<string>> | Set<string> = newPath
-                ? (async () => {
-                      const indexEntry = await index.getByPath(newPath);
-                      const newSourceBlob = await repo.getBlob(indexEntry.id);
-                      return getTsImportSetFromSourceString(
-                          newSourceBlob.content().toString('utf-8')
-                      );
-                  })()
-                : new Set();
+            const newSourceImportsPromise: Promise<Set<string>> = (async () => {
+                const indexEntry = await index.getByPath(newPath);
+                const newSourceBlob = await repo.getBlob(indexEntry.id);
+                return getTsImportSetFromSourceString(newSourceBlob.content().toString('utf-8'));
+            })();
             const oldSourceImportsPromise: Promise<Set<string>> | Set<string> = oldPath
                 ? (async () => {
                       const oldSourceEntry = await compareTree.getEntry(oldPath);
