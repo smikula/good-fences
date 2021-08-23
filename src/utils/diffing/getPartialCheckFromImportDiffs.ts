@@ -15,7 +15,9 @@ export function getPartialCheckFromImportDiffs(
     for (let [normalizedSourceFilePath, importDiff] of graphDiff.sourceImportDiffs.entries()) {
         if (importDiff.addedImports?.length) {
             // we need to re-check this file, since the new imports
-            // might violate the importing fence.
+            // might violate a parent fence of the file, or might
+            // violate the exports rules of the fences of new modules
+            // it is importing.
             sourceFiles.add(normalizedSourceFilePath);
         }
     }
