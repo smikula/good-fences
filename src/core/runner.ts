@@ -34,6 +34,17 @@ async function getSourceFilesNormalized(
     return normalizedFiles;
 }
 
+async function getSourceFilesFromPartialCheck(
+    sourceFileProvider: SourceFileProvider,
+    partialCheck: PartialCheck
+) {
+    const fenceScopeFiles = await getSourceFilesNormalized(
+        sourceFileProvider,
+        partialCheck.fences.map((fencePath: NormalizedPath) => path.dirname(fencePath))
+    );
+    return Array.from(new Set([...partialCheck.sourceFiles, ...fenceScopeFiles]));
+}
+
 export async function run(rawOptions: RawOptions) {
     // Store options so they can be globally available
     setOptions(rawOptions);
@@ -73,37 +84,19 @@ export async function run(rawOptions: RawOptions) {
         validateTagsExist();
     }
 
-    if (partialCheck) {
-        // Validate only those files specified on the command line,
-        // or included in the scope of changed fence files.
-        const fenceScopeFiles = await getSourceFilesNormalized(
-            sourceFileProvider,
-            partialCheck.fences.map((fencePath: NormalizedPath) => path.dirname(fencePath))
-        );
+    let normalizedFiles = await (partialCheck
+        ? getSourceFilesFromPartialCheck(sourceFileProvider, partialCheck)
+        : getSourceFilesNormalized(sourceFileProvider));
 
-        const normalizedFiles = [...partialCheck.sourceFiles, ...fenceScopeFiles];
-
+    await runWithConcurrentLimit(
         // we have to limit the concurrent executed promises because
         // otherwise we will open all the files at the same time and
         // hit the MFILE error (when we hit rlimit)
-        await runWithConcurrentLimit(
-            options.maxConcurrentFenceJobs,
-            normalizedFiles,
-            (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider),
-            options.progress
-        );
-    } else {
-        const normalizedFiles = await getSourceFilesNormalized(sourceFileProvider);
+        options.maxConcurrentFenceJobs,
+        normalizedFiles,
+        (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider),
+        options.progress
+    );
 
-        // Limit the concurrent executed promises because
-        // otherwise we will open all the files at the same time and
-        // hit the MFILE error (when we hit rlimit)
-        await runWithConcurrentLimit(
-            options.maxConcurrentFenceJobs,
-            normalizedFiles,
-            (normalizedFile: NormalizedPath) => validateFile(normalizedFile, sourceFileProvider),
-            options.progress
-        );
-    }
     return getResult();
 }
