@@ -58,7 +58,6 @@ async function getFenceAndSourcePatches(diffSinceHash: Git.Diff, extensions: str
             )
         ) {
             sourcePatches.push(patch);
-        } else {
         }
     }
     return [fencePatches, sourcePatches];
