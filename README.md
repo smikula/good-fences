@@ -154,11 +154,77 @@ Default           | CLI                                    | API
 
 ### Root Directory
 
-Specify the project root directory.
+Specify the project root directory or directories.
+These are the folders that will be scanned for fences, and if running with
+`--looseRootFileDiscovery`, the directories that will be scanned for source files.
 
 Default         | CLI                                    | API
 ----------------|----------------------------------------|----
-`process.cwd()` | `--rootDir <string>`<br/>`-r <string>` | `rootDir: string`
+`process.cwd()` | `--rootDir <string...>`<br/>`-r <string...>` | `rootDir: string | string[]`
+
+
+### Ignore External Fences
+
+Ignore external fences (e.g. those in `node_modules`).
+
+Default         | CLI                                    | API
+----------------|----------------------------------------|----
+`false`         | `--ignoreExternalFences`<br/>`-i`      | `ignoreExternalFences: boolean`
+
+
+### Loose Root File Discovery
+
+Discover sources from the root directories rather than discovering sources
+from the project file.
+
+Default         | CLI                                    | API
+----------------|----------------------------------------|----
+`false`         | `--looseRootFileDiscovery`<br/>`-x`    | `looseRootFileDiscovery: boolean`
+
+
+### Since Git Hash
+
+Only run on files changed between the current git index and the given commit hash
+or reference name. If the git index is empty, good-fences will check against the
+current HEAD instead.
+
+Default         | CLI                                         | API
+----------------|---------------------------------------------|----
+`undefined`     | `--sinceGitHash <string>`<br/>`-g <string>` | `sinceGitHash: string`
+
+
+### Partial Check Limit
+
+When running in a partial check (e.g. with `--sinceGitHash`), the maximum number
+of source files to check. If more than this number of files have changed in the
+partial check (including fences and source files), good-fences will exit with
+code 0. This is intended for using good-fences as a pre-commit check.
+
+Default         | CLI                                              | API
+----------------|--------------------------------------------------|----
+`undefined`     | `--partialCheckLimit <number>`<br/>`-l <number>` | `partialCheckLimit: number`
+
+
+### Show Progress Bar
+
+Whether a progress bar should be displayed on the process stderr during fence
+checking. Does not show while discovering files, only while actually running
+fences, so it may take several minutes to show on large projects not running
+with `--looseRootFileDiscovery`.
+
+Default         | CLI                                          | API
+----------------|----------------------------------------------|----
+`false`         | `--progressBar <boolean>`<br/>`-p <boolean>` | `maxConcurrentFenceJobs: boolean`
+
+
+### Max Concurrent Fence Jobs
+
+The maximum number of fence jobs to run at the same time. Should be set below MFILE on your machine, as otherwise good-fences will hit EMFILE and crash out.
+
+Default         | CLI                                                   | API
+----------------|-------------------------------------------------------|----
+`6000`          | `--maxConcurrentFenceJobs <number>`<br/>`-j <number>` | `maxConcurrentFenceJobs: number`
+
 
 ## Return value
 
