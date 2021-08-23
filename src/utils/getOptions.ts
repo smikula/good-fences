@@ -23,7 +23,7 @@ export function setOptions(rawOptions: RawOptions) {
         ? normalizePath(rawOptions.project)
         : normalizePath(rootDir[0], 'tsconfig.json');
 
-    if (typeof rawOptions.partialCheckLimit === 'boolean' && !rawOptions.sinceGitHash) {
+    if (typeof rawOptions.partialCheckLimit === 'number' && !rawOptions.sinceGitHash) {
         throw new Error('Cannot specify --partialCheckLimit without --sinceGitHash');
     }
 
