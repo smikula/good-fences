@@ -79,7 +79,7 @@ export function getPartialCheckFromImportDiffs(
             // an imports section, which would make imports that depend on that
             // tag invalid.
             reportWarning(
-                `Cannot perform partial evaluation -- removed tags section from fence ${normalizedFencePath}`
+                `Cannot perform partial evaluation -- removed tags from fence ${normalizedFencePath}`
             );
             canResolve = false;
         }
