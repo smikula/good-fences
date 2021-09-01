@@ -1,10 +1,10 @@
-import NormalizedPath from '../../src/types/NormalizedPath';
+import NormalizedPath from '../../../src/types/NormalizedPath';
 import {
     FenceAndImportDiffs,
     SourceImportDiff,
-} from '../../src/utils/diffing/getFenceAndImportDiffsFromGit';
-import { FenceDiff } from '../../src/utils/diffing/getFenceDiff';
-import { getPartialCheckFromImportDiffs } from '../../src/utils/diffing/getPartialCheckFromImportDiffs';
+} from '../../../src/utils/diffing/getFenceAndImportDiffsFromGit';
+import { FenceDiff } from '../../../src/utils/diffing/getFenceDiff';
+import { getPartialCheckFromImportDiffs } from '../../../src/utils/diffing/getPartialCheckFromImportDiffs';
 
 function testGraphDiff({
     fenceDiffs,
@@ -273,7 +273,7 @@ describe('getPartialCheckFromImportDiffs', () => {
         });
 
         describe('when tags are removed', () => {
-            it("re-checks the fence's children", () => {
+            it('performs a full check', () => {
                 const graphDiff = testGraphDiff({
                     fenceDiffs: {
                         '/path/to/fence': {
@@ -286,7 +286,7 @@ describe('getPartialCheckFromImportDiffs', () => {
                 });
 
                 const partialCheck = getPartialCheckFromImportDiffs(graphDiff);
-                expect(partialCheck).toEqual({ fences: ['/path/to/fence'], sourceFiles: [] });
+                expect(partialCheck).toEqual(null);
             });
         });
     });

@@ -75,8 +75,13 @@ export function getPartialCheckFromImportDiffs(
 
         const fenceHadTagsRemoved = fenceDiff.tags?.removed?.length;
         if (fenceHadTagsRemoved) {
-            // Forces a check on all fence children
-            fences.add(normalizedFencePath);
+            // There might exist another fence that references the removed tag in
+            // an imports section, which would make imports that depend on that
+            // tag invalid.
+            reportWarning(
+                `Cannot perform partial evaluation -- removed tags section from fence ${normalizedFencePath}`
+            );
+            canResolve = false;
         }
     }
 
