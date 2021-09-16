@@ -19,6 +19,7 @@
         "commander": "^7.2.0",
         "fdir": "^5.1.0",
         "minimatch": "^3.0.4",
+        "nodegit": "^0.27.0",
         "picomatch": "^2.3.0",
         "tsconfig-paths": "^3.10.1",
         "typescript": "^4.0.3"
@@ -28,6 +29,7 @@
         "@types/commander": "^2.12.2",
         "@types/jest": "^26.0.15",
         "@types/node": "^12.7.8",
+        "@types/nodegit": "^0.27.2",
         "husky": "^4.3.8",
         "jest": "^26.6.0",
         "prettier": "^2.2.1",

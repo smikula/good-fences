@@ -23,10 +23,16 @@ export function setOptions(rawOptions: RawOptions) {
         ? normalizePath(rawOptions.project)
         : normalizePath(rootDir[0], 'tsconfig.json');
 
+    if (typeof rawOptions.partialCheckLimit === 'number' && !rawOptions.sinceGitHash) {
+        throw new Error('Cannot specify --partialCheckLimit without --sinceGitHash');
+    }
+
     options = {
         project,
         rootDir,
         ignoreExternalFences: rawOptions.ignoreExternalFences,
+        partialCheckLimit: rawOptions?.partialCheckLimit,
+        sinceGitHash: rawOptions.sinceGitHash,
         looseRootFileDiscovery: rawOptions.looseRootFileDiscovery || false,
         maxConcurrentFenceJobs: rawOptions.maxConcurrentJobs || 6000,
         progress: rawOptions.progressBar || false,

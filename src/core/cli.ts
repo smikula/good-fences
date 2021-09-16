@@ -12,6 +12,14 @@ async function main() {
         .option('-p, --project <string> ', 'tsconfig.json file')
         .option('-r, --rootDir <string...>', 'root directories of the project')
         .option(
+            '-g, --sinceGitHash <string>',
+            'Infer files and fences to check based on changes since the specified git hash'
+        )
+        .option(
+            '-l, --partialCheckLimit <number>',
+            'Maximum files to check during a partial check run. If more files than this limit are changed, the partial check will be aborted and good-fences will exit with code 0.'
+        )
+        .option(
             '-x, --looseRootFileDiscovery',
             '(UNSTABLE) Check source files under rootDirs instead of instantiating a full typescript program.'
         )
