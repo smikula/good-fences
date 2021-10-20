@@ -88,7 +88,6 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             // definition files.
             includeDefinitions: true,
         });
-        console.log(baseUrl, this.parsedCommandLine.options.paths);
 
         this.matchPath = createMatchPathAsync(baseUrl, this.parsedCommandLine.options.paths ?? {});
     }
