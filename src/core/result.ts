@@ -9,6 +9,11 @@ const result: GoodFencesResult = {
     warnings: [],
 };
 
+export function resetResult() {
+    result.errors = [];
+    result.warnings = [];
+}
+
 export function getResult() {
     return result;
 }

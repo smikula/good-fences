@@ -7,7 +7,7 @@ async function main() {
     const packageVersion = require('../../package.json').version;
 
     // Parse command line options
-    const program = commander
+    const program = commander.program
         .version(packageVersion)
         .option('-p, --project <string> ', 'tsconfig.json file')
         .option('-r, --rootDir <string...>', 'root directories of the project')

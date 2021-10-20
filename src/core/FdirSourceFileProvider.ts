@@ -14,9 +14,11 @@ import {
     ParsedCommandLine,
     preProcessFile,
 } from 'typescript';
+import picomatch from 'picomatch';
 
 export class FDirSourceFileProvider implements SourceFileProvider {
     parsedCommandLine: ParsedCommandLine;
+    excludePatternsPicoMatchers: picomatch.Matcher[];
     matchPath: MatchPathAsync;
     private sourceFileGlob: string;
     private extensionsToCheckDuringImportResolution: string[];
@@ -50,6 +52,16 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             }
         );
 
+        const baseUrl = this.parsedCommandLine.options.baseUrl ?? path.dirname(configFileName);
+        this.excludePatternsPicoMatchers = (this.parsedCommandLine.raw?.exclude ?? []).map(
+            (excludePattern: string) => {
+                const matcher = picomatch(excludePattern);
+                return (pathToCheck: string) => {
+                    return matcher(path.relative(baseUrl, pathToCheck));
+                };
+            }
+        );
+
         this.sourceFileGlob = `**/*@(${getScriptFileExtensions({
             // Derive these settings from the typescript project itself
             allowJs: this.parsedCommandLine.options.allowJs || false,
@@ -76,11 +88,9 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             // definition files.
             includeDefinitions: true,
         });
+        console.log(baseUrl, this.parsedCommandLine.options.paths);
 
-        this.matchPath = createMatchPathAsync(
-            this.parsedCommandLine.options.baseUrl,
-            this.parsedCommandLine.options.paths
-        );
+        this.matchPath = createMatchPathAsync(baseUrl, this.parsedCommandLine.options.paths ?? {});
     }
 
     async getSourceFiles(searchRoots?: string[]): Promise<string[]> {
@@ -95,7 +105,13 @@ export class FDirSourceFileProvider implements SourceFileProvider {
             )
         );
 
-        return [...new Set<string>(allRootsDiscoveredFiles.reduce((a, b) => a.concat(b), []))];
+        return [
+            ...new Set<string>(allRootsDiscoveredFiles.reduce((a, b) => a.concat(b), [])),
+        ].filter((p: string) => !this.isPathExcluded(p));
+    }
+
+    private isPathExcluded(path: string) {
+        return this.excludePatternsPicoMatchers.some(isMatch => isMatch(path));
     }
 
     async getImportsForFile(filePath: string): Promise<string[]> {
