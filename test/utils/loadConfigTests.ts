@@ -1,3 +1,4 @@
+jest.mock('fs');
 import * as fs from 'fs';
 import RawConfig from '../../src/types/rawConfig/RawConfig';
 import loadConfig, { normalizeExportRules } from '../../src/utils/loadConfig';

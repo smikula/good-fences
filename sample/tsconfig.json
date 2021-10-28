@@ -8,6 +8,6 @@
         "noImplicitAny": false,
         "noUnusedLocals": true
     },
-    "exclude": ["lib"],
+    "exclude": ["lib", "src/**/ignored/**/*.ts"],
     "include": ["src/**/*"]
 }

@@ -3,7 +3,7 @@ import getOptions, { setOptions } from '../utils/getOptions';
 import validateFile from '../validation/validateFile';
 import TypeScriptProgram from './TypeScriptProgram';
 import normalizePath from '../utils/normalizePath';
-import { getResult, reportWarning } from './result';
+import { getResult, reportWarning, resetResult } from './result';
 import { validateTagsExist } from '../validation/validateTagsExist';
 import { SourceFileProvider } from './SourceFileProvider';
 import { FDirSourceFileProvider } from './FdirSourceFileProvider';
@@ -98,5 +98,9 @@ export async function run(rawOptions: RawOptions) {
         options.progress
     );
 
-    return getResult();
+    const result = getResult();
+    // Reset the global results object so so that future runs
+    // do not have the results from this run.
+    resetResult();
+    return result;
 }

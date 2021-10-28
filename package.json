@@ -26,10 +26,10 @@
     },
     "devDependencies": {
         "@types/cli-progress": "^3.9.2",
-        "@types/commander": "^2.12.2",
         "@types/jest": "^26.0.15",
         "@types/node": "^12.7.8",
         "@types/nodegit": "^0.27.2",
+        "@types/picomatch": "^2.3.0",
         "husky": "^4.3.8",
         "jest": "^26.6.0",
         "prettier": "^2.2.1",
