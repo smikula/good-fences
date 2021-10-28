@@ -1,14 +1,9 @@
-import { resetResult } from '../../src/core/result';
 import { run } from '../../src/core/runner';
 import GoodFencesError from '../../src/types/GoodFencesError';
 import GoodFencesResult from '../../src/types/GoodFencesResult';
 import normalizePath from '../../src/utils/normalizePath';
 
 describe('runner', () => {
-    afterEach(() => {
-        resetResult();
-    });
-
     it('returns the expected results', async () => {
         // Arrange
         const expectedResults = require('./endToEndTests.expected.json');

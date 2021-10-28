@@ -4,14 +4,16 @@ import GoodFencesError from '../types/GoodFencesError';
 import GoodFencesResult from '../types/GoodFencesResult';
 import ImportRecord from './ImportRecord';
 
-const result: GoodFencesResult = {
+let result: GoodFencesResult = {
     errors: [],
     warnings: [],
 };
 
 export function resetResult() {
-    result.errors = [];
-    result.warnings = [];
+    result = {
+        errors: [],
+        warnings: [],
+    };
 }
 
 export function getResult() {
