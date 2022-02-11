@@ -1,6 +1,6 @@
 {
     "name": "good-fences",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Code boundary management for TypeScript projects",
     "main": "./lib/index.js",
     "typings": "./lib/index.d.ts",
@@ -19,7 +19,7 @@
         "commander": "^7.2.0",
         "fdir": "^5.1.0",
         "minimatch": "^3.0.4",
-        "nodegit": "^0.27.0",
+        "nodegit": "0.28.0-alpha.13",
         "picomatch": "^2.3.0",
         "tsconfig-paths": "^3.10.1",
         "typescript": "^4.0.3"
