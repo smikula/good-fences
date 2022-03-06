@@ -15,6 +15,10 @@ export function loadConfigFromString(
     configPath: NormalizedPath,
     fileContent: string
 ): Config | null {
+    // Strip BOM if needed
+    if (fileContent.charCodeAt(0) === 0xfeff) {
+        fileContent = fileContent.slice(1);
+    }
     // Load the raw config
     let rawConfig: RawConfig = JSON.parse(fileContent);
 
