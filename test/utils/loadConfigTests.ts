@@ -13,7 +13,7 @@ describe('loadConfig', () => {
     let configSet: ConfigSet;
 
     beforeEach(() => {
-        spyOn(fs, 'readFileSync').and.returnValue({});
+        spyOn(fs, 'readFileSync').and.returnValue('');
         spyOn(JSON, 'parse').and.callFake(() => rawConfig);
         spyOn(normalizePath, 'default').and.returnValue(normalizedPath);
         configSet = {};
