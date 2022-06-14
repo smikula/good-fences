@@ -1,9 +1,11 @@
 jest.mock('fs');
 import * as fs from 'fs';
 import RawConfig from '../../src/types/rawConfig/RawConfig';
-import loadConfig, { normalizeExportRules } from '../../src/utils/loadConfig';
+import loadConfig, { loadConfigFromString, normalizeExportRules } from '../../src/utils/loadConfig';
 import * as normalizePath from '../../src/utils/normalizePath';
 import ConfigSet from '../../src/types/ConfigSet';
+import Config from '../../src/types/config/Config';
+import NormalizedPath from '../../src/types/NormalizedPath';
 
 describe('loadConfig', () => {
     const configPath = 'configPath';
@@ -87,6 +89,46 @@ describe('loadConfig', () => {
 
         // Assert
         expect(configSet[normalizedPath].dependencies).toEqual(normalizedDependencies);
+    });
+});
+
+describe('loadConfigFromString', () => {
+    const normalizedPath: NormalizedPath = 'normalizedPath' as NormalizedPath;
+
+    it('handles BOM', () => {
+        // Arrange
+        const configString = '\ufeff{}';
+
+        // Act
+        const config = loadConfigFromString(normalizedPath, configString);
+
+        // Assert
+        const expected: Config = {
+            path: normalizedPath,
+            tags: undefined,
+            exports: null,
+            dependencies: null,
+            imports: undefined,
+        };
+        expect(config).toEqual(expected);
+    });
+
+    it('handles comments', () => {
+        // Arrange
+        const configString = '{} // Comment';
+
+        // Act
+        const config = loadConfigFromString(normalizedPath, configString);
+
+        // Assert
+        const expected: Config = {
+            path: normalizedPath,
+            tags: undefined,
+            exports: null,
+            dependencies: null,
+            imports: undefined,
+        };
+        expect(config).toEqual(expected);
     });
 });
 

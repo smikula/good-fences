@@ -21,6 +21,7 @@
         "minimatch": "^3.0.4",
         "nodegit": "^0.27.0",
         "picomatch": "^2.3.0",
+        "strip-json-comments": "^3.1.1",
         "tsconfig-paths": "^3.10.1",
         "typescript": "^4.0.3"
     },

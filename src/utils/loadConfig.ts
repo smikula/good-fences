@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import stripJsonComments from 'strip-json-comments';
 import RawConfig from '../types/rawConfig/RawConfig';
 import Config from '../types/config/Config';
 import normalizePath from './normalizePath';
@@ -19,6 +20,9 @@ export function loadConfigFromString(
     if (fileContent.charCodeAt(0) === 0xfeff) {
         fileContent = fileContent.slice(1);
     }
+
+    fileContent = stripJsonComments(fileContent);
+
     // Load the raw config
     let rawConfig: RawConfig = JSON.parse(fileContent);
 
