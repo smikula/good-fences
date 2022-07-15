@@ -1,11 +1,11 @@
-import * as Git from 'nodegit';
+import { Diff } from 'nodegit';
 
 /**
  * Given a nodegit Diff object, partitions it by path
  * into diffs between fences or script files. Ignores any paths
  * that are neither fences nor script files
  */
-export async function getFenceAndSourcePatches(diffSinceHash: Git.Diff, extensions: string[]) {
+export async function getFenceAndSourcePatches(diffSinceHash: Diff, extensions: string[]) {
     const patches = await diffSinceHash.patches();
     const fencePatches = [];
     const sourcePatches = [];

@@ -1,14 +1,14 @@
-import * as Git from 'nodegit';
+import { Commit, Oid, Reference, Repository } from 'nodegit';
 
 export async function resolveHashOrRefToCommit(
-    repo: Git.Repository,
+    repo: Repository,
     compareOidOrRefName: string
-): Promise<Git.Commit> {
-    let oid: Git.Oid;
+): Promise<Commit> {
+    let oid: Oid;
     try {
-        oid = Git.Oid.fromString(compareOidOrRefName);
+        oid = Oid.fromString(compareOidOrRefName);
     } catch {
-        oid = await Git.Reference.nameToId(repo, compareOidOrRefName);
+        oid = await Reference.nameToId(repo, compareOidOrRefName);
     }
-    return await Git.Commit.lookup(repo, oid);
+    return await Commit.lookup(repo, oid);
 }

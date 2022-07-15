@@ -1,4 +1,4 @@
-import * as Git from 'nodegit';
+import { Diff, Repository } from 'nodegit';
 import { loadConfigFromString } from '../loadConfig';
 import Config from '../../types/config/Config';
 import normalizePath from '../normalizePath';
@@ -47,15 +47,15 @@ export type FenceAndImportDiffs = {
 export async function getFenceAndImportDiffsFromGit(
     compareOidOrRefName: string
 ): Promise<FenceAndImportDiffs | null> {
-    const repo = await Git.Repository.open(process.cwd());
+    const repo = await Repository.open(process.cwd());
     const [index, headCommitTree, compareTree] = await Promise.all([
         repo.index(),
         repo.getHeadCommit().then(headCommit => headCommit?.getTree?.()),
         resolveHashOrRefToCommit(repo, compareOidOrRefName).then(commit => commit.getTree()),
     ]);
 
-    let repoDiff: Git.Diff;
-    const indexToHead = await Git.Diff.treeToIndex(repo, headCommitTree, null);
+    let repoDiff: Diff;
+    const indexToHead = await Diff.treeToIndex(repo, headCommitTree, null);
     const indexIsEmpty = indexToHead.numDeltas() === 0;
 
     // Permit all extensions in the extension set. If we are
@@ -72,12 +72,12 @@ export async function getFenceAndImportDiffsFromGit(
     });
 
     if (!indexIsEmpty) {
-        repoDiff = await Git.Diff.treeToIndex(repo, compareTree, index, {
+        repoDiff = await Diff.treeToIndex(repo, compareTree, index, {
             contextLines: 0,
             pathspec: mostPermissiveExtensionSet.map(dotExt => '*' + dotExt),
         });
     } else {
-        repoDiff = await Git.Diff.treeToTree(repo, compareTree, headCommitTree, {
+        repoDiff = await Diff.treeToTree(repo, compareTree, headCommitTree, {
             contextLines: 0,
             pathspec: mostPermissiveExtensionSet.map(dotExt => '*' + dotExt),
         });
