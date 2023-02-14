@@ -7,4 +7,5 @@ export default interface RawOptions {
     looseRootFileDiscovery?: boolean;
     maxConcurrentJobs?: number;
     progressBar?: boolean;
+    excludeFilesPattern?: string;
 }

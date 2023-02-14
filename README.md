@@ -226,6 +226,15 @@ Default         | CLI                                                   | API
 `6000`          | `--maxConcurrentFenceJobs <number>`<br/>`-j <number>` | `maxConcurrentFenceJobs: number`
 
 
+### Exclude Files Patten
+
+Specify a pattern for file names that should be excluded from good-fences validation. For example *.test.ts to exclude test files.
+
+Default         | CLI                                                   | API
+----------------|-------------------------------------------------------|----
+`undefined`          | `--excludeFilesPattern <string>`<br/>`-p <string>` | `excludeFilesPattern: string`
+
+
 ## Return value
 
 When running good-fences via the API, the results are returned in a structure like the following:
