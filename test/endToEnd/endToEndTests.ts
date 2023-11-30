@@ -11,6 +11,7 @@ describe('runner', () => {
         // Act
         const actualResults = await run({
             rootDir: './sample',
+            excludeFilesPattern: '*.test.ts',
         });
 
         // Assert
@@ -29,6 +30,7 @@ describe('runner', () => {
         const actualResults = await run({
             rootDir: './sample',
             looseRootFileDiscovery: true,
+            excludeFilesPattern: '*.test.ts',
         });
 
         // Assert

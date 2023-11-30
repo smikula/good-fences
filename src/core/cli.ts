@@ -31,6 +31,10 @@ async function main() {
             '-j, --maxConcurrentFenceJobs',
             'Maximum number of concurrent fence jobs to run. Default 6000'
         )
+        .option(
+            '-p, --excludeFilesPattern <string>',
+            'Exclude files matching the pattern from validation'
+        )
         .option('-b, --progressBar', 'Show a progress bar while evaluating fences');
     program.parse(process.argv);
     const options = program.opts() as RawOptions;

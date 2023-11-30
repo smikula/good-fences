@@ -15,4 +15,5 @@ export default interface Options {
     // we try to open too many files concurrently.
     maxConcurrentFenceJobs: number;
     progress: boolean;
+    excludeFilesPattern?: string;
 }

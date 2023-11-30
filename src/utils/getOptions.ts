@@ -36,5 +36,6 @@ export function setOptions(rawOptions: RawOptions) {
         looseRootFileDiscovery: rawOptions.looseRootFileDiscovery || false,
         maxConcurrentFenceJobs: rawOptions.maxConcurrentJobs || 6000,
         progress: rawOptions.progressBar || false,
+        excludeFilesPattern: rawOptions.excludeFilesPattern,
     };
 }

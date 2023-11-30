@@ -88,6 +88,17 @@ export async function run(rawOptions: RawOptions) {
         ? getSourceFilesFromPartialCheck(sourceFileProvider, partialCheck)
         : getSourceFilesNormalized(sourceFileProvider));
 
+    if (options.excludeFilesPattern !== undefined) {
+        // A naive string replace to convert the glob pattern to a regex pattern
+        let regexString = options.excludeFilesPattern
+            .replace('\\', '\\\\.')
+            .replace('.', '\\.')
+            .replace('*', '.*?');
+        normalizedFiles = normalizedFiles.filter(
+            fileName => !fileName.match(new RegExp(regexString, 'i'))
+        );
+    }
+
     await runWithConcurrentLimit(
         // we have to limit the concurrent executed promises because
         // otherwise we will open all the files at the same time and
