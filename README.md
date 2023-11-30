@@ -1,9 +1,11 @@
 # good-fences
 
-> "Good fences make good neighbors."
-— Robert Frost, [*Mending Wall*](https://www.poetryfoundation.org/poems/44266/mending-wall)
+⚠ The JavaScript version of `good-fences` is no longer maintained.  Please see [`good-fences-rs`](https://github.com/Adjective-Object/good-fences-rs-core).
 
 ## What is good-fences?
+
+> "Good fences make good neighbors."
+— Robert Frost, [*Mending Wall*](https://www.poetryfoundation.org/poems/44266/mending-wall)
 
 Good-fences is a tool that allows you to segment a TypeScript project into conceptual areas and manage dependencies between those areas.
 
