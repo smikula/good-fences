@@ -1,6 +1,6 @@
 # good-fences
 
-The JavaScript version of `good-fences` is no longer maintained.  Please see [`good-fences-rs`](https://github.com/Adjective-Object/good-fences-rs-core).
+⚠ The JavaScript version of `good-fences` is no longer maintained.  Please see [`good-fences-rs`](https://github.com/Adjective-Object/good-fences-rs-core).
 
 ## What is good-fences?
 
